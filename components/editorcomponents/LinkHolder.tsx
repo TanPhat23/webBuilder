@@ -1,3 +1,4 @@
+import { LinkIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -12,7 +13,7 @@ const LinkHolder = (props: Props) => {
   };
   return (
     <div draggable onDragStart={(e) => onDragStart(e, "Link")}>
-      Link
+      <LinkIcon/>
     </div>
   );
 };

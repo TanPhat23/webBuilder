@@ -1,3 +1,4 @@
+import { Image } from "lucide-react";
 import React from "react";
 
 type Props = {};
@@ -11,7 +12,7 @@ const ImageHolder = (props: Props) => {
   };
   return (
     <div draggable onDragStart={(e) => onDragStart(e, "Image")}>
-      Image
+      <Image />
     </div>
   );
 };

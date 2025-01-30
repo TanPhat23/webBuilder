@@ -21,14 +21,18 @@ export const elementsReducer = (
     case "SAVE_ELEMENTS_TO_LOCAL_STORAGE":
       localStorage.setItem("elements", JSON.stringify(state));
       return state;
+
     case "LOAD_ELEMENTS_FROM_LOCAL_STORAGE":
       return action.payload;
 
     case "UPDATE_ALL_ELEMENTS":
       return state.map((element) => ({ ...element, ...action.payload }));
-    // case "DESELECT_ALL":
-    //   return state.map((element) => ({ ...element, isSelected: false }));
+    
+    case "UNDO":
+      return state.slice(0, -1);
 
+    case "REDO":
+      return state.concat(action.payload);
     default:
       return state;
   }

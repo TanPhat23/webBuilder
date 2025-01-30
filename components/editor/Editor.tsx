@@ -33,7 +33,7 @@ const Editor = () => {
     dispatch({
       type: "SAVE_ELEMENTS_TO_LOCAL_STORAGE",
       payload: elements,
-    })
+    });
   }, [elements, dispatch]);
 
   const onContextMenu = useCallback(
@@ -71,6 +71,55 @@ const Editor = () => {
           },
         });
       }
+    },
+    [dispatch]
+  );
+  const handleCopy = useCallback(
+    (e: React.ClipboardEvent<HTMLDivElement>) => {
+      const selectedElement = elements.find((element) => element.isSelected);
+      if (selectedElement) {
+        const textToCopy = JSON.stringify(selectedElement);
+
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            console.log("Element copied to clipboard:", selectedElement);
+          });
+        }
+      }
+      setShowContextMenu(false);
+    },
+    [elements]
+  );
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLDivElement>) => {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          try {
+            const clipboardText: Element = JSON.parse(text);
+            const newElement = {
+              type: clipboardText.type,
+              id: clipboardText.type + "-" + Date.now(),
+              content: clipboardText.content,
+              isSelected: false,
+              x: clipboardText.x + 50,
+              y: clipboardText.y + 50,
+              styles: {
+                ...clipboardText.styles,
+              },
+            };
+            dispatch({
+              type: "ADD_ELEMENT",
+              payload: newElement,
+            });
+          } catch (err) {
+            console.error("Failed to parse clipboard content:", err);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read clipboard content:", err);
+        });
     },
     [dispatch]
   );
@@ -136,12 +185,31 @@ const Editor = () => {
       if (e.key === "End") {
         dispatch({ type: "DELETE_ELEMENT", payload: id });
       }
+      if (e.key === "Escape") {
+        dispatch({
+          type: "UPDATE_ELEMENT",
+          payload: { id, updates: { isSelected: false } },
+        });
+      }
+    },
+    [dispatch]
+  );
+  const handleEditorKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "z" && e.ctrlKey) {
+        dispatch({ type: "UNDO", payload: elements });
+      }
+      if (e.key === "y" && e.ctrlKey) {
+        dispatch({ type: "REDO", payload: elements });
+      }
     },
     [dispatch]
   );
 
   const handleDoubleClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, id: string) => {
+    (e: React.MouseEvent<HTMLElement>, id: string) => {
+      console.log("double click");
+      e.currentTarget.focus();
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: { id, updates: { isSelected: true } },
@@ -175,7 +243,9 @@ const Editor = () => {
         type: "UPDATE_ELEMENT",
         payload: {
           id,
-          updates: { isSelected: true, styles: { border: "2px dotted black" } },
+          updates: {
+            styles: { ...element.styles, border: "2px dotted black" },
+          },
         },
       });
       setDraggingElement({ id, offsetX, offsetY });
@@ -192,7 +262,20 @@ const Editor = () => {
           type: "UPDATE_ELEMENT",
           payload: { id: draggingElement.id, updates: { x, y } },
         });
-        dispatch({type:"UPDATE_ALL_ELEMENTS", payload: {isSelected: false, styles: {border: "2px dotted black"}}})
+
+        elements.map((element) => {
+          if (element.id !== draggingElement.id) {
+            dispatch({
+              type: "UPDATE_ELEMENT",
+              payload: {
+                id: element.id,
+                updates: {
+                  styles: { ...element.styles, border: "2px dotted black" },
+                },
+              },
+            });
+          }
+        });
       } else if (resizingElement) {
         const { id, direction, startX, startY, startWidth, startHeight } =
           resizingElement;
@@ -247,16 +330,25 @@ const Editor = () => {
 
         dispatch({
           type: "UPDATE_ELEMENT",
-          payload: { id: draggingElement.id, updates: { x, y, styles: {border: ""} } },
-        });
-        dispatch({
-          type: "UPDATE_ALL_ELEMENTS",
           payload: {
-            isSelected: false,
-            styles: { border: "" },
+            id: draggingElement.id,
+            updates: { x, y, styles: { ...element.styles, border: "" } },
           },
         });
-        
+
+        elements.map((element) => {
+          if (element.id !== draggingElement.id) {
+            dispatch({
+              type: "UPDATE_ELEMENT",
+              payload: {
+                id: element.id,
+                updates: {
+                  styles: { ...element.styles, border: "" },
+                },
+              },
+            });
+          }
+        });
       }
       setDraggingElement(null);
     } else if (resizingElement) {
@@ -267,26 +359,34 @@ const Editor = () => {
   return (
     <div
       id="canvas"
-      onClick={handleDeselectAll}
       onContextMenu={(e) => {
         e.preventDefault();
       }}
       onDoubleClick={(e) => {
+        e.currentTarget.focus();
+        handleDeselectAll(e);
         if (showContextMenu) setShowContextMenu(false);
       }}
       onDrop={onDrop}
+      onKeyDown={(e) => handleEditorKeyDown(e)}
       onDragOver={(e) => e.preventDefault()}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
+      onPaste={(e) => handlePaste(e)}
+      tabIndex={0}
       className="w-screen h-auto bg-slate-300 overflow-hidden"
     >
       {elements.map((element) => (
         <div
           key={element.id}
           onContextMenu={(e) => onContextMenu(e, element.id)}
-          onDoubleClick={(e) => handleDoubleClick(e, element.id)}
+          onDoubleClick={(e) => {
+            handleDoubleClick(e, element.id);
+            e.stopPropagation();
+          }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
           onKeyDown={(e) => handleKeyDown(e, element.id)}
+          onCopy={(e) => handleCopy(e)}
           tabIndex={0}
           style={{
             position: "absolute",
@@ -296,17 +396,17 @@ const Editor = () => {
             height: element.styles?.height || "50px",
             ...element.styles,
           }}
-          className={`hover:bg-slate-100`}
+          className={`hover:bg-slate-100  z-50 ${
+            element.isSelected
+              ? "border-2 border-black hover:cursor-text "
+              : "hover:cursor-pointer"
+          }`}
         >
           <div
             role="textbox"
             aria-multiline="true"
-            contentEditable={element.isSelected}
+            contentEditable={element.isSelected && element.type !== "Image"}
             suppressContentEditableWarning={true}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.currentTarget.focus();
-            }}
             onBlur={(e) => handleInput(e, element.id)}
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(element.content),

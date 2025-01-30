@@ -1,3 +1,4 @@
+import { TypeIcon } from "lucide-react";
 import React from "react";
 
 type Props = {};
@@ -10,11 +11,8 @@ const TextHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Text")}
-    >
-      Text
+    <div draggable onDragStart={(e) => onDragStart(e, "Text")}>
+      <TypeIcon />
     </div>
   );
 };
