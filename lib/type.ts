@@ -18,5 +18,7 @@ export type EditorAction =
   | { type: "SAVE_ELEMENTS_TO_LOCAL_STORAGE"; payload: Element[] }
   | { type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE"; payload: Element[] }
   | { type: "UPDATE_ALL_ELEMENTS"; payload: Partial<Element> }
-  | { type: "UNDO", payload: Element[] }
-  | { type: "REDO", payload: Element[] };
+  | { type: "UNDO"; payload: Element[] }
+  | { type: "REDO"; payload: Element[] };
+
+export type TextAlign = "left" | "center" | "right" | "justify";

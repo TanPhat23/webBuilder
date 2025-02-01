@@ -27,14 +27,10 @@ const SideBar = () => {
       component: <LinkHolder />,
       label: "Link",
     },
-    // {
-    //   component: <ImageHolder />,
-    //   label: "Image",
-    // },
   ];
 
   return (
-    <Accordion type="multiple" className="w-auto h-screen bg-gray-100 z-50" >
+    <Accordion type="multiple" className="w-auto h-screen bg-gray-100 z-50">
       <AccordionItem value="item-1">
         <AccordionTrigger>
           <PlusIcon />
@@ -80,7 +76,7 @@ const SideBar = () => {
             left: 30,
           }}
         >
-          <Configuration/>
+          <Configuration />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

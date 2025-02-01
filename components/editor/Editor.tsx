@@ -67,6 +67,7 @@ const Editor = () => {
             styles: {
               height: "50px",
               width: "100px",
+              textAlign: "center",
             },
           },
         });
@@ -310,6 +311,7 @@ const Editor = () => {
             id,
             updates: {
               styles: {
+                ...elements.find((element) => element.id === id)?.styles,
                 width: `${newWidth}px`,
                 height: `${newHeight}px`,
               },
@@ -396,7 +398,7 @@ const Editor = () => {
             height: element.styles?.height || "50px",
             ...element.styles,
           }}
-          className={`hover:bg-slate-100  z-50 ${
+          className={`hover:bg-slate-100 z-50 ${
             element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
@@ -411,10 +413,14 @@ const Editor = () => {
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(element.content),
             }}
-            style={{ height: "100%", width: "100%" }}
+            style={{
+              fontFamily: `"${element.styles?.fontFamily}"`,
+              height: "100%",
+              width: "100%",
+              fontSize: `${element.styles?.fontSize}px`,
+            }}
             ref={editableRef}
           />
-
           {element.isSelected && (
             <>
               <div

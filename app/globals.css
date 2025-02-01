@@ -1,10 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-body {
+@import url('https://fonts.googleapis.com/css2?family=ADLaM+Display&display=swap');
+/* body {
   font-family: Arial, Helvetica, sans-serif;
-}
+} */
 
 @layer base {
   :root {
@@ -61,7 +61,9 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
+.font {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS';
+}
 @layer base {
   * {
     @apply border-border;
@@ -69,6 +71,11 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+.poppins-extrabold {
+  font-family: "Poppins", serif;
+  font-weight: 800;
+  font-style: normal;
 }
 
 .resize-handle {
