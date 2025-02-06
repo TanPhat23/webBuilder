@@ -67,10 +67,10 @@ const FontSizeComboBox = (props: Props) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[170px] justify-between"
+          className="w-[170px]"
         >
-          {value ? `${value}` : "Select font size"}
-          <ChevronsUpDown className="h-4 mr-1 w-4 shrink-0 opacity-50" />
+          {value ? `${value}` : "0"}
+          <ChevronsUpDown className="ml-4 h-4 mr-1 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[180px]">

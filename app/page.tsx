@@ -1,16 +1,12 @@
 "use client";
-import React, {
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 import Editor from "../components/editor/Editor";
 
 import { EditorContext, ImageUploadContext } from "@/lib/context";
 import { elementsReducer } from "@/lib/editorReducer";
 import SideBar from "@/components/sidebar/SideBar";
 import { loadFont } from "./utils/LoadFont";
+import { loadEventFromLocalStorage } from "./utils/LoadEvents";
 
 const loadedFonts = new Set<string>();
 
@@ -18,7 +14,7 @@ function WebBuilder() {
   const [elements, dispatch] = useReducer(elementsReducer, []);
   const [uploadImages, setUploadImages] = useState<string[]>([]);
   useEffect(() => {
-    const savedElements  = localStorage.getItem("elements");
+    const savedElements = localStorage.getItem("elements");
     if (savedElements) {
       try {
         dispatch({
@@ -29,6 +25,9 @@ function WebBuilder() {
         console.error(e);
       }
     }
+    setTimeout(() => {
+      loadEventFromLocalStorage();
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -37,11 +36,13 @@ function WebBuilder() {
       const fontFamily = element.styles?.fontFamily;
       if (fontFamily && !loadedFonts.has(fontFamily)) {
         fontsToLoad.add(fontFamily);
-        loadedFonts.add(fontFamily); 
+        loadedFonts.add(fontFamily);
       }
     });
     fontsToLoad.forEach((font) => loadFont(font));
   }, [elements]);
+
+  useEffect(() => {}, [dispatch]);
 
   const editorValue = useMemo(() => ({ elements, dispatch }), [elements]);
   const imageUploadValue = useMemo(
@@ -49,7 +50,6 @@ function WebBuilder() {
     [uploadImages]
   );
   return (
-    
     <div className="flex justify-between">
       <ImageUploadContext.Provider value={imageUploadValue}>
         <EditorContext.Provider value={editorValue}>

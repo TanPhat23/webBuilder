@@ -1,14 +1,18 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
-import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
+import { useEditorContext, useImageUploadContext } from "@/lib/context";
+import { ButtonElement, EditorElement, Element } from "@/lib/type";
+import { blobToBase64 } from "@/app/utils/HandleImage";
 
 const Editor = () => {
   const { elements, dispatch } = useEditorContext();
+  const { uploadImages, setUploadImages } = useImageUploadContext();
 
+  const [prevElementStyle, setPrevElementStyle] =
+    useState<React.CSSProperties>();
   const [showContextMenu, setShowContextMenu] = useState(false);
-  const [selectedElement, setSelectedElement] = useState<Element>();
+  const [selectedElement, setSelectedElement] = useState<EditorElement>();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
@@ -55,9 +59,8 @@ const Editor = () => {
       e.preventDefault();
       const newElement = e.dataTransfer.getData("elementType");
       if (newElement) {
-        dispatch({
-          type: "ADD_ELEMENT",
-          payload: {
+        if (newElement !== "Button") {
+          const element: Element = {
             type: newElement,
             id: newElement + "-" + Date.now(),
             content: newElement,
@@ -69,8 +72,30 @@ const Editor = () => {
               width: "100px",
               textAlign: "center",
             },
-          },
-        });
+          };
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: element,
+          });
+        } else {
+          const buttonElement: ButtonElement = {
+            type: "Button",
+            id: "Button-" + Date.now(),
+            content: "Button",
+            isSelected: false,
+            x: e.clientX,
+            y: e.clientY,
+            styles: {
+              height: "50px",
+              width: "100px",
+              textAlign: "center",
+            },
+          };
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: buttonElement,
+          });
+        }
       }
     },
     [dispatch]
@@ -93,34 +118,69 @@ const Editor = () => {
   );
 
   const handlePaste = useCallback(
-    (e: React.ClipboardEvent<HTMLDivElement>) => {
-      navigator.clipboard
-        .readText()
-        .then((text) => {
-          try {
-            const clipboardText: Element = JSON.parse(text);
-            const newElement = {
-              type: clipboardText.type,
-              id: clipboardText.type + "-" + Date.now(),
-              content: clipboardText.content,
+    async (e: React.ClipboardEvent<HTMLDivElement>) => {
+      try {
+        const clipboardItems = await navigator.clipboard.read();
+
+        for (const item of clipboardItems) {
+          if (item.types.includes("image/png")) {
+            const blob = await item.getType("image/png");
+            const base64 = await blobToBase64(blob);
+            const imageContent = /* html */ `<img src="${base64}" style="pointer-events: none;" />`;
+
+            setUploadImages([...uploadImages, base64]);
+            const newElement: Element = {
+              type: "Image",
+              id: `Image-${Date.now()}`,
+              content: imageContent,
               isSelected: false,
-              x: clipboardText.x + 50,
-              y: clipboardText.y + 50,
+              x: 50,
+              y: 50,
               styles: {
-                ...clipboardText.styles,
+                height: "50px",
+                width: "100px",
+                textAlign: "center",
               },
             };
+
             dispatch({
               type: "ADD_ELEMENT",
               payload: newElement,
             });
-          } catch (err) {
-            console.error("Failed to parse clipboard content:", err);
+
+            return;
           }
-        })
-        .catch((err) => {
-          console.error("Failed to read clipboard content:", err);
-        });
+
+          if (item.types.includes("text/plain")) {
+            const text = await item.getType("text/plain");
+            const textContent = await text.text();
+
+            try {
+              const clipboardText: Element = JSON.parse(textContent);
+              const newElement: Element = {
+                type: clipboardText.type,
+                id: `${clipboardText.type}-${Date.now()}`,
+                content: clipboardText.content,
+                isSelected: false,
+                x: clipboardText.x + 50,
+                y: clipboardText.y + 50,
+                styles: {
+                  ...clipboardText.styles,
+                },
+              };
+
+              dispatch({
+                type: "ADD_ELEMENT",
+                payload: newElement,
+              });
+            } catch (err) {
+              console.error("Failed to parse clipboard text as JSON:", err);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to read clipboard data:", err);
+      }
     },
     [dispatch]
   );
@@ -148,7 +208,7 @@ const Editor = () => {
   );
 
   const handleInput = useCallback(
-    (e: React.FormEvent<HTMLDivElement>, id: string) => {
+    (e: React.FormEvent<HTMLElement>, id: string) => {
       let newContent = e.currentTarget.innerHTML;
 
       if (newContent.includes("<br>")) {
@@ -198,18 +258,30 @@ const Editor = () => {
   const handleEditorKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "z" && e.ctrlKey) {
-        dispatch({ type: "UNDO", payload: elements });
+        const selectedElement = elements.find((element) => element.isSelected);
+        e.preventDefault();
+        if (selectedElement?.isSelected) {
+          dispatch({
+            type: "UPDATE_ELEMENT",
+            payload: {
+              id: selectedElement.id,
+              updates: { styles: prevElementStyle },
+            },
+          });
+        } else {
+          dispatch({ type: "UNDO", payload: elements });
+        }
       }
       if (e.key === "y" && e.ctrlKey) {
+        e.preventDefault();
         dispatch({ type: "REDO", payload: elements });
       }
     },
-    [dispatch]
+    [dispatch, elements, selectedElement, prevElementStyle]
   );
 
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>, id: string) => {
-      console.log("double click");
       e.currentTarget.focus();
       dispatch({
         type: "UPDATE_ELEMENT",
@@ -222,6 +294,8 @@ const Editor = () => {
   const handleDeselectAll = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
+      // setSelectedElement(undefined);
+      // setPrevElementStyle(undefined);
     },
     [dispatch]
   );
@@ -232,6 +306,16 @@ const Editor = () => {
     selected: boolean
   ) => {
     const element = elements.find((element) => element.id === id);
+
+    const target = e.target as HTMLElement;
+    if (
+      (target.closest("button") ||
+        target.closest("input") ||
+        target.closest("a")) &&
+      !selected
+    ) {
+      return;
+    }
     if (selected) {
       e.stopPropagation();
       return;
@@ -404,23 +488,41 @@ const Editor = () => {
               : "hover:cursor-pointer"
           }`}
         >
-          <div
-            role="textbox"
-            aria-multiline="true"
-            contentEditable={element.isSelected && element.type !== "Image"}
-            suppressContentEditableWarning={true}
-            onBlur={(e) => handleInput(e, element.id)}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(element.content),
-            }}
-            style={{
-              fontFamily: `"${element.styles?.fontFamily}"`,
-              height: "100%",
-              width: "100%",
-              fontSize: `${element.styles?.fontSize}px`,
-            }}
-            ref={editableRef}
-          />
+          {element.type === "Button" ? (
+            <button
+              id={element.id}
+              contentEditable={element.isSelected}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleInput(e, element.id)}
+              onClick={(element as ButtonElement).events?.onClick}
+              onMouseOver={(element as ButtonElement).events?.onHover}
+              style={{
+                width: "90%",
+                height: "90%",
+              }}
+            >
+              {element.content}
+            </button>
+          ) : (
+            <div
+              id={element.id}
+              role="textbox"
+              aria-multiline="true"
+              contentEditable={element.isSelected && element.type !== "Image"}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleInput(e, element.id)}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(element.content),
+              }}
+              style={{
+                fontFamily: `"${element.styles?.fontFamily}"`,
+                height: "100%",
+                width: "100%",
+                fontSize: `${element.styles?.fontSize}px`,
+              }}
+              ref={editableRef}
+            />
+          )}
           {element.isSelected && (
             <>
               <div

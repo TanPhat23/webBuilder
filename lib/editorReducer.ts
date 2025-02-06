@@ -1,4 +1,4 @@
-import { EditorAction, Element } from "./type";
+import { ButtonElement, EditorAction, Element } from "./type";
 
 export const elementsReducer = (
   state: Element[],
@@ -6,6 +6,12 @@ export const elementsReducer = (
 ): Element[] => {
   switch (action.type) {
     case "ADD_ELEMENT":
+      if (action.payload.type === "Button") {
+        const buttonElement = action.payload as ButtonElement;
+        console.log("Adding a button:", buttonElement);
+      } else {
+        console.log("Adding a generic element:", action.payload);
+      }
       return [...state, action.payload];
 
     case "UPDATE_ELEMENT":
@@ -27,7 +33,7 @@ export const elementsReducer = (
 
     case "UPDATE_ALL_ELEMENTS":
       return state.map((element) => ({ ...element, ...action.payload }));
-    
+
     case "UNDO":
       return state.slice(0, -1);
 

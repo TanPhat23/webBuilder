@@ -6,8 +6,9 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@radix-ui/react-context-menu";
-import React, { useCallback,  useState } from "react";
-import { useEditorContext } from "@/lib/context";
+import React, { useCallback, useMemo, useState } from "react";
+import { EditorContextProvider, useEditorContext } from "@/lib/context";
+import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
 
 type Props = {
   x: number;
@@ -16,15 +17,18 @@ type Props = {
   onClose: () => void;
 };
 
-const EditorContextMenu = ({ onClose, ...props }: Props) => {
+const EditorContextMenu = ({ ...props }: Props) => {
   const [link, setLink] = useState("");
   const [addLink, setAddLink] = useState(false);
-  const { x, y, selectedElement } = props;
+  const [addEvent, setAddEvent] = useState(false);
+  const { onClose, x, y, selectedElement } = props;
   const elementType = selectedElement?.type;
 
-  const { dispatch } = useEditorContext();
-
-  
+  const { elements, dispatch } = useEditorContext();
+  const editorContext = useMemo(
+    () => ({ x, y, selectedElement, onClose }),
+    [selectedElement, onClose]
+  );
   const handleSetLink = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -64,6 +68,51 @@ const EditorContextMenu = ({ onClose, ...props }: Props) => {
     [selectedElement, dispatch, onClose]
   );
 
+  const handleCopy = useCallback(() => {
+    const selectedElement = elements.find((element) => element.isSelected);
+    if (selectedElement) {
+      const textToCopy = JSON.stringify(selectedElement);
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          console.log("Element copied to clipboard:", selectedElement);
+        });
+      }
+    }
+    onClose();
+  }, [elements]);
+
+  const handlePaste = useCallback(() => {
+    navigator.clipboard
+      .readText()
+      .then((text) => {
+        try {
+          const clipboardText: Element = JSON.parse(text);
+          const newElement = {
+            type: clipboardText.type,
+            id: clipboardText.type + "-" + Date.now(),
+            content: clipboardText.content,
+            isSelected: false,
+            x: clipboardText.x + 50,
+            y: clipboardText.y + 50,
+            styles: {
+              ...clipboardText.styles,
+            },
+          };
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: newElement,
+          });
+        } catch (err) {
+          console.error("Failed to parse clipboard content:", err);
+        }
+        onClose();
+      })
+      .catch((err) => {
+        console.error("Failed to read clipboard content:", err);
+      });
+  }, [dispatch]);
+
   return (
     <ContextMenu>
       <ContextMenuContent
@@ -76,6 +125,7 @@ const EditorContextMenu = ({ onClose, ...props }: Props) => {
             <Button
               onClick={(e) => {
                 setAddLink(true);
+
                 e.stopPropagation();
               }}
               className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
@@ -86,9 +136,38 @@ const EditorContextMenu = ({ onClose, ...props }: Props) => {
             </Button>
           </ContextMenuItem>
         )}
+        {elementType?.includes("Button") && (
+          <ContextMenuItem>
+            <Button
+              onClick={(e) => {
+                setAddEvent(true);
+                console.log(addEvent);
+                e.stopPropagation();
+              }}
+              className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
+            >
+              Add Event
+            </Button>
+          </ContextMenuItem>
+        )}
         <ContextMenuItem className="hover:rounded-lg">
           <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
             Delete
+          </Button>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
+            Copy
+          </Button>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
+            Paste
+          </Button>
+        </ContextMenuItem>
+        <ContextMenuItem>
+          <Button onClick={onClose} className="hover:bg-blue-400 w-full">
+            Cancel
           </Button>
         </ContextMenuItem>
       </ContextMenuContent>
@@ -107,6 +186,12 @@ const EditorContextMenu = ({ onClose, ...props }: Props) => {
             left: x + 160,
           }}
         />
+      )}
+      {addEvent && (
+        <EditorContextProvider.Provider value={editorContext}>
+          <ButtonContextMenu
+          />
+        </EditorContextProvider.Provider>
       )}
     </ContextMenu>
   );

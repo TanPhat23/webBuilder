@@ -1,9 +1,9 @@
-import { Image } from "lucide-react";
+import { Image, MousePointerClick } from "lucide-react";
 import React from "react";
 
 type Props = {};
 
-const ImageHolder = (props: Props) => {
+const ButtonHolder = (props: Props) => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string
@@ -11,10 +11,10 @@ const ImageHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div draggable onDragStart={(e) => onDragStart(e, "Image")}>
-      <Image />
+    <div draggable onDragStart={(e) => onDragStart(e, "Button")}>
+      <MousePointerClick />
     </div>
   );
 };
 
-export default ImageHolder;
+export default ButtonHolder;

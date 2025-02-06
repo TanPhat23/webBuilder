@@ -11,6 +11,7 @@ import TextHolder from "../editorcomponents/TextHolder";
 import LinkHolder from "../editorcomponents/LinkHolder";
 import ImageUpload from "./ImageUpload";
 import Configuration from "./Configuration";
+import ButtonHolder from "../editorcomponents/ButtonHolder";
 
 type Component = {
   component: React.ReactNode;
@@ -26,6 +27,10 @@ const SideBar = () => {
     {
       component: <LinkHolder />,
       label: "Link",
+    },
+    {
+      component: <ButtonHolder />,
+      label: "Button",
     },
   ];
 

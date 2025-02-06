@@ -6,6 +6,8 @@ import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
 import { Button } from "../ui/button";
 import TextAlignButton from "./buttons/TextAlignButton";
 import TextStyleButtons from "./buttons/TextStyleButtons";
+import TextColorInput from "./inputs/TextColorInput";
+import BackGroundColorInput from "./inputs/BackGroundColorInput";
 
 type Props = {};
 
@@ -109,7 +111,8 @@ const Configuration = (props: Props) => {
       <div className="flex flex-row gap-1">
         <div>
           <Input
-            value={selectedElement?.styles?.fontSize || ""}
+            className="w-[130px]"
+            value={selectedElement?.styles?.fontSize || "0"}
             onChange={(e) => handleFontChange(e)}
           />
           <label>Font size</label>
@@ -137,12 +140,15 @@ const Configuration = (props: Props) => {
           selectedElements={selectedElements}
         />
       </div>
-      <div className="mt-4">
-        <div className="flex flex-row gap-1">
-          <Input type="color" />
-          <Input type="text" />
-        </div>
-        <label>Text color</label>
+      <div className="flex flex-row mt-4 gap-1">
+        <TextColorInput
+          selectedElement={selectedElement}
+          selectedElements={selectedElements}
+        />
+        <BackGroundColorInput
+          selectedElement={selectedElement}
+          selectedElements={selectedElements}
+        />
       </div>
     </div>
   );
