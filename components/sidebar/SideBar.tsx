@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@radix-ui/react-accordion";
-import React, { useState } from "react";
+import React from "react";
 
 import { Image, PlusIcon, Settings } from "lucide-react";
 import TextHolder from "../editorcomponents/TextHolder";
@@ -12,6 +12,8 @@ import LinkHolder from "../editorcomponents/LinkHolder";
 import ImageUpload from "./ImageUpload";
 import Configuration from "./Configuration";
 import ButtonHolder from "../editorcomponents/ButtonHolder";
+import ExportButton from "./ExportToCode";
+import { useEditorContext } from "@/lib/context";
 
 type Component = {
   component: React.ReactNode;
@@ -19,6 +21,7 @@ type Component = {
 };
 
 const SideBar = () => {
+  const { elements } = useEditorContext();
   const placeHolderComponents: Component[] = [
     {
       component: <TextHolder />,
@@ -56,7 +59,7 @@ const SideBar = () => {
           </div>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2">
+      <AccordionItem value="item-3">
         <AccordionTrigger>
           <Image />
         </AccordionTrigger>
@@ -70,7 +73,7 @@ const SideBar = () => {
           <ImageUpload />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3">
+      <AccordionItem value="item-4">
         <AccordionTrigger>
           <Settings />
         </AccordionTrigger>
@@ -83,6 +86,9 @@ const SideBar = () => {
         >
           <Configuration />
         </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-5">
+          <ExportButton elements={elements}/>
       </AccordionItem>
     </Accordion>
   );

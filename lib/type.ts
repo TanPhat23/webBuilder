@@ -6,6 +6,8 @@ export interface Element {
   styles?: React.CSSProperties;
   x: number;
   y: number;
+  src?: string;
+  href?: string;
 }
 
 export interface ButtonElement extends Element {

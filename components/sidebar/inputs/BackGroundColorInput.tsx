@@ -11,18 +11,18 @@ type Props = {
 const BackGroundColorInput = ({ selectedElement, selectedElements }: Props) => {
   const { dispatch } = useEditorContext();
   const [color, setColor] = useState("#000000");
-  const [colorText, setColorText] = useState("#000000");
+  const [backColor, setBackColor] = useState("#000000");
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
     setColor(newColor);
-    setColorText(newColor);
+    setBackColor(newColor);
     updateElementColor(newColor);
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setColorText(value);
+    setBackColor(value);
 
     if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
       setColor(value);
@@ -53,7 +53,7 @@ const BackGroundColorInput = ({ selectedElement, selectedElements }: Props) => {
     if (selectedElement) {
       const color = selectedElement.styles?.backgroundColor || "#000000";
       setColor(color);
-      setColorText(color);
+      setBackColor(color);
     }
   }, [selectedElement]);
   return (
@@ -68,7 +68,7 @@ const BackGroundColorInput = ({ selectedElement, selectedElements }: Props) => {
         />
         <Input
           type="text"
-          value={colorText}
+          value={backColor}
           onChange={handleTextChange}
           placeholder="#000000"
           className=""

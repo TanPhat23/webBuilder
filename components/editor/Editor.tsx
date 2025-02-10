@@ -4,6 +4,9 @@ import DOMPurify from "dompurify";
 import { useEditorContext, useImageUploadContext } from "@/lib/context";
 import { ButtonElement, EditorElement, Element } from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
+import { createElements } from "@/app/utils/CreateElements";
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 const Editor = () => {
   const { elements, dispatch } = useEditorContext();
@@ -48,7 +51,6 @@ const Editor = () => {
         setMenuPosition({ x: e.clientX, y: e.clientY });
         setShowContextMenu(true);
         setSelectedElement(selectElement);
-        console.log(selectElement);
       }
     },
     [elements]
@@ -59,43 +61,7 @@ const Editor = () => {
       e.preventDefault();
       const newElement = e.dataTransfer.getData("elementType");
       if (newElement) {
-        if (newElement !== "Button") {
-          const element: Element = {
-            type: newElement,
-            id: newElement + "-" + Date.now(),
-            content: newElement,
-            isSelected: false,
-            x: e.clientX,
-            y: e.clientY,
-            styles: {
-              height: "50px",
-              width: "100px",
-              textAlign: "center",
-            },
-          };
-          dispatch({
-            type: "ADD_ELEMENT",
-            payload: element,
-          });
-        } else {
-          const buttonElement: ButtonElement = {
-            type: "Button",
-            id: "Button-" + Date.now(),
-            content: "Button",
-            isSelected: false,
-            x: e.clientX,
-            y: e.clientY,
-            styles: {
-              height: "50px",
-              width: "100px",
-              textAlign: "center",
-            },
-          };
-          dispatch({
-            type: "ADD_ELEMENT",
-            payload: buttonElement,
-          });
-        }
+        createElements(newElement, dispatch, e.clientX, e.clientY);
       }
     },
     [dispatch]
@@ -126,13 +92,12 @@ const Editor = () => {
           if (item.types.includes("image/png")) {
             const blob = await item.getType("image/png");
             const base64 = await blobToBase64(blob);
-            const imageContent = /* html */ `<img src="${base64}" style="pointer-events: none;" />`;
 
             setUploadImages([...uploadImages, base64]);
             const newElement: Element = {
-              type: "Image",
-              id: `Image-${Date.now()}`,
-              content: imageContent,
+              type: "Img",
+              id: `Img-${Date.now()}`,
+              content: "",
               isSelected: false,
               x: 50,
               y: 50,
@@ -140,7 +105,9 @@ const Editor = () => {
                 height: "50px",
                 width: "100px",
                 textAlign: "center",
+
               },
+              src: base64,
             };
 
             dispatch({
@@ -167,6 +134,8 @@ const Editor = () => {
                 styles: {
                   ...clipboardText.styles,
                 },
+                src: clipboardText.src,
+                href: clipboardText.href,
               };
 
               dispatch({
@@ -218,25 +187,11 @@ const Editor = () => {
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = newContent;
 
-      const anchorElement = tempDiv.querySelector("a");
-      if (anchorElement) {
-        const href = anchorElement.getAttribute("href") || "";
-        const textContent = tempDiv.textContent || "";
-        let updatedContent = `<a href="${href}">${textContent}</a>`;
-
-        if (updatedContent.includes("<br>")) {
-          updatedContent = updatedContent.replace(/<br>/g, "");
-        }
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: { id, updates: { content: updatedContent } },
-        });
-      } else {
         dispatch({
           type: "UPDATE_ELEMENT",
           payload: { id, updates: { content: newContent } },
         });
-      }
+      
     },
     [dispatch]
   );
@@ -294,8 +249,6 @@ const Editor = () => {
   const handleDeselectAll = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
-      // setSelectedElement(undefined);
-      // setPrevElementStyle(undefined);
     },
     [dispatch]
   );
@@ -329,7 +282,7 @@ const Editor = () => {
         payload: {
           id,
           updates: {
-            styles: { ...element.styles, border: "2px dotted black" },
+            styles: { ...element.styles },
           },
         },
       });
@@ -346,20 +299,6 @@ const Editor = () => {
         dispatch({
           type: "UPDATE_ELEMENT",
           payload: { id: draggingElement.id, updates: { x, y } },
-        });
-
-        elements.map((element) => {
-          if (element.id !== draggingElement.id) {
-            dispatch({
-              type: "UPDATE_ELEMENT",
-              payload: {
-                id: element.id,
-                updates: {
-                  styles: { ...element.styles, border: "2px dotted black" },
-                },
-              },
-            });
-          }
         });
       } else if (resizingElement) {
         const { id, direction, startX, startY, startWidth, startHeight } =
@@ -399,7 +338,7 @@ const Editor = () => {
                 width: `${newWidth}px`,
                 height: `${newHeight}px`,
               },
-            },
+            },    
           },
         });
       }
@@ -418,22 +357,8 @@ const Editor = () => {
           type: "UPDATE_ELEMENT",
           payload: {
             id: draggingElement.id,
-            updates: { x, y, styles: { ...element.styles, border: "" } },
+            updates: { x, y, styles: { ...element.styles } },
           },
-        });
-
-        elements.map((element) => {
-          if (element.id !== draggingElement.id) {
-            dispatch({
-              type: "UPDATE_ELEMENT",
-              payload: {
-                id: element.id,
-                updates: {
-                  styles: { ...element.styles, border: "" },
-                },
-              },
-            });
-          }
         });
       }
       setDraggingElement(null);
@@ -443,7 +368,7 @@ const Editor = () => {
   }, [draggingElement, resizingElement, elements, dispatch, gridSize]);
 
   return (
-    <div
+    <motion.div
       id="canvas"
       onContextMenu={(e) => {
         e.preventDefault();
@@ -463,7 +388,7 @@ const Editor = () => {
       className="w-screen h-auto bg-slate-300 overflow-hidden"
     >
       {elements.map((element) => (
-        <div
+        <motion.div
           key={element.id}
           onContextMenu={(e) => onContextMenu(e, element.id)}
           onDoubleClick={(e) => {
@@ -486,9 +411,9 @@ const Editor = () => {
             element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
-          }`}
+          } ${draggingElement ? "border-dashed border-black border-2" : ""}`}
         >
-          {element.type === "Button" ? (
+          {element.type === "Button" && (
             <button
               id={element.id}
               contentEditable={element.isSelected}
@@ -503,12 +428,13 @@ const Editor = () => {
             >
               {element.content}
             </button>
-          ) : (
+          )}
+          {element.type === "Text" && (
             <div
               id={element.id}
               role="textbox"
               aria-multiline="true"
-              contentEditable={element.isSelected && element.type !== "Image"}
+              contentEditable={element.isSelected}
               suppressContentEditableWarning={true}
               onBlur={(e) => handleInput(e, element.id)}
               dangerouslySetInnerHTML={{
@@ -518,10 +444,39 @@ const Editor = () => {
                 fontFamily: `"${element.styles?.fontFamily}"`,
                 height: "100%",
                 width: "100%",
-                fontSize: `${element.styles?.fontSize}px`,
+                ...element.styles,
               }}
               ref={editableRef}
             />
+          )}
+          {element.type === "Img" && element.src && (
+            <div className="flex justify-center items-center h-full w-full">
+              <img
+                src={element.src}
+                alt="uploaded"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  pointerEvents: "none",
+                }}
+              />
+            </div>
+          )}
+          {element.type === "A" && (
+            <a
+              id={element.id}
+              href={element.href}
+              contentEditable={element.isSelected}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleInput(e, element.id)}
+              style={{
+                width: "90%",
+                height: "90%",
+              }}
+            >
+              {element.content}
+            </a>
           )}
           {element.isSelected && (
             <>
@@ -551,7 +506,7 @@ const Editor = () => {
               />
             </>
           )}
-        </div>
+        </motion.div>
       ))}
       {showContextMenu && (
         <ContextMenu
@@ -561,7 +516,7 @@ const Editor = () => {
           onClose={() => setShowContextMenu(false)}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

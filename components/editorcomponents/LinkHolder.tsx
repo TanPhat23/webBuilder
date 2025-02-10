@@ -12,7 +12,7 @@ const LinkHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div draggable onDragStart={(e) => onDragStart(e, "Link")}>
+    <div draggable onDragStart={(e) => onDragStart(e, "A")}>
       <LinkIcon/>
     </div>
   );

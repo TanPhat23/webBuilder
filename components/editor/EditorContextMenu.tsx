@@ -33,22 +33,13 @@ const EditorContextMenu = ({ ...props }: Props) => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (addLink && selectedElement) {
-        let updatedContent = selectedElement.content;
-
-        if (selectedElement.content.includes("</a>")) {
-          updatedContent = selectedElement.content.replace(
-            /<a[^>]*>([^<]*)<\/a>/,
-            `<a href="${link}">$1</a>`
-          );
-        } else {
-          updatedContent = `<a href="${link}">${selectedElement.content}</a>`;
-        }
-
         dispatch({
           type: "UPDATE_ELEMENT",
           payload: {
             id: selectedElement.id,
-            updates: { content: updatedContent },
+            updates: {
+              href: link,
+            },
           },
         });
       }
@@ -120,7 +111,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
         style={{ top: y, left: x }}
         forceMount
       >
-        {elementType?.includes("Link") && (
+        {elementType?.includes("A") && (
           <ContextMenuItem>
             <Button
               onClick={(e) => {
@@ -189,8 +180,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
       )}
       {addEvent && (
         <EditorContextProvider.Provider value={editorContext}>
-          <ButtonContextMenu
-          />
+          <ButtonContextMenu />
         </EditorContextProvider.Provider>
       )}
     </ContextMenu>

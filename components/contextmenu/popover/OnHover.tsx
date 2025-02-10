@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Command,
   CommandEmpty,
@@ -21,26 +21,60 @@ import { Input } from "@/components/ui/input";
 import { ButtonElement, Element } from "@/lib/type";
 
 const OnHover = () => {
-  const [number, setNumber] = React.useState(1);
   const { selectedElement } = useEditorContextProvider();
   React.useState<Element | null>(null);
   const { elements, dispatch } = useEditorContext();
-  const [color, setColor] = React.useState<string>("");
+  const [backColor, setBackColor] = React.useState<string>("#000000");
+  const [textColor, setTextColor] = React.useState<string>("#000000");
+
+  const prevBackColor = selectedElement?.styles?.backgroundColor || "#FFFFFF";
+  const prevTextColor = selectedElement?.styles?.color || "#000000";
 
   const mouseHoverEvent = () => {
     if (selectedElement) {
       const el = document.getElementById(selectedElement.id);
-      const prevColor = el?.style.backgroundColor;
       el?.addEventListener("mouseover", function () {
-        el.style.backgroundColor = color;
+        el.style.backgroundColor = backColor;
+        el.style.color = textColor;
       });
       el?.addEventListener("mouseout", function () {
-        prevColor
-          ? (el.style.backgroundColor = prevColor)
+        prevBackColor
+          ? (el.style.backgroundColor = prevBackColor)
           : (el.style.backgroundColor = "");
+        prevTextColor
+          ? (el.style.color = prevTextColor)
+          : (el.style.color = "");
       });
     }
   };
+  const handleBackColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setBackColor(newColor);
+  };
+
+  const handleBackColorTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setBackColor(value);
+  };
+
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setTextColor(newColor);
+  };
+
+  const handleTextColorTextChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setTextColor(value);
+  };
+
+  useEffect(() => {
+    setBackColor(prevBackColor);
+    setTextColor(prevTextColor);
+  }, []);
 
   const addEvent = () => {
     if (!selectedElement) return;
@@ -48,7 +82,8 @@ const OnHover = () => {
 
     const eventData = {
       selectedElementId: selectedElement.id,
-      number,
+      backColor: backColor,
+      textColor: textColor,
     };
     localStorage.setItem("onHoverEvent", JSON.stringify(eventData));
 
@@ -75,12 +110,42 @@ const OnHover = () => {
         <Button className="hover:bg-blue-400">OnHover</Button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
-        <Input
-          type="number"
-          value={number}
-          onChange={(e) => setNumber(parseInt(e.target.value))}
-          onDoubleClick={(e) => e.stopPropagation()}
-        />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row gap-2">
+            <Input
+              id="colorPicker"
+              type="color"
+              value={backColor}
+              onChange={handleBackColorChange}
+              className="w-14 rounded-xl"
+            />
+            <Input
+              type="text"
+              value={backColor}
+              onChange={handleBackColorTextChange}
+              placeholder="#000000"
+              className=""
+            />
+          </div>
+          <label>Background color</label>
+          <div className="flex flex-row gap-2">
+            <Input
+              id="colorPicker"
+              type="color"
+              value={textColor}
+              onChange={handleTextColorChange}
+              className="w-14 rounded-xl"
+            />
+            <Input
+              type="text"
+              value={textColor}
+              onChange={handleTextColorTextChange}
+              placeholder="#000000"
+              className=""
+            />
+          </div>
+          <label>Text color</label>
+        </div>
         <div className="grid gap-4 mt-4">
           <Button onClick={addEvent}>Add event</Button>
         </div>

@@ -3,15 +3,15 @@ import React, { useEffect } from "react";
 import { Input } from "../ui/input";
 import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
 import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
-import { Button } from "../ui/button";
 import TextAlignButton from "./buttons/TextAlignButton";
 import TextStyleButtons from "./buttons/TextStyleButtons";
 import TextColorInput from "./inputs/TextColorInput";
 import BackGroundColorInput from "./inputs/BackGroundColorInput";
+import BorderRadiusInput from "./inputs/BorderRadiusInput";
+import BorderWeightPopover from "./popovers/BorderWeightPopover";
 
-type Props = {};
 
-const Configuration = (props: Props) => {
+const Configuration = () => {
   const { elements, dispatch } = useEditorContext();
   const [fontFamilies, setFontFamilies] = React.useState<string[]>([]);
   const selectedElements = elements.filter((element) => element.isSelected);
@@ -146,6 +146,16 @@ const Configuration = (props: Props) => {
           selectedElements={selectedElements}
         />
         <BackGroundColorInput
+          selectedElement={selectedElement}
+          selectedElements={selectedElements}
+        />
+      </div>
+      <div className="flex flex-row mt-4 gap-1">
+        <BorderRadiusInput
+          selectedElement={selectedElement}
+          selectedElements={selectedElements}
+        />
+        <BorderWeightPopover
           selectedElement={selectedElement}
           selectedElements={selectedElements}
         />

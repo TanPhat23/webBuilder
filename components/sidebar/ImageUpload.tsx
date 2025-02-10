@@ -24,16 +24,17 @@ const ImageUpload = (props: Props) => {
         const fixedWidth = 200;
         const calculatedHeight = fixedWidth / aspectRatio;
         const newElement: Element = {
-          type: "Image",
-          content: /*html */ `<img src="${uploadImages[index]} " alt="image"  style="pointer-events: none;" />`,
-          id: "Image" + "-" + Date.now(),
+          type: "Img",
+          id: "Img" + "-" + Date.now(),
           isSelected: false,
+          content: "",
           x: 0,
           y: 0,
           styles: {
             width: `${fixedWidth}px`,
             height: `${calculatedHeight}px`,
           },
+          src: uploadImages[index],
         };
         dispatch({ type: "ADD_ELEMENT", payload: newElement });
       };
