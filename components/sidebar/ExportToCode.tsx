@@ -23,10 +23,12 @@ const generateHTML = (elements: Element[]) => {
       switch (type) {
         case "Img":
           return /*html*/ `<img id="${id}" src="${src}" style="${styleString}" alt="${content}" />`;
-        case "a":
+        case "A":
           return /*html*/ `<a id="${id}" href="${href}" style="${styleString}">${content}</a>`;
+        case "Text":
+          return /*html*/ `<p id="${id}" style="${styleString}">${content}</p>`;
         default:
-          return /*html*/ `<${type} id="${id}" style="${styleString}">${content}</${type}>`;
+          return /*html*/ `<${type.toLowerCase()} id="${id}" style="${styleString}">${content}</${type.toLowerCase()}>`;
       }
     })
     .join("\n");

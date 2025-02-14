@@ -53,8 +53,8 @@ function WebBuilder() {
     <div className="flex justify-between">
       <ImageUploadContext.Provider value={imageUploadValue}>
         <EditorContext.Provider value={editorValue}>
-          <SideBar />
           <Editor />
+          <SideBar /> 
         </EditorContext.Provider>
       </ImageUploadContext.Provider>
     </div>

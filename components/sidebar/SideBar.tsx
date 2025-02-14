@@ -7,13 +7,14 @@ import {
 import React from "react";
 
 import { Image, PlusIcon, Settings } from "lucide-react";
-import TextHolder from "../editorcomponents/TextHolder";
-import LinkHolder from "../editorcomponents/LinkHolder";
+import TextHolder from "../sidebarcomponentholders/TextHolder";
+import LinkHolder from "../sidebarcomponentholders/LinkHolder";
 import ImageUpload from "./ImageUpload";
 import Configuration from "./Configuration";
-import ButtonHolder from "../editorcomponents/ButtonHolder";
+import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import ExportButton from "./ExportToCode";
 import { useEditorContext } from "@/lib/context";
+import ListItemHolder from "../sidebarcomponentholders/ListItemHolder";
 
 type Component = {
   component: React.ReactNode;
@@ -35,10 +36,18 @@ const SideBar = () => {
       component: <ButtonHolder />,
       label: "Button",
     },
+    {
+      component: <ListItemHolder />,
+      label: "ListItem",
+    },
   ];
 
   return (
-    <Accordion type="multiple" className="w-auto h-screen bg-gray-100 z-50">
+    <Accordion
+      type="multiple"
+      className="w-auto h-screen bg-gray-100 z-50"
+      id="sidebar"
+    >
       <AccordionItem value="item-1">
         <AccordionTrigger>
           <PlusIcon />
@@ -88,7 +97,7 @@ const SideBar = () => {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-5">
-          <ExportButton elements={elements}/>
+        <ExportButton elements={elements} />
       </AccordionItem>
     </Accordion>
   );

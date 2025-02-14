@@ -45,6 +45,11 @@ const TextAlignButton = ({ selectedElement, selectedElements }: Props) => {
         },
       });
     });
+    // setTimeout(() => {
+    //   selectedElements.forEach((element) => {
+    //     console.log(element.styles?.textAlign);
+    //   });
+    // }, 1000);
     setCurrentAlignmentKey(nextAlignmentKey);
   };
 

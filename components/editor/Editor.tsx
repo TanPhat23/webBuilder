@@ -5,8 +5,8 @@ import { useEditorContext, useImageUploadContext } from "@/lib/context";
 import { ButtonElement, EditorElement, Element } from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
-import { motion } from "framer-motion";
-import Image from "next/image";
+import ListItemComponents from "../editorcomponents/ListItemComponents";
+import { v4 as uuidv4 } from "uuid";
 
 const Editor = () => {
   const { elements, dispatch } = useEditorContext();
@@ -96,7 +96,7 @@ const Editor = () => {
             setUploadImages([...uploadImages, base64]);
             const newElement: Element = {
               type: "Img",
-              id: `Img-${Date.now()}`,
+              id: `Img-${uuidv4()}`,
               content: "",
               isSelected: false,
               x: 50,
@@ -105,7 +105,6 @@ const Editor = () => {
                 height: "50px",
                 width: "100px",
                 textAlign: "center",
-
               },
               src: base64,
             };
@@ -126,7 +125,7 @@ const Editor = () => {
               const clipboardText: Element = JSON.parse(textContent);
               const newElement: Element = {
                 type: clipboardText.type,
-                id: `${clipboardText.type}-${Date.now()}`,
+                id: `${clipboardText.type}-${uuidv4()}`,
                 content: clipboardText.content,
                 isSelected: false,
                 x: clipboardText.x + 50,
@@ -184,14 +183,10 @@ const Editor = () => {
         newContent = newContent.replace(/<br>/g, "");
       }
 
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = newContent;
-
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: { id, updates: { content: newContent } },
-        });
-      
+      dispatch({
+        type: "UPDATE_ELEMENT",
+        payload: { id, updates: { content: newContent } },
+      });
     },
     [dispatch]
   );
@@ -274,9 +269,20 @@ const Editor = () => {
       return;
     }
     if (element) {
+      const canvas = document.getElementById("canvas");
+
       const offsetX = e.clientX - element.x;
       const offsetY = e.clientY - element.y;
 
+      if (!canvas) return;
+      if (
+        offsetX > canvas?.getBoundingClientRect().width - 20 ||
+        offsetY > canvas?.getBoundingClientRect().height - 20 ||
+        offsetX < 20 ||
+        offsetY < 20
+      ) {
+        return;
+      }
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: {
@@ -293,12 +299,37 @@ const Editor = () => {
   const onMouseMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (draggingElement) {
-        const x = e.clientX - draggingElement.offsetX;
-        const y = e.clientY - draggingElement.offsetY;
+        const canvas = document.getElementById("canvas");
+        if (!canvas) return;
+
+        const canvasRect = canvas.getBoundingClientRect();
+        const element = elements.find((e) => e.id === draggingElement.id);
+        if (!element) return;
+
+        const newX = e.clientX - draggingElement.offsetX;
+        const newY = e.clientY - draggingElement.offsetY;
+
+        const elementWidth = parseInt(
+          element.styles?.width?.toString() || "100",
+          10
+        );
+        const elementHeight = parseInt(
+          element.styles?.height?.toString() || "50",
+          10
+        );
+
+        const boundedX = Math.max(
+          0,
+          Math.min(newX, canvasRect.width - elementWidth)
+        );
+        const boundedY = Math.max(0, Math.min(newY, canvasRect.height + 5));
 
         dispatch({
           type: "UPDATE_ELEMENT",
-          payload: { id: draggingElement.id, updates: { x, y } },
+          payload: {
+            id: draggingElement.id,
+            updates: { x: boundedX, y: boundedY },
+          },
         });
       } else if (resizingElement) {
         const { id, direction, startX, startY, startWidth, startHeight } =
@@ -328,6 +359,22 @@ const Editor = () => {
             break;
         }
 
+        const canvas = document.getElementById("canvas");
+        if (canvas) {
+          const canvasRect = canvas.getBoundingClientRect();
+          const element = elements.find((e) => e.id === id);
+          if (element) {
+            newWidth = Math.max(
+              50,
+              Math.min(newWidth, canvasRect.width - element.x)
+            );
+            newHeight = Math.max(
+              50,
+              Math.min(newHeight, canvasRect.height - element.y)
+            );
+          }
+        }
+
         dispatch({
           type: "UPDATE_ELEMENT",
           payload: {
@@ -338,12 +385,12 @@ const Editor = () => {
                 width: `${newWidth}px`,
                 height: `${newHeight}px`,
               },
-            },    
+            },
           },
         });
       }
     },
-    [draggingElement, resizingElement, dispatch]
+    [draggingElement, resizingElement, dispatch, elements]
   );
 
   const onMouseUp = useCallback(() => {
@@ -368,13 +415,12 @@ const Editor = () => {
   }, [draggingElement, resizingElement, elements, dispatch, gridSize]);
 
   return (
-    <motion.div
+    <div
       id="canvas"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
       onDoubleClick={(e) => {
-        e.currentTarget.focus();
         handleDeselectAll(e);
         if (showContextMenu) setShowContextMenu(false);
       }}
@@ -385,10 +431,10 @@ const Editor = () => {
       onMouseUp={onMouseUp}
       onPaste={(e) => handlePaste(e)}
       tabIndex={0}
-      className="w-screen h-auto bg-slate-300 overflow-hidden"
+      className="w-screen h-auto bg-slate-300 "
     >
       {elements.map((element) => (
-        <motion.div
+        <div
           key={element.id}
           onContextMenu={(e) => onContextMenu(e, element.id)}
           onDoubleClick={(e) => {
@@ -405,13 +451,16 @@ const Editor = () => {
             top: element.y,
             width: element.styles?.width || "100px",
             height: element.styles?.height || "50px",
-            ...element.styles,
           }}
           className={`hover:bg-slate-100 z-50 ${
             element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
-          } ${draggingElement ? "border-dashed border-black border-2" : ""}`}
+          } ${
+            draggingElement || resizingElement
+              ? "border-dashed border-black border-2"
+              : ""
+          }`}
         >
           {element.type === "Button" && (
             <button
@@ -422,8 +471,8 @@ const Editor = () => {
               onClick={(element as ButtonElement).events?.onClick}
               onMouseOver={(element as ButtonElement).events?.onHover}
               style={{
-                width: "90%",
-                height: "90%",
+                pointerEvents: "none",
+                ...element.styles,
               }}
             >
               {element.content}
@@ -473,10 +522,23 @@ const Editor = () => {
               style={{
                 width: "90%",
                 height: "90%",
+                ...element.styles,
+                pointerEvents: "none",
               }}
             >
               {element.content}
             </a>
+          )}
+          {element.type === "List" && (
+            <ul
+              id={element.id}
+              onBlur={(e) => handleInput(e, element.id)}
+              style={{
+                ...element.styles,
+              }}
+            >
+              <ListItemComponents element={element} />
+            </ul>
           )}
           {element.isSelected && (
             <>
@@ -506,7 +568,7 @@ const Editor = () => {
               />
             </>
           )}
-        </motion.div>
+        </div>
       ))}
       {showContextMenu && (
         <ContextMenu
@@ -516,7 +578,7 @@ const Editor = () => {
           onClose={() => setShowContextMenu(false)}
         />
       )}
-    </motion.div>
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Element } from "@/lib/type";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {};
 
@@ -25,7 +26,7 @@ const ImageUpload = (props: Props) => {
         const calculatedHeight = fixedWidth / aspectRatio;
         const newElement: Element = {
           type: "Img",
-          id: "Img" + "-" + Date.now(),
+          id: `Img-${uuidv4()}`,
           isSelected: false,
           content: "",
           x: 0,

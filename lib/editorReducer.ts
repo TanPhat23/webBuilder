@@ -1,9 +1,14 @@
-import { ButtonElement, EditorAction, Element } from "./type";
+import {
+  ButtonElement,
+  EditorAction,
+  EditorElement,
+  ListElement,
+} from "./type";
 
 export const elementsReducer = (
-  state: Element[],
+  state: EditorElement[],
   action: EditorAction
-): Element[] => {
+): EditorElement[] => {
   switch (action.type) {
     case "ADD_ELEMENT":
       if (action.payload.type === "Button") {
@@ -34,6 +39,20 @@ export const elementsReducer = (
     case "UPDATE_ALL_ELEMENTS":
       return state.map((element) => ({ ...element, ...action.payload }));
 
+    case "UPDATE_LIST_ITEM":
+      return state.map((element) => {
+        if (element.type === "List" && element.id === action.payload.listId) {
+          return {
+            ...element,
+            items: (element as ListElement).items.map((item) =>
+              item.id === action.payload.itemId
+                ? { ...item, ...action.payload.updates }
+                : item
+            ),
+          };
+        }
+        return element;
+      });
     case "UNDO":
       return state.slice(0, -1);
 
