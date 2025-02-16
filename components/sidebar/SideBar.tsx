@@ -15,6 +15,7 @@ import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import ExportButton from "./ExportToCode";
 import { useEditorContext } from "@/lib/context";
 import ListItemHolder from "../sidebarcomponentholders/ListItemHolder";
+import FrameHolder from "../sidebarcomponentholders/FrameHolder";
 
 type Component = {
   component: React.ReactNode;
@@ -39,6 +40,10 @@ const SideBar = () => {
     {
       component: <ListItemHolder />,
       label: "ListItem",
+    },
+    {
+      component: <FrameHolder />,
+      label: "Frame",
     },
   ];
 
@@ -76,7 +81,7 @@ const SideBar = () => {
           className="border border-black p-1 rounded-lg transition-all duration-300 absolute w-[500px] h-[600px] bg-slate-50 overflow-scroll"
           style={{
             top: 14,
-            left: 30,
+            left: 1450,
           }}
         >
           <ImageUpload />
@@ -90,15 +95,15 @@ const SideBar = () => {
           className="border border-black p-1 rounded-lg transition-all duration-300 absolute w-[500px] h-[600px] bg-slate-50 overflow-scroll"
           style={{
             top: 14,
-            left: 30,
+            left: 1450,
           }}
         >
           <Configuration />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-5">
+      {/* <AccordionItem value="item-5">
         <ExportButton elements={elements} />
-      </AccordionItem>
+      </AccordionItem> */}
     </Accordion>
   );
 };

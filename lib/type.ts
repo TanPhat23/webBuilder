@@ -8,20 +8,24 @@ export interface Element {
   styles?: React.CSSProperties;
   x: number;
   y: number;
+  parentElements?: string[];
   src?: string;
   href?: string;
 }
 
+export interface FrameElement extends Element {
+  elements?: EditorElement[];
+}
 export interface ButtonElement extends Element {
   type: "Button";
   events?: {
     onClick?: () => void;
-    onHover?: () => void;
+    onHover?: () => void; 
     onFocus?: () => void;
   };
 }
 
-interface ListItem {
+export interface ListItem {
   id: string;
   content: string;
   isSelected: boolean;
@@ -32,7 +36,11 @@ export interface ListElement extends Element {
   items: ListItem[];
 }
 
-export type EditorElement = Element | ButtonElement | ListElement;
+export type EditorElement =
+  | Element
+  | FrameElement
+  | ButtonElement
+  | ListElement;
 
 export type EditorAction =
   | { type: "ADD_ELEMENT"; payload: EditorElement }

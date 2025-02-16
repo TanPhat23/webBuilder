@@ -7,6 +7,7 @@ import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
 import ListItemComponents from "../editorcomponents/ListItemComponents";
 import { v4 as uuidv4 } from "uuid";
+import FrameComponents from "../editorcomponents/FrameComponents";
 
 const Editor = () => {
   const { elements, dispatch } = useEditorContext();
@@ -450,9 +451,9 @@ const Editor = () => {
             left: element.x,
             top: element.y,
             width: element.styles?.width || "100px",
-            height: element.styles?.height || "50px",
+            height: element.styles?.height || "100px",
           }}
-          className={`hover:bg-slate-100 z-50 ${
+          className={`z-50 ${
             element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
@@ -532,13 +533,15 @@ const Editor = () => {
           {element.type === "List" && (
             <ul
               id={element.id}
-              onBlur={(e) => handleInput(e, element.id)}
               style={{
                 ...element.styles,
               }}
             >
               <ListItemComponents element={element} />
             </ul>
+          )}
+          {element.type === "Frame" && (
+            <FrameComponents element={element} />
           )}
           {element.isSelected && (
             <>

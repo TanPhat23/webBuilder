@@ -8,6 +8,7 @@ import SideBar from "@/components/sidebar/SideBar";
 import { loadFont } from "./utils/LoadFont";
 import { loadEventFromLocalStorage } from "./utils/LoadEvents";
 
+
 const loadedFonts = new Set<string>();
 
 function WebBuilder() {
@@ -25,9 +26,9 @@ function WebBuilder() {
         console.error(e);
       }
     }
-    setTimeout(() => {
-      loadEventFromLocalStorage();
-    }, 1000);
+    // setTimeout(() => {
+    //   loadEventFromLocalStorage();
+    // }, 1000);
   }, []);
 
   useEffect(() => {

@@ -9,6 +9,8 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 import { EditorContextProvider, useEditorContext } from "@/lib/context";
 import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
+import { v4 as uuidv4 } from "uuid";
+import AddDeleteItems from "../contextmenu/AddDeleteItems";
 
 type Props = {
   x: number;
@@ -81,7 +83,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
           const clipboardText: Element = JSON.parse(text);
           const newElement = {
             type: clipboardText.type,
-            id: clipboardText.type + "-" + Date.now(),
+            id: `${clipboardText.type}-${uuidv4()}`,
             content: clipboardText.content,
             isSelected: false,
             x: clipboardText.x + 50,
@@ -105,85 +107,84 @@ const EditorContextMenu = ({ ...props }: Props) => {
   }, [dispatch]);
 
   return (
-    <ContextMenu>
-      <ContextMenuContent
-        className="z-50 absolute min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2"
-        style={{ top: y, left: x }}
-        forceMount
-      >
-        {elementType?.includes("A") && (
-          <ContextMenuItem>
-            <Button
-              onClick={(e) => {
-                setAddLink(true);
-
-                e.stopPropagation();
-              }}
-              className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-            >
-              {selectedElement?.content.includes("</a>")
-                ? "Update Link"
-                : "Add Link"}
+    <EditorContextProvider.Provider value={editorContext}>
+      <ContextMenu>
+        <ContextMenuContent
+          className="z-50 absolute min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2"
+          style={{ top: y, left: x }}
+          forceMount
+        >
+          {elementType?.includes("A") && (
+            <ContextMenuItem>
+              <Button
+                onClick={(e) => {
+                  setAddLink(true);
+                  e.stopPropagation();
+                }}
+                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
+              >
+                {selectedElement?.href ? "Update Link" : "Add Link"}
+              </Button>
+            </ContextMenuItem>
+          )}
+          {elementType?.includes("Button") && (
+            <ContextMenuItem>
+              <Button
+                onClick={(e) => {
+                  setAddEvent(true);
+                  e.stopPropagation();
+                }}
+                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
+              >
+                Add Event
+              </Button>
+            </ContextMenuItem>
+          )}
+          {elementType?.includes("List") && (
+            <ContextMenuItem className="">
+              <AddDeleteItems />
+            </ContextMenuItem>
+          )}
+          <ContextMenuItem className="hover:rounded-lg">
+            <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
+              Delete
             </Button>
           </ContextMenuItem>
-        )}
-        {elementType?.includes("Button") && (
           <ContextMenuItem>
-            <Button
-              onClick={(e) => {
-                setAddEvent(true);
-                console.log(addEvent);
-                e.stopPropagation();
-              }}
-              className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-            >
-              Add Event
+            <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
+              Copy
             </Button>
           </ContextMenuItem>
-        )}
-        <ContextMenuItem className="hover:rounded-lg">
-          <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
-            Delete
-          </Button>
-        </ContextMenuItem>
-        <ContextMenuItem>
-          <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
-            Copy
-          </Button>
-        </ContextMenuItem>
-        <ContextMenuItem>
-          <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
-            Paste
-          </Button>
-        </ContextMenuItem>
-        <ContextMenuItem>
-          <Button onClick={onClose} className="hover:bg-blue-400 w-full">
-            Cancel
-          </Button>
-        </ContextMenuItem>
-      </ContextMenuContent>
+          <ContextMenuItem>
+            <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
+              Paste
+            </Button>
+          </ContextMenuItem>
+          {/* <ContextMenuItem>
+            <Button onClick={onClose} className="hover:bg-blue-400 w-full">
+              Cancel
+            </Button>
+          </ContextMenuItem> */}
+        </ContextMenuContent>
 
-      {addLink && (
-        <Input
-          id="link"
-          type="text"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          onBlur={handleSetLink}
-          className="border border-gray-300 p-1 rounded-lg transition-all duration-300 text-white bg-primary absolute w-[200px]"
-          placeholder="Enter URL"
-          style={{
-            top: y + 12,
-            left: x + 160,
-          }}
-        />
-      )}
-      {addEvent && (
-        <EditorContextProvider.Provider value={editorContext}>
-          <ButtonContextMenu />
-        </EditorContextProvider.Provider>
-      )}
-    </ContextMenu>
+        {addLink && (
+          <Input
+            id="link"
+            type="text"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            onBlur={handleSetLink}
+            className="border border-gray-300 p-1 rounded-lg transition-all duration-300 text-white bg-primary absolute w-[200px]"
+            placeholder="Enter URL"
+            style={{
+              top: y + 12,
+              left: x + 160,
+            }}
+          />
+        )}
+        {addEvent && <ButtonContextMenu />}
+      </ContextMenu>
+    </EditorContextProvider.Provider>
   );
 };
 

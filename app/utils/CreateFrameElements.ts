@@ -1,4 +1,9 @@
-import { ButtonElement, Element, FrameElement, ListElement } from "@/lib/type";
+import {
+  EditorElement,
+  ButtonElement,
+  FrameElement,
+  ListElement,
+} from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,18 +20,13 @@ export const listItemStyles: CSSProperties = {
   textAlign: "center",
 };
 
-export const createElements = (
-  name: string,
-  dispatch: Function,
-  x: number,
-  y: number
-) => {
+const createElements = (name: string): EditorElement => {
   const baseElement = {
     id: `${name}-${uuidv4()}`,
     content: name,
     isSelected: false,
-    x,
-    y,
+    x: 0,
+    y: 0,
     styles: {
       ...commonStyles,
       height: "50px",
@@ -65,11 +65,7 @@ export const createElements = (
           },
         ],
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: listElement,
-      });
-      break;
+      return listElement;
     }
 
     case "Button": {
@@ -80,43 +76,34 @@ export const createElements = (
           ...baseElement.styles,
         },
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: buttonElement,
-      });
-      break;
+      return buttonElement;
     }
+
     case "Frame": {
-      const element: FrameElement = {
+      const frameElement: FrameElement = {
         ...baseElement,
         type: "Frame",
-        x: 0,
-        y: 0,
         styles: {
           ...baseElement.styles,
           height: "200px",
-          width: "100%",
+          width: "50%",
           display: "flex",
-          flexDirection: "row",
+          backgroundColor: "lightgreen",
+          flexDirection: "column",
         },
         elements: [],
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: element,
-      });
-      break;
+      return frameElement;
     }
+
     default: {
-      const element: Element = {
+      const element: EditorElement = {
         ...baseElement,
         type: name,
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: element,
-      });
-      break;
+      return element;
     }
   }
 };
+
+export default createElements;
