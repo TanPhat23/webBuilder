@@ -2,6 +2,7 @@ import {
   ButtonElement,
   EditorAction,
   EditorElement,
+  FrameElement,
   ListElement,
 } from "./type";
 
@@ -36,8 +37,57 @@ export const elementsReducer = (
     case "LOAD_ELEMENTS_FROM_LOCAL_STORAGE":
       return action.payload;
 
-    case "UPDATE_ALL_ELEMENTS":
-      return state.map((element) => ({ ...element, ...action.payload }));
+    case "UPDATE_ALL_ELEMENTS": {
+      const { payload: updates } = action;
+
+      const updateElement = (element: EditorElement): EditorElement => {
+        const updatedElement = { ...element, ...updates };
+
+        if (
+          updatedElement.type === "Frame" &&
+          (updatedElement as FrameElement).elements
+        ) {
+          return {
+            ...updatedElement,
+            elements: (updatedElement as FrameElement).elements.map(
+              updateElement
+            ),
+          };
+        }
+
+        return updatedElement;
+      };
+
+      return state.map(updateElement);
+    }
+
+    case "UPDATE_ALL_SELECTED_ELEMENTS": {
+      const { payload: updates } = action;
+
+      const updateSelectedElement = (element: EditorElement): EditorElement => {
+        if (element.isSelected) {
+          const updatedElement = { ...element, ...updates };
+
+          if (
+            updatedElement.type === "Frame" &&
+            (updatedElement as FrameElement).elements
+          ) {
+            return {
+              ...updatedElement,
+              elements: (updatedElement as FrameElement).elements.map(
+                updateSelectedElement
+              ),
+            };
+          }
+
+          return updatedElement;
+        }
+
+        return element;
+      };
+
+      return state.map(updateSelectedElement);
+    }
 
     case "UPDATE_LIST_ITEM":
       return state.map((element) => {
@@ -53,6 +103,33 @@ export const elementsReducer = (
         }
         return element;
       });
+
+    case "UPDATE_FRAME_ELEMENT": {
+      const { childUpdates, updates } = action.payload;
+
+      const updateChildElement = (element: EditorElement): EditorElement => {
+        if (element.id === childUpdates) {
+          return {
+            ...element,
+            ...updates,
+          };
+        }
+
+        if (element.type === "Frame" && (element as FrameElement).elements) {
+          return {
+            ...element,
+            elements: (element as FrameElement).elements.map(
+              updateChildElement
+            ),
+          };
+        }
+
+        return element;
+      };
+
+      return state.map(updateChildElement);
+    }
+
     case "UNDO":
       return state.slice(0, -1);
 

@@ -14,13 +14,13 @@ export interface Element {
 }
 
 export interface FrameElement extends Element {
-  elements?: EditorElement[];
+  elements: EditorElement[];
 }
 export interface ButtonElement extends Element {
   type: "Button";
   events?: {
     onClick?: () => void;
-    onHover?: () => void; 
+    onHover?: () => void;
     onFocus?: () => void;
   };
 }
@@ -52,9 +52,18 @@ export type EditorAction =
   | { type: "SAVE_ELEMENTS_TO_LOCAL_STORAGE"; payload: EditorElement[] }
   | { type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE"; payload: EditorElement[] }
   | { type: "UPDATE_ALL_ELEMENTS"; payload: Partial<EditorElement> }
+  | { type: "UPDATE_ALL_SELECTED_ELEMENTS"; payload: Partial<EditorElement> }
   | {
       type: "UPDATE_LIST_ITEM";
       payload: { listId: string; itemId: string; updates: Partial<ListItem> };
+    }
+  | {
+      type: "UPDATE_FRAME_ELEMENT";
+      payload: {
+        parentElement: EditorElement;
+        childUpdates: string;
+        updates: Partial<EditorElement>;
+      };
     }
   | { type: "UNDO"; payload: EditorElement[] }
   | { type: "REDO"; payload: EditorElement[] };

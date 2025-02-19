@@ -1,0 +1,91 @@
+[
+  {
+    "id": "Frame-c2a64902-c5a7-4aef-a4a1-f82959bec2aa",
+    "content": "Frame",
+    "isSelected": false,
+    "x": 0,
+    "y": 0,
+    "styles": {
+      "justifyContent": "center",
+      "alignItems": "center",
+      "textAlign": "center",
+      "height": "200px",
+      "width": "100%",
+      "display": "flex",
+      "flexDirection": "row"
+    },
+    "type": "Frame",
+    "elements": [
+      {
+        "id": "Frame-2c659253-3a21-4838-9e77-3d72a5b401bc",
+        "content": "Frame",
+        "isSelected": false,
+        "x": 0,
+        "y": 0,
+        "styles": {
+          "justifyContent": "center",
+          "alignItems": "center",
+          "textAlign": "center",
+          "height": "200px",
+          "width": "50%",
+          "display": "flex",
+          "backgroundColor": "lightgreen",
+          "flexDirection": "column"
+        },
+        "type": "Frame",
+        "elements": [
+          {
+            "id": "Text-1a9a2c22-d21e-414e-b2af-22ff8c509571",
+            "content": "Text",
+            "isSelected": false,
+            "x": 0,
+            "y": 0,
+            "styles": {
+              "justifyContent": "center",
+              "alignItems": "center",
+              "textAlign": "center",
+              "height": "50px",
+              "width": "100px"
+            },
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "id": "Frame-5e51d1b7-14d1-41d9-819f-a585d1cb544a",
+        "content": "Frame",
+        "isSelected": false,
+        "x": 0,
+        "y": 0,
+        "styles": {
+          "justifyContent": "center",
+          "alignItems": "center",
+          "textAlign": "center",
+          "height": "200px",
+          "width": "50%",
+          "display": "flex",
+          "backgroundColor": "lightgreen",
+          "flexDirection": "column"
+        },
+        "type": "Frame",
+        "elements": [
+          {
+            "id": "Text-bb86516a-c322-4a6b-b014-5ff7732dd582",
+            "content": "Text",
+            "isSelected": false,
+            "x": 0,
+            "y": 0,
+            "styles": {
+              "justifyContent": "center",
+              "alignItems": "center",
+              "textAlign": "center",
+              "height": "50px",
+              "width": "100px"
+            },
+            "type": "Text"
+          }
+        ]
+      }
+    ]
+  }
+]

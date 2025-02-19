@@ -9,6 +9,7 @@ type Props = {
 
 const FrameComponents = ({ element }: Props) => {
   const { dispatch } = useEditorContext();
+  const rootElement = element as FrameElement;
 
   const handleDrop = React.useCallback(
     (e: React.DragEvent<HTMLDivElement>, element: EditorElement) => {
@@ -17,7 +18,6 @@ const FrameComponents = ({ element }: Props) => {
       const elementType = e.dataTransfer.getData("elementType");
 
       const newElement: EditorElement = createElements(elementType);
-      newElement.parentElements?.push(element.id);
 
       (element as FrameElement).elements?.push(newElement);
       dispatch({
@@ -33,29 +33,65 @@ const FrameComponents = ({ element }: Props) => {
     [dispatch]
   );
 
+  const handleDoubleClick = React.useCallback(
+    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      dispatch({
+        type: "UPDATE_FRAME_ELEMENT",
+        payload: {
+          parentElement: rootElement,
+          childUpdates: element.id,
+          updates: {
+            isSelected: !element.isSelected,
+          },
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === "End") {
+        
+      }
+    },
+    [dispatch, element]
+  );
+
   const renderElement = (element: EditorElement) => {
     switch (element.type) {
       case "Frame":
         return <FrameComponents key={element.id} element={element} />;
       case "Button":
         return (
-          <div key={element.id} style={{ ...element.styles }}>
+          <button key={element.id} style={{ ...element.styles }}>
             {element.content}
-          </div>
+          </button>
         );
       case "List":
         return (
-          <div key={element.id} style={{ ...element.styles }}>
+          <ul key={element.id} style={{ ...element.styles }}>
             {(element as ListElement).items?.map((item) => (
-              <div key={item.id} style={{ ...item.styles }}>
+              <li key={item.id} style={{ ...item.styles }}>
                 {item.content}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         );
       default:
         return (
-          <div key={element.id} style={{ ...element.styles }}>
+          <div
+            key={element.id}
+            style={{ ...element.styles }}
+            className={
+              element.isSelected ? "border-black border-2 border-solid" : ""
+            }
+            onDoubleClick={(e) => handleDoubleClick(e, element)}
+          >
             {element.content}
           </div>
         );
@@ -68,6 +104,10 @@ const FrameComponents = ({ element }: Props) => {
       style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
+      onDoubleClick={(e) => handleDoubleClick(e, element)}
+      
+      className={element.isSelected ? "border-black border-2 border-solid" : ""}
+      onKeyDown={handleKeyDown}
     >
       {(element as FrameElement).elements?.map((childElement) =>
         renderElement(childElement)

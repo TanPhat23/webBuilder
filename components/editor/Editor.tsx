@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
 import { useEditorContext, useImageUploadContext } from "@/lib/context";
-import { ButtonElement, EditorElement, Element } from "@/lib/type";
+import { ButtonElement, EditorElement, Element, FrameElement } from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
 import ListItemComponents from "../editorcomponents/ListItemComponents";
@@ -193,8 +193,35 @@ const Editor = () => {
   );
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>, id: string) => {
-      if (e.key === "End") {
+    (e: React.KeyboardEvent<HTMLDivElement>, element: EditorElement) => {
+      console.log("Key down:", e.key);
+      e.preventDefault();
+      e.stopPropagation();
+      if (!element.isSelected) {
+        const selectedChild = (element as FrameElement).elements?.find(
+          (child) => child.isSelected
+        );
+
+        if (selectedChild) {
+          console.log("Deleting selected child:", selectedChild.id);
+          const updatedElements = (element as FrameElement).elements?.filter(
+            (child) => child.id !== selectedChild.id
+          );
+          console.log("Updated elements:", updatedElements);
+
+          dispatch({
+            type: "UPDATE_ELEMENT",
+            payload: {
+              id: element.id,
+              updates: {
+                elements: updatedElements,
+              },
+            },
+          });
+        }
+      }
+      const id = element.id;
+      if (e.key === "Backspace") {
         dispatch({ type: "DELETE_ELEMENT", payload: id });
       }
       if (e.key === "Escape") {
@@ -234,6 +261,8 @@ const Editor = () => {
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>, id: string) => {
       e.currentTarget.focus();
+      e.stopPropagation();
+
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: { id, updates: { isSelected: true } },
@@ -440,10 +469,9 @@ const Editor = () => {
           onContextMenu={(e) => onContextMenu(e, element.id)}
           onDoubleClick={(e) => {
             handleDoubleClick(e, element.id);
-            e.stopPropagation();
           }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
-          onKeyDown={(e) => handleKeyDown(e, element.id)}
+          onKeyDown={(e) => handleKeyDown(e, element)}
           onCopy={(e) => handleCopy(e)}
           tabIndex={0}
           style={{
@@ -540,9 +568,7 @@ const Editor = () => {
               <ListItemComponents element={element} />
             </ul>
           )}
-          {element.type === "Frame" && (
-            <FrameComponents element={element} />
-          )}
+          {element.type === "Frame" && <FrameComponents element={element} />}
           {element.isSelected && (
             <>
               <div
