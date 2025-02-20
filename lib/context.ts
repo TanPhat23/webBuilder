@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { EditorAction, EditorElement, Element } from "./type";
+import { EditorAction, EditorElement } from "./type";
 
 type ElementsContextType = {
   elements: EditorElement[];
@@ -12,9 +12,12 @@ type ImageUploadContextType = {
 };
 
 type EditorProviderProps = {
-  x : number
-  y : number
-  selectedElement: Element | undefined;
+  x: number;
+  y: number;
+  selectedElement: EditorElement | undefined;
+  setSelectedElement: React.Dispatch<
+    React.SetStateAction<EditorElement | undefined>
+  >;
   onClose: () => void;
 };
 
@@ -22,15 +25,15 @@ export const EditorContext = createContext<ElementsContextType | null>(null);
 export const ImageUploadContext = createContext<ImageUploadContextType | null>(
   null
 );
-export const EditorContextProvider = createContext<EditorProviderProps | null>(null);
+export const EditorContextProvider = createContext<EditorProviderProps | null>(
+  null
+);
 
 export function useEditorContext() {
   const context = useContext(EditorContext);
 
   if (!context) {
-    throw new Error(
-      "useEditorContext must be used within a EditorProvider"
-    );
+    throw new Error("useEditorContext must be used within a EditorProvider");
   }
 
   return context;
@@ -55,5 +58,5 @@ export function useEditorContextProvider() {
       "useEditorContextProvider must be used within a EditorContextProvider"
     );
   }
-  return context
+  return context;
 }

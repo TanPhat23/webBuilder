@@ -14,6 +14,7 @@ import ListItemComponents from "../editorcomponents/ListItemComponents";
 import { v4 as uuidv4 } from "uuid";
 import FrameComponents from "../editorcomponents/FrameComponents";
 
+const loadedFonts = new Set<string>();
 const Editor = () => {
   const { elements, dispatch } = useEditorContext();
   const { uploadImages, setUploadImages } = useImageUploadContext();
@@ -39,11 +40,33 @@ const Editor = () => {
   const gridSize = 20;
 
   const editableRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+      const savedElements = localStorage.getItem("elements");
+      if (savedElements) {
+        try {
+          dispatch({
+            type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE",
+            payload: JSON.parse(savedElements),
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }, []);
 
   useEffect(() => {
     dispatch({
       type: "SAVE_ELEMENTS_TO_LOCAL_STORAGE",
       payload: elements,
+    });
+
+    const fontsToLoad = new Set<string>();
+    elements.forEach((element) => {
+      const fontFamily = element.styles?.fontFamily;
+      if (fontFamily && !loadedFonts.has(fontFamily)) {
+        fontsToLoad.add(fontFamily);
+        loadedFonts.add(fontFamily);
+      }
     });
   }, [elements, dispatch]);
 
@@ -196,24 +219,23 @@ const Editor = () => {
     [dispatch]
   );
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>, element: EditorElement) => {
-      console.log("Key down:", e.key);
-      e.preventDefault();
-      e.stopPropagation();
-      const id = element.id;
-      if (e.key === "Backspace") {
-        dispatch({ type: "DELETE_ELEMENT", payload: id });
-      }
-      if (e.key === "Escape") {
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: { id, updates: { isSelected: false } },
-        });
-      }
-    },
-    [dispatch]
-  );
+  // const handleKeyDown = useCallback(
+  //   (e: React.KeyboardEvent<HTMLDivElement>, element: EditorElement) => {
+  //     console.log("Key down:", e.key);
+  //     e.preventDefault();
+  //     const id = element.id;
+  //     if (e.key === "Backspace") {
+  //       dispatch({ type: "DELETE_ELEMENT", payload: id });
+  //     }
+  //     if (e.key === "Escape") {
+  //       dispatch({
+  //         type: "UPDATE_ELEMENT",
+  //         payload: { id, updates: { isSelected: false } },
+  //       });
+  //     }
+  //   },
+  //   [dispatch]
+  // );
   const handleEditorKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "z" && e.ctrlKey) {
@@ -442,7 +464,7 @@ const Editor = () => {
             handleDoubleClick(e, element.id);
           }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
-          onKeyDown={(e) => handleKeyDown(e, element)}
+          // onKeyDown={(e) => handleKeyDown(e, element)}
           onCopy={(e) => handleCopy(e)}
           tabIndex={0}
           style={{

@@ -64,7 +64,10 @@ const SideBar = () => {
           <AccordionTrigger>
             <PlusIcon />
           </AccordionTrigger>
-          <AccordionContent className="">
+          <AccordionContent
+            className={`border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute  top-16 `}
+            style={{ left: canvasWH.width - 410 }}
+          >
             <div className="grid grid-cols-2 transition ease-linear duration-1000">
               {placeHolderComponents.map((component, index) => (
                 <div
@@ -102,7 +105,6 @@ const SideBar = () => {
             <Configuration />
           </AccordionContent>
         </AccordionItem>
-
       </Accordion>
     </div>
   );

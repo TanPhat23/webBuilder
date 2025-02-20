@@ -107,7 +107,6 @@ const EditorContextMenu = ({ ...props }: Props) => {
   }, [dispatch]);
 
   return (
-    <EditorContextProvider.Provider value={editorContext}>
       <ContextMenu>
         <ContextMenuContent
           className="z-50 absolute min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2"
@@ -184,7 +183,6 @@ const EditorContextMenu = ({ ...props }: Props) => {
         )}
         {addEvent && <ButtonContextMenu />}
       </ContextMenu>
-    </EditorContextProvider.Provider>
   );
 };
 
