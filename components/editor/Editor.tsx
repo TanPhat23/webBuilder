@@ -2,7 +2,12 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
 import { useEditorContext, useImageUploadContext } from "@/lib/context";
-import { ButtonElement, EditorElement, Element, FrameElement } from "@/lib/type";
+import {
+  ButtonElement,
+  EditorElement,
+  Element,
+  FrameElement,
+} from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
 import ListItemComponents from "../editorcomponents/ListItemComponents";
@@ -13,8 +18,6 @@ const Editor = () => {
   const { elements, dispatch } = useEditorContext();
   const { uploadImages, setUploadImages } = useImageUploadContext();
 
-  const [prevElementStyle, setPrevElementStyle] =
-    useState<React.CSSProperties>();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [selectedElement, setSelectedElement] = useState<EditorElement>();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -47,6 +50,7 @@ const Editor = () => {
   const onContextMenu = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, id: string) => {
       e.preventDefault();
+
       const selectElement = elements.find((element) => element.id === id);
       if (selectElement?.isSelected) {
         setMenuPosition({ x: e.clientX, y: e.clientY });
@@ -95,7 +99,7 @@ const Editor = () => {
             const base64 = await blobToBase64(blob);
 
             setUploadImages([...uploadImages, base64]);
-            const newElement: Element = {
+            const newElement: EditorElement = {
               type: "Img",
               id: `Img-${uuidv4()}`,
               content: "",
@@ -123,8 +127,8 @@ const Editor = () => {
             const textContent = await text.text();
 
             try {
-              const clipboardText: Element = JSON.parse(textContent);
-              const newElement: Element = {
+              const clipboardText: EditorElement = JSON.parse(textContent);
+              const newElement: EditorElement = {
                 type: clipboardText.type,
                 id: `${clipboardText.type}-${uuidv4()}`,
                 content: clipboardText.content,
@@ -197,29 +201,6 @@ const Editor = () => {
       console.log("Key down:", e.key);
       e.preventDefault();
       e.stopPropagation();
-      if (!element.isSelected) {
-        const selectedChild = (element as FrameElement).elements?.find(
-          (child) => child.isSelected
-        );
-
-        if (selectedChild) {
-          console.log("Deleting selected child:", selectedChild.id);
-          const updatedElements = (element as FrameElement).elements?.filter(
-            (child) => child.id !== selectedChild.id
-          );
-          console.log("Updated elements:", updatedElements);
-
-          dispatch({
-            type: "UPDATE_ELEMENT",
-            payload: {
-              id: element.id,
-              updates: {
-                elements: updatedElements,
-              },
-            },
-          });
-        }
-      }
       const id = element.id;
       if (e.key === "Backspace") {
         dispatch({ type: "DELETE_ELEMENT", payload: id });
@@ -236,26 +217,16 @@ const Editor = () => {
   const handleEditorKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "z" && e.ctrlKey) {
-        const selectedElement = elements.find((element) => element.isSelected);
         e.preventDefault();
-        if (selectedElement?.isSelected) {
-          dispatch({
-            type: "UPDATE_ELEMENT",
-            payload: {
-              id: selectedElement.id,
-              updates: { styles: prevElementStyle },
-            },
-          });
-        } else {
-          dispatch({ type: "UNDO", payload: elements });
-        }
+
+        dispatch({ type: "UNDO", payload: elements });
       }
       if (e.key === "y" && e.ctrlKey) {
         e.preventDefault();
         dispatch({ type: "REDO", payload: elements });
       }
     },
-    [dispatch, elements, selectedElement, prevElementStyle]
+    [dispatch, elements, selectedElement]
   );
 
   const handleDoubleClick = useCallback(
@@ -481,7 +452,7 @@ const Editor = () => {
             width: element.styles?.width || "100px",
             height: element.styles?.height || "100px",
           }}
-          className={`z-50 ${
+          className={` ${
             element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
@@ -568,7 +539,14 @@ const Editor = () => {
               <ListItemComponents element={element} />
             </ul>
           )}
-          {element.type === "Frame" && <FrameComponents element={element} />}
+          {element.type === "Frame" && (
+            <FrameComponents
+              element={element}
+              setShowContextMenu={setShowContextMenu}
+              setSelectedElement={setSelectedElement}
+              setMenuPosition={setMenuPosition}
+            />
+          )}
           {element.isSelected && (
             <>
               <div

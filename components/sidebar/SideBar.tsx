@@ -12,8 +12,6 @@ import LinkHolder from "../sidebarcomponentholders/LinkHolder";
 import ImageUpload from "./ImageUpload";
 import Configuration from "./Configuration";
 import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
-import ExportButton from "./ExportToCode";
-import { useEditorContext } from "@/lib/context";
 import ListItemHolder from "../sidebarcomponentholders/ListItemHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
 
@@ -23,7 +21,15 @@ type Component = {
 };
 
 const SideBar = () => {
-  const { elements } = useEditorContext();
+  const [canvasWH, setCanvasWH] = React.useState({ width: 0, height: 0 });
+  React.useEffect(() => {
+    const canvas = document.getElementById("canvas");
+    if (canvas) {
+      const rect = canvas?.getBoundingClientRect();
+      setCanvasWH({ width: rect?.width, height: rect?.height });
+      console.log(rect.width);
+    }
+  }, []);
   const placeHolderComponents: Component[] = [
     {
       component: <TextHolder />,
@@ -48,63 +54,57 @@ const SideBar = () => {
   ];
 
   return (
-    <Accordion
-      type="multiple"
-      className="w-auto h-screen bg-gray-100 z-50"
-      id="sidebar"
-    >
-      <AccordionItem value="item-1">
-        <AccordionTrigger>
-          <PlusIcon />
-        </AccordionTrigger>
-        <AccordionContent className="">
-          <div className="grid grid-cols-2 transition ease-linear duration-1000">
-            {placeHolderComponents.map((component, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center"
-              >
-                <div className="hover:cursor-pointer">
-                  {component.component}
+    <div className="flex h-screen">
+      <Accordion
+        type="multiple"
+        className="w-auto h-full bg-gray-100 z-50 min-w-10 items-center"
+        id="sidebar"
+      >
+        <AccordionItem value="item-1">
+          <AccordionTrigger>
+            <PlusIcon />
+          </AccordionTrigger>
+          <AccordionContent className="">
+            <div className="grid grid-cols-2 transition ease-linear duration-1000">
+              {placeHolderComponents.map((component, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center"
+                >
+                  <div className="hover:cursor-pointer">
+                    {component.component}
+                  </div>
+                  <div>{component.label}</div>
                 </div>
-                <div>{component.label}</div>
-              </div>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-3">
-        <AccordionTrigger>
-          <Image />
-        </AccordionTrigger>
-        <AccordionContent
-          className="border border-black p-1 rounded-lg transition-all duration-300 absolute w-[500px] h-[600px] bg-slate-50 overflow-scroll"
-          style={{
-            top: 14,
-            left: 1450,
-          }}
-        >
-          <ImageUpload />
-        </AccordionContent>
-      </AccordionItem>
-      <AccordionItem value="item-4">
-        <AccordionTrigger>
-          <Settings />
-        </AccordionTrigger>
-        <AccordionContent
-          className="border border-black p-1 rounded-lg transition-all duration-300 absolute w-[500px] h-[600px] bg-slate-50 overflow-scroll"
-          style={{
-            top: 14,
-            left: 1450,
-          }}
-        >
-          <Configuration />
-        </AccordionContent>
-      </AccordionItem>
-      {/* <AccordionItem value="item-5">
-        <ExportButton elements={elements} />
-      </AccordionItem> */}
-    </Accordion>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>
+            <Image />
+          </AccordionTrigger>
+          <AccordionContent
+            className="border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute top-16"
+            style={{ left: canvasWH.width - 410 }}
+          >
+            <ImageUpload />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>
+            <Settings />
+          </AccordionTrigger>
+          <AccordionContent
+            className={`border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute  top-16 `}
+            style={{ left: canvasWH.width - 410 }}
+          >
+            <Configuration />
+          </AccordionContent>
+        </AccordionItem>
+
+      </Accordion>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Element } from "@/lib/type";
+import { EditorElement, Element } from "@/lib/type";
 import { Button } from "@/components/ui/button";
 import { ContextMenu } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
@@ -80,7 +80,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
       .readText()
       .then((text) => {
         try {
-          const clipboardText: Element = JSON.parse(text);
+          const clipboardText: EditorElement = JSON.parse(text);
           const newElement = {
             type: clipboardText.type,
             id: `${clipboardText.type}-${uuidv4()}`,

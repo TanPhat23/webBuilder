@@ -27,8 +27,32 @@ export const elementsReducer = (
           : element
       );
 
-    case "DELETE_ELEMENT":
-      return state.filter((element) => element.id !== action.payload);
+    case "DELETE_ELEMENT": {
+      const deleteElement = (element: EditorElement): EditorElement | null => {
+        if (element.id === action.payload) {
+          return null;
+        }
+
+        if (element.type === "Frame" && (element as FrameElement).elements) {
+          const updatedElements = (element as FrameElement).elements
+            .map(deleteElement)
+            .filter((el): el is EditorElement => el !== null);
+
+          return {
+            ...element,
+            elements: updatedElements,
+          };
+        }
+
+        return element;
+      };
+
+      const updatedState = state
+        .map(deleteElement)
+        .filter((el): el is EditorElement => el !== null);
+
+      return updatedState;
+    }
 
     case "SAVE_ELEMENTS_TO_LOCAL_STORAGE":
       localStorage.setItem("elements", JSON.stringify(state));

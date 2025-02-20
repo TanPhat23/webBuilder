@@ -5,9 +5,19 @@ import React from "react";
 
 type Props = {
   element: EditorElement;
+  setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedElement: React.Dispatch<
+    React.SetStateAction<EditorElement | undefined>
+  >;
+  setMenuPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
 };
 
-const FrameComponents = ({ element }: Props) => {
+const FrameComponents = ({
+  element,
+  setSelectedElement,
+  setShowContextMenu,
+  setMenuPosition,
+}: Props) => {
   const { dispatch } = useEditorContext();
   const rootElement = element as FrameElement;
 
@@ -55,26 +65,80 @@ const FrameComponents = ({ element }: Props) => {
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent) => {
       e.stopPropagation();
-      if (e.key === "End") {
-        
-      }
     },
     [dispatch, element]
   );
+  const handleInput = React.useCallback(
+    (e: React.FormEvent<HTMLElement>, element: EditorElement) => {
+      e.preventDefault();
+      e.stopPropagation();
+      let newContent = e.currentTarget.innerHTML;
 
+      if (newContent.includes("<br>")) {
+        newContent = newContent.replace(/<br>/g, "");
+      }
+
+      dispatch({
+        type: "UPDATE_FRAME_ELEMENT",
+        payload: {
+          childUpdates: element.id,
+          parentElement: rootElement,
+          updates: { content: newContent },
+        },
+      });
+    },
+    [dispatch]
+  );
+
+  const handleContextMenu = React.useCallback(
+    (e: React.MouseEvent, element: EditorElement) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setSelectedElement(element);
+      setMenuPosition({ x: e.clientX, y: e.clientY });
+      setShowContextMenu(true);
+    },
+    [dispatch]
+  );
   const renderElement = (element: EditorElement) => {
     switch (element.type) {
       case "Frame":
-        return <FrameComponents key={element.id} element={element} />;
+        return (
+          <FrameComponents
+            key={element.id}
+            element={element}
+            setSelectedElement={setSelectedElement}
+            setShowContextMenu={setShowContextMenu}
+            setMenuPosition={setMenuPosition}
+          />
+        );
       case "Button":
         return (
-          <button key={element.id} style={{ ...element.styles }}>
+          <button
+            key={element.id}
+            style={{ ...element.styles }}
+            onDoubleClick={(e) => handleDoubleClick(e, element)}
+            onKeyDown={(e) => handleKeyDown(e)}
+            contentEditable={element.isSelected}
+            onContextMenu={(e) => handleContextMenu(e, element)}
+            suppressContentEditableWarning
+            className={
+              element.isSelected ? "border-black border-2 border-solid" : ""
+            }
+          >
             {element.content}
           </button>
         );
       case "List":
         return (
-          <ul key={element.id} style={{ ...element.styles }}>
+          <ul
+            key={element.id}
+            style={{ ...element.styles }}
+            onDoubleClick={(e) => handleDoubleClick(e, element)}
+            className={
+              element.isSelected ? "border-black border-2 border-solid" : ""
+            }
+          >
             {(element as ListElement).items?.map((item) => (
               <li key={item.id} style={{ ...item.styles }}>
                 {item.content}
@@ -90,6 +154,10 @@ const FrameComponents = ({ element }: Props) => {
             className={
               element.isSelected ? "border-black border-2 border-solid" : ""
             }
+            contentEditable={element.isSelected}
+            onContextMenu={(e) => handleContextMenu(e, element)}
+            suppressContentEditableWarning
+            onBlur={(e) => handleInput(e, element)}
             onDoubleClick={(e) => handleDoubleClick(e, element)}
           >
             {element.content}
@@ -104,10 +172,9 @@ const FrameComponents = ({ element }: Props) => {
       style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
+      onContextMenu={(e) => handleContextMenu(e, element)}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
-      
       className={element.isSelected ? "border-black border-2 border-solid" : ""}
-      onKeyDown={handleKeyDown}
     >
       {(element as FrameElement).elements?.map((childElement) =>
         renderElement(childElement)

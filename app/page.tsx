@@ -6,7 +6,6 @@ import { EditorContext, ImageUploadContext } from "@/lib/context";
 import { elementsReducer } from "@/lib/editorReducer";
 import SideBar from "@/components/sidebar/SideBar";
 import { loadFont } from "./utils/LoadFont";
-import { loadEventFromLocalStorage } from "./utils/LoadEvents";
 
 
 const loadedFonts = new Set<string>();
@@ -26,9 +25,6 @@ function WebBuilder() {
         console.error(e);
       }
     }
-    // setTimeout(() => {
-    //   loadEventFromLocalStorage();
-    // }, 1000);
   }, []);
 
   useEffect(() => {

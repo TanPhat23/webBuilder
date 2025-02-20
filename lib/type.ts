@@ -8,7 +8,7 @@ export interface Element {
   styles?: React.CSSProperties;
   x: number;
   y: number;
-  parentElements?: string[];
+  parentElement?: string;
   src?: string;
   href?: string;
 }
