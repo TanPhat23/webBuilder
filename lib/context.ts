@@ -12,22 +12,18 @@ type ImageUploadContextType = {
 };
 
 type EditorProviderProps = {
-  x: number;
-  y: number;
   selectedElement: EditorElement | undefined;
   setSelectedElement: React.Dispatch<
     React.SetStateAction<EditorElement | undefined>
   >;
-  onClose: () => void;
 };
 
 export const EditorContext = createContext<ElementsContextType | null>(null);
 export const ImageUploadContext = createContext<ImageUploadContextType | null>(
   null
 );
-export const EditorContextProvider = createContext<EditorProviderProps | null>(
-  null
-);
+export const SelectedElementProvider =
+  createContext<EditorProviderProps | null>(null);
 
 export function useEditorContext() {
   const context = useContext(EditorContext);
@@ -52,7 +48,7 @@ export function useImageUploadContext() {
 }
 
 export function useEditorContextProvider() {
-  const context = useContext(EditorContextProvider);
+  const context = useContext(SelectedElementProvider);
   if (!context) {
     throw new Error(
       "useEditorContextProvider must be used within a EditorContextProvider"

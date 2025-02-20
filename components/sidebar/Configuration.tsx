@@ -1,4 +1,4 @@
-import { useEditorContext } from "@/lib/context";
+import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import React, { useEffect } from "react";
 import { Input } from "../ui/input";
 import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
@@ -10,47 +10,41 @@ import BackGroundColorInput from "./inputs/BackGroundColorInput";
 import BorderRadiusInput from "./inputs/BorderRadiusInput";
 import BorderWeightPopover from "./popovers/BorderWeightPopover";
 
-
 const Configuration = () => {
   const { elements, dispatch } = useEditorContext();
   const [fontFamilies, setFontFamilies] = React.useState<string[]>([]);
-  const selectedElements = elements.filter((element) => element.isSelected);
 
-  const selectedElement = selectedElements[selectedElements.length - 1];
+  const { selectedElement, setSelectedElement } = useEditorContextProvider();
 
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
     if (!selectedElement) return;
-    selectedElements.forEach((element) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            styles: {
-              ...element.styles,
-              width: e.currentTarget.value,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            width: e.currentTarget.value,
           },
         },
-      });
+      },
     });
   };
 
   const handleHeightChange = (e: React.FormEvent<HTMLInputElement>) => {
     if (!selectedElement) return;
-    selectedElements.forEach((element) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            styles: {
-              ...element.styles,
-              height: e.currentTarget.value,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            height: e.currentTarget.value,
           },
         },
-      });
+      },
     });
   };
   const getFontFamily = async () => {
@@ -70,23 +64,22 @@ const Configuration = () => {
     getFontFamily().then((data) => {
       setFontFamilies(data);
     });
+    console.log(selectedElement);
   }, []);
 
   const handleFontChange = (e: React.FormEvent<HTMLInputElement>) => {
     if (!selectedElement) return;
-    selectedElements.forEach((element) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            styles: {
-              ...element.styles,
-              fontSize: e.currentTarget.value,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            fontSize: e.currentTarget.value,
           },
         },
-      });
+      },
     });
   };
 
@@ -117,48 +110,26 @@ const Configuration = () => {
           />
           <label>Font size</label>
         </div>
-        <FontSizeComboBox
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
+        <FontSizeComboBox selectedElement={selectedElement} />
         <div>
           <FontFamilyComboBox
             selectedElement={selectedElement}
-            selectedElements={selectedElements}
             fontFamilies={fontFamilies}
           />
           <label>Font Family</label>
         </div>
       </div>
       <div className="flex flex-row justify-between mt-4">
-        <TextAlignButton
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
-        <TextStyleButtons
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
+        <TextAlignButton selectedElement={selectedElement} />
+        <TextStyleButtons selectedElement={selectedElement} />
       </div>
       <div className="flex flex-row mt-4 gap-1">
-        <TextColorInput
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
-        <BackGroundColorInput
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
+        <TextColorInput selectedElement={selectedElement} />
+        <BackGroundColorInput selectedElement={selectedElement} />
       </div>
       <div className="flex flex-row mt-4 gap-1">
-        <BorderRadiusInput
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
-        <BorderWeightPopover
-          selectedElement={selectedElement}
-          selectedElements={selectedElements}
-        />
+        <BorderRadiusInput selectedElement={selectedElement} />
+        <BorderWeightPopover selectedElement={selectedElement} />
       </div>
     </div>
   );

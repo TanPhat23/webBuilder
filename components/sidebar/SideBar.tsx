@@ -65,14 +65,14 @@ const SideBar = () => {
             <PlusIcon />
           </AccordionTrigger>
           <AccordionContent
-            className={`border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute  top-16 `}
-            style={{ left: canvasWH.width - 410 }}
+            className={`border border-black p-1 rounded-lg min-w-[200px] h-[600px] bg-slate-50 overflow-scroll absolute  `}
+            style={{ left: canvasWH.width - 210 }}
           >
             <div className="grid grid-cols-2 transition ease-linear duration-1000">
               {placeHolderComponents.map((component, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center"
+                  className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center text-sm"
                 >
                   <div className="hover:cursor-pointer">
                     {component.component}
@@ -88,7 +88,7 @@ const SideBar = () => {
             <Image />
           </AccordionTrigger>
           <AccordionContent
-            className="border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute top-16"
+            className="border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute "
             style={{ left: canvasWH.width - 410 }}
           >
             <ImageUpload />
@@ -99,7 +99,7 @@ const SideBar = () => {
             <Settings />
           </AccordionTrigger>
           <AccordionContent
-            className={`border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute  top-16 `}
+            className={`border border-black p-1 rounded-lg w-[400px] h-[600px] bg-slate-50 overflow-scroll absolute `}
             style={{ left: canvasWH.width - 410 }}
           >
             <Configuration />

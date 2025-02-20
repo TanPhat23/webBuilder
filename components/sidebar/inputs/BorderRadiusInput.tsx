@@ -1,15 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
-import { Radius } from "lucide-react";
+import { EditorElement } from "@/lib/type";
 import React, { useEffect } from "react";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
-const BorderRadiusInput = ({ selectedElement, selectedElements }: Props) => {
+const BorderRadiusInput = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const [borderRadius, setBorderRadius] = React.useState<number | string>(0);
   const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -18,19 +16,17 @@ const BorderRadiusInput = ({ selectedElement, selectedElements }: Props) => {
 
   const handleBlur = () => {
     if (!selectedElement) return;
-    selectedElements.forEach((element) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            styles: {
-              ...element.styles,
-              borderRadius: borderRadius,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            borderRadius: borderRadius,
           },
         },
-      });
+      },
     });
   };
 

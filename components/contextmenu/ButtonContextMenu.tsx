@@ -9,10 +9,13 @@ const Events = [
   { type: "Click", label: <OnClick /> },
   { type: "Hover", label: <OnHover /> },
 ];
+type Props = {
+  x: number;
+  y: number;
+}
 
-const ButtonContextMenu = () => {
+const ButtonContextMenu = ({x, y}: Props) => {
   const [search, setSearch] = React.useState("");
-  const { x, y } = useEditorContextProvider();
 
   return (
     <div

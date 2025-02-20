@@ -1,12 +1,11 @@
 import { useEditorContext } from "@/lib/context";
-import { Element, TextAlign } from "@/lib/type";
+import { EditorElement, Element, TextAlign } from "@/lib/type";
 import React from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
 const alignType = {
@@ -16,7 +15,7 @@ const alignType = {
   justify: { type: "justify", icon: <AlignJustify /> },
 };
 
-const TextAlignButton = ({ selectedElement, selectedElements }: Props) => {
+const TextAlignButton = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const alignmentKeys = Object.keys(alignType) as (keyof typeof alignType)[];
   const [currentAlignmentKey, setCurrentAlignmentKey] =
@@ -31,20 +30,18 @@ const TextAlignButton = ({ selectedElement, selectedElements }: Props) => {
     );
     const nextIndex = (currentIndex + 1) % alignmentKeys.length;
     const nextAlignmentKey = alignmentKeys[nextIndex];
-    selectedElements.forEach((element) => {
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: {
-          id: element.id,
+          id: selectedElement.id,
           updates: {
             styles: {
-              ...element.styles,
+              ...selectedElement.styles,
               textAlign: alignType[nextAlignmentKey].type as TextAlign,
             },
           },
         },
       });
-    });
     // setTimeout(() => {
     //   selectedElements.forEach((element) => {
     //     console.log(element.styles?.textAlign);

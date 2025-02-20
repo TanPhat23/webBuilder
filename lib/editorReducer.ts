@@ -12,20 +12,27 @@ export const elementsReducer = (
 ): EditorElement[] => {
   switch (action.type) {
     case "ADD_ELEMENT":
-      if (action.payload.type === "Button") {
-        const buttonElement = action.payload as ButtonElement;
-        console.log("Adding a button:", buttonElement);
-      } else {
-        console.log("Adding a generic element:", action.payload);
-      }
       return [...state, action.payload];
 
-    case "UPDATE_ELEMENT":
-      return state.map((element) =>
-        element.id === action.payload.id
-          ? { ...element, ...action.payload.updates }
-          : element
-      );
+    case "UPDATE_ELEMENT": {
+      const { id, updates } = action.payload;
+
+      const updateElement = (element: EditorElement): EditorElement => {
+        if (element.id === id) {
+          return { ...element, ...updates };}
+
+        if (element.type === "Frame" && (element as FrameElement).elements) {
+          return {
+            ...element,
+            elements: (element as FrameElement).elements.map(updateElement),
+          };
+        }
+
+        return element;
+      };
+
+      return state.map(updateElement);
+    }
 
     case "DELETE_ELEMENT": {
       const deleteElement = (element: EditorElement): EditorElement | null => {

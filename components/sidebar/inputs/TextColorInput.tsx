@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
-const TextColorInput = ({ selectedElement, selectedElements }: Props) => {
+const TextColorInput = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const [color, setColor] = useState("#000000");
   const [colorText, setColorText] = useState("#000000");
@@ -33,19 +32,17 @@ const TextColorInput = ({ selectedElement, selectedElements }: Props) => {
   const updateElementColor = (color: string) => {
     if (!selectedElement) return;
 
-    selectedElements.forEach((element) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            styles: {
-              ...element.styles,
-              color: color,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            color: color,
           },
         },
-      });
+      },
     });
   };
 

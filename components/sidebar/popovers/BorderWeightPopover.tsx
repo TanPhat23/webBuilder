@@ -6,12 +6,11 @@ import {
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import React from "react";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
 const borderStyles = [
@@ -27,7 +26,7 @@ const borderStyles = [
   "hidden",
 ];
 
-const BorderWeightPopover = ({ selectedElement, selectedElements }: Props) => {
+const BorderWeightPopover = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
 
   const [borderWeight, setBorderWeight] = React.useState<number>(0);
@@ -36,15 +35,20 @@ const BorderWeightPopover = ({ selectedElement, selectedElements }: Props) => {
 
   const updateBorder = (weight: number, style: string, color: string) => {
     const newBorder = `${weight}px ${style} ${color}`;
-    selectedElements.forEach((element) => {
+    if (selectedElement) {
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: {
-          id: element.id,
-          updates: { styles: { ...element.styles, border: newBorder } },
+          id: selectedElement.id,
+          updates: {
+            styles: {
+              ...selectedElement.styles,
+              border: newBorder,
+            },
+          },
         },
       });
-    });
+    }
   };
 
   const handleSliderChange = (value: number[]) => {
@@ -79,7 +83,9 @@ const BorderWeightPopover = ({ selectedElement, selectedElements }: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="bg-white text-black hover:bg-slate-200">Border Properties</Button>
+        <Button className="bg-white text-black hover:bg-slate-200">
+          Border Properties
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 space-y-4">
         <div>

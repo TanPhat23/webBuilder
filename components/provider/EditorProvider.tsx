@@ -1,4 +1,8 @@
-import { EditorContext, EditorContextProvider, ImageUploadContext } from "@/lib/context";
+import {
+  EditorContext,
+  SelectedElementProvider,
+  ImageUploadContext,
+} from "@/lib/context";
 import { elementsReducer } from "@/lib/editorReducer";
 import { EditorElement } from "@/lib/type";
 import React from "react";
@@ -24,7 +28,9 @@ const EditorProvider: React.FC<Props> = ({ children }) => {
   return (
     <EditorContext.Provider value={editorValue}>
         <ImageUploadContext.Provider value={imageUploadValue}>
+          <SelectedElementProvider.Provider value={editorProviderValue}>
           {children}
+          </SelectedElementProvider.Provider>
         </ImageUploadContext.Provider>
     </EditorContext.Provider>
   );

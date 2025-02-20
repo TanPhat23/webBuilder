@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
-import { useEditorContext, useImageUploadContext } from "@/lib/context";
+import { useEditorContext, useEditorContextProvider, useImageUploadContext } from "@/lib/context";
 import {
   ButtonElement,
   EditorElement,
@@ -20,7 +20,7 @@ const Editor = () => {
   const { uploadImages, setUploadImages } = useImageUploadContext();
 
   const [showContextMenu, setShowContextMenu] = useState(false);
-  const [selectedElement, setSelectedElement] = useState<EditorElement>();
+  const { selectedElement, setSelectedElement } = useEditorContextProvider();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
@@ -565,7 +565,6 @@ const Editor = () => {
             <FrameComponents
               element={element}
               setShowContextMenu={setShowContextMenu}
-              setSelectedElement={setSelectedElement}
               setMenuPosition={setMenuPosition}
             />
           )}

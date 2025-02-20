@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import { Bold, Italic, Strikethrough, Underline } from "lucide-react";
 import React from "react";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
 const TextStyle = [
@@ -17,7 +16,7 @@ const TextStyle = [
   { type: "uppercase", icon: "aA", style: "textTransform" },
 ];
 
-const TextStyleButtons = ({ selectedElement, selectedElements }: Props) => {
+const TextStyleButtons = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const [activeStyles, setActiveStyles] = React.useState<
     Record<string, boolean>
@@ -39,7 +38,7 @@ const TextStyleButtons = ({ selectedElement, selectedElements }: Props) => {
           selectedElement.styles?.textDecoration === "line-through",
         uppercase: selectedElement.styles?.textTransform === "uppercase",
       });
-    }else{
+    } else {
       setActiveStyles({
         bold: false,
         italic: false,
@@ -73,27 +72,27 @@ const TextStyleButtons = ({ selectedElement, selectedElements }: Props) => {
         newValue = "none";
     }
 
-    selectedElements.forEach((element) => {
+    if (selectedElement) {
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: {
-          id: element.id,
+          id: selectedElement.id,
           updates: {
             styles: {
-              ...element.styles,
+              ...selectedElement.styles,
               [style]: newValue,
             },
           },
         },
       });
-    });
+    }
 
     setActiveStyles((prev) => ({
       ...prev,
       [type]: !prev[type],
     }));
   };
-  
+
   return (
     <>
       {TextStyle.map((style) => (

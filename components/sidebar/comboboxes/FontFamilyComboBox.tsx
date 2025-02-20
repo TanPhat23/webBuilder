@@ -15,18 +15,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Element } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import { useEditorContext } from "@/lib/context";
 import { loadFont } from "@/app/utils/LoadFont";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
   fontFamilies: string[];
 };
 
 const FontFamilyComboBox = (props: Props) => {
-  const { selectedElement, selectedElements, fontFamilies } = props;
+  const { selectedElement, fontFamilies } = props;
   const [open, setOpen] = useState(false);
   const [selectedFontFamily, setSelectedFontFamily] = useState<string | null>(
     null
@@ -45,19 +44,17 @@ const FontFamilyComboBox = (props: Props) => {
     setSelectedFontFamily(selectedFamily);
     loadFont(selectedFamily);
     if (selectedElement) {
-      selectedElements.forEach((element) => {
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: element.id,
-            updates: {
-              styles: {
-                ...element.styles,
-                fontFamily: selectedFamily,
-              },
+      dispatch({
+        type: "UPDATE_ELEMENT",
+        payload: {
+          id: selectedElement.id,
+          updates: {
+            styles: {
+              ...selectedElement.styles,
+              fontFamily: selectedFamily,
             },
           },
-        });
+        },
       });
     }
   };

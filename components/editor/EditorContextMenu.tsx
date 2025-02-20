@@ -6,8 +6,8 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@radix-ui/react-context-menu";
-import React, { useCallback, useMemo, useState } from "react";
-import { EditorContextProvider, useEditorContext } from "@/lib/context";
+import React, { useCallback, useState } from "react";
+import { useEditorContext } from "@/lib/context";
 import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
 import { v4 as uuidv4 } from "uuid";
 import AddDeleteItems from "../contextmenu/AddDeleteItems";
@@ -27,10 +27,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
   const elementType = selectedElement?.type;
 
   const { elements, dispatch } = useEditorContext();
-  const editorContext = useMemo(
-    () => ({ x, y, selectedElement, onClose }),
-    [selectedElement, onClose]
-  );
+
   const handleSetLink = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -159,11 +156,6 @@ const EditorContextMenu = ({ ...props }: Props) => {
               Paste
             </Button>
           </ContextMenuItem>
-          {/* <ContextMenuItem>
-            <Button onClick={onClose} className="hover:bg-blue-400 w-full">
-              Cancel
-            </Button>
-          </ContextMenuItem> */}
         </ContextMenuContent>
 
         {addLink && (
@@ -181,7 +173,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
             }}
           />
         )}
-        {addEvent && <ButtonContextMenu />}
+        {addEvent && <ButtonContextMenu x={x} y={y}/>}
       </ContextMenu>
   );
 };

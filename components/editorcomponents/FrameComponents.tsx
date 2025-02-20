@@ -1,24 +1,23 @@
 import createElements from "@/app/utils/CreateFrameElements";
-import { useEditorContext } from "@/lib/context";
+import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { EditorElement, FrameElement, ListElement } from "@/lib/type";
 import React from "react";
 
 type Props = {
   element: EditorElement;
   setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedElement: React.Dispatch<
-    React.SetStateAction<EditorElement | undefined>
+  setMenuPosition: React.Dispatch<
+    React.SetStateAction<{ x: number; y: number }>
   >;
-  setMenuPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
 };
 
 const FrameComponents = ({
   element,
-  setSelectedElement,
   setShowContextMenu,
   setMenuPosition,
 }: Props) => {
   const { dispatch } = useEditorContext();
+  const { selectedElement, setSelectedElement } = useEditorContextProvider();
   const rootElement = element as FrameElement;
 
   const handleDrop = React.useCallback(
@@ -47,7 +46,7 @@ const FrameComponents = ({
     (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
       e.preventDefault();
       e.stopPropagation();
-
+      if (!element.isSelected) setSelectedElement(element);
       dispatch({
         type: "UPDATE_FRAME_ELEMENT",
         payload: {
@@ -107,7 +106,6 @@ const FrameComponents = ({
           <FrameComponents
             key={element.id}
             element={element}
-            setSelectedElement={setSelectedElement}
             setShowContextMenu={setShowContextMenu}
             setMenuPosition={setMenuPosition}
           />

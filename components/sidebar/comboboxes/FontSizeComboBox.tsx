@@ -16,16 +16,15 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { fontSize } from "@/lib/constants";
-import { Element } from "@/lib/type";
+import { EditorElement} from "@/lib/type";
 import { useEditorContext } from "@/lib/context";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
 const FontSizeComboBox = (props: Props) => {
-  const { selectedElement, selectedElements } = props;
+  const { selectedElement} = props;
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<number | null>(null);
 
@@ -43,20 +42,18 @@ const FontSizeComboBox = (props: Props) => {
     setValue(size);
 
     if (selectedElement) {
-      selectedElements.forEach((element) => {
         dispatch({
           type: "UPDATE_ELEMENT",
           payload: {
-            id: element.id,
+            id: selectedElement.id,
             updates: {
               styles: {
-                ...element.styles,
+                ...selectedElement.styles,
                 fontSize: size,
               },
             },
           },
         });
-      });
     }
   };
 

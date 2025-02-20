@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useEditorContext } from "@/lib/context";
-import { Element } from "@/lib/type";
+import { EditorElement, Element } from "@/lib/type";
 
 type Props = {
-  selectedElement: Element | null;
-  selectedElements: Element[];
+  selectedElement: EditorElement | undefined;
 };
 
-const BackGroundColorInput = ({ selectedElement, selectedElements }: Props) => {
+const BackGroundColorInput = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const [color, setColor] = useState("#000000");
   const [backColor, setBackColor] = useState("#000000");
@@ -32,21 +31,18 @@ const BackGroundColorInput = ({ selectedElement, selectedElements }: Props) => {
 
   const updateElementColor = (color: string) => {
     if (!selectedElement) return;
-
-    selectedElements.forEach((element) => {
       dispatch({
         type: "UPDATE_ELEMENT",
         payload: {
-          id: element.id,
+          id: selectedElement.id,
           updates: {
             styles: {
-              ...element.styles,
+              ...selectedElement.styles,
               backgroundColor: color,
             },
           },
         },
       });
-    });
   };
 
   React.useEffect(() => {
