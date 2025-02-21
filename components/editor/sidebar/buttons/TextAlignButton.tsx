@@ -30,24 +30,20 @@ const TextAlignButton = ({ selectedElement }: Props) => {
     );
     const nextIndex = (currentIndex + 1) % alignmentKeys.length;
     const nextAlignmentKey = alignmentKeys[nextIndex];
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: selectedElement.id,
-          updates: {
-            styles: {
-              ...selectedElement.styles,
-              textAlign: alignType[nextAlignmentKey].type as TextAlign,
-            },
+    setCurrentAlignmentKey(nextAlignmentKey);
+
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            textAlign: alignType[nextAlignmentKey].type as TextAlign,
           },
         },
-      });
-    // setTimeout(() => {
-    //   selectedElements.forEach((element) => {
-    //     console.log(element.styles?.textAlign);
-    //   });
-    // }, 1000);
-    setCurrentAlignmentKey(nextAlignmentKey);
+      },
+    });
   };
 
   React.useEffect(() => {
@@ -63,7 +59,7 @@ const TextAlignButton = ({ selectedElement }: Props) => {
   }, [selectedElement]);
   return (
     <Button
-      className="bg-white text-black hover:bg-gray-100"
+      className="bg-white text-black hover:bg-gray-100 h-8 w-8"
       onClick={handleAlign}
     >
       <div className="flex items-center gap-2">

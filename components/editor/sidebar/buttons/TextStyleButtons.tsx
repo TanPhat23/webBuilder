@@ -50,6 +50,8 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
   }, [selectedElement]);
 
   const handleTextStyle = (type: string, style: string) => {
+    if (!selectedElement) return;
+
     let newValue: string;
 
     switch (type) {
@@ -71,21 +73,20 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
       default:
         newValue = "none";
     }
-
-    if (selectedElement) {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: selectedElement.id,
-          updates: {
-            styles: {
-              ...selectedElement.styles,
-              [style]: newValue,
-            },
+    
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            [style]: newValue,
           },
         },
-      });
-    }
+      },
+    });
+    console.log(selectedElement.styles);
 
     setActiveStyles((prev) => ({
       ...prev,
@@ -94,19 +95,23 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
   };
 
   return (
-    <>
+    <div className="flex gap-1">
       {TextStyle.map((style) => (
         <Button
           key={style.type}
-          className={`bg-white text-black hover:bg-gray-100 ${
-            activeStyles[style.type] ? "bg-blue-400" : ""
+          variant="outline"
+          size="sm"
+          className={`h-8 w-8 ${
+            activeStyles[style.type]
+              ? "bg-blue-400 text-white hover:bg-blue-500"
+              : "bg-white text-black hover:bg-gray-100"
           }`}
           onClick={() => handleTextStyle(style.type, style.style)}
         >
           {style.icon}
         </Button>
       ))}
-    </>
+    </div>
   );
 };
 

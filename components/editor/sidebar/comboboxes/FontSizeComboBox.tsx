@@ -64,7 +64,7 @@ const FontSizeComboBox = (props: Props) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[170px]"
+          className="h-8"
         >
           {value ? `${value}` : "0"}
           <ChevronsUpDown className="ml-4 h-4 mr-1 w-4 shrink-0 opacity-50" />

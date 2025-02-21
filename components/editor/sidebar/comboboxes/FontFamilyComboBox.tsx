@@ -66,7 +66,7 @@ const FontFamilyComboBox = (props: Props) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] h-8 justify-between"
         >
           {selectedFontFamily || "Font family"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

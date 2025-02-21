@@ -31,18 +31,18 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
 
   const updateElementColor = (color: string) => {
     if (!selectedElement) return;
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: selectedElement.id,
-          updates: {
-            styles: {
-              ...selectedElement.styles,
-              backgroundColor: color,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: selectedElement.id,
+        updates: {
+          styles: {
+            ...selectedElement.styles,
+            backgroundColor: color,
           },
         },
-      });
+      },
+    });
   };
 
   React.useEffect(() => {
@@ -53,14 +53,14 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
     }
   }, [selectedElement]);
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-2">
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-row gap-1 justify-center items-center">
         <Input
           id="colorPicker"
           type="color"
           value={color}
           onChange={handleColorChange}
-          className="w-14 rounded-xl"
+          className="w-8 h-6 p-1"
         />
         <Input
           type="text"
@@ -70,7 +70,7 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
           className=""
         />
       </div>
-      <label>Background color</label>
+      <label className="text-xs">Background color</label>
     </div>
   );
 };

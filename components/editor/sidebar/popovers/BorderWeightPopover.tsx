@@ -82,8 +82,8 @@ const BorderWeightPopover = ({ selectedElement }: Props) => {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button className="bg-white text-black hover:bg-slate-200">
+      <PopoverTrigger asChild className="w-auto h-8">
+        <Button className="bg-white text-black hover:bg-slate-200 text-xs">
           Border Properties
         </Button>
       </PopoverTrigger>

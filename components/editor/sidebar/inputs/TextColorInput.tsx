@@ -61,7 +61,7 @@ const TextColorInput = ({ selectedElement }: Props) => {
           type="color"
           value={color}
           onChange={handleColorChange}
-          className="w-14 rounded-xl"
+          className="w-12 h-8 "
         />
         <Input
           type="text"

@@ -1,18 +1,17 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
-import { useEditorContext, useEditorContextProvider, useImageUploadContext } from "@/lib/context";
 import {
-  ButtonElement,
-  EditorElement,
-  Element,
-  FrameElement,
-} from "@/lib/type";
+  useEditorContext,
+  useEditorContextProvider,
+  useImageUploadContext,
+} from "@/lib/context";
+import { ButtonElement, EditorElement } from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
-import ListItemComponents from "../editorcomponents/ListItemComponents";
+import ListItemComponents from "./editorcomponents/ListItemComponents";
 import { v4 as uuidv4 } from "uuid";
-import FrameComponents from "../editorcomponents/FrameComponents";
+import FrameComponents from "./editorcomponents/FrameComponents";
 
 const loadedFonts = new Set<string>();
 const Editor = () => {
@@ -41,18 +40,18 @@ const Editor = () => {
 
   const editableRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-      const savedElements = localStorage.getItem("elements");
-      if (savedElements) {
-        try {
-          dispatch({
-            type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE",
-            payload: JSON.parse(savedElements),
-          });
-        } catch (e) {
-          console.error(e);
-        }
+    const savedElements = localStorage.getItem("elements");
+    if (savedElements) {
+      try {
+        dispatch({
+          type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE",
+          payload: JSON.parse(savedElements),
+        });
+      } catch (e) {
+        console.error(e);
       }
-    }, []);
+    }
+  }, []);
 
   useEffect(() => {
     dispatch({
@@ -454,7 +453,7 @@ const Editor = () => {
       onMouseUp={onMouseUp}
       onPaste={(e) => handlePaste(e)}
       tabIndex={0}
-      className="w-screen h-auto bg-slate-300 "
+      className="w-full h-full bg-slate-300 relative"
     >
       {elements.map((element) => (
         <div

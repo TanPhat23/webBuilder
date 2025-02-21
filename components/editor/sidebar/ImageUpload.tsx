@@ -1,7 +1,7 @@
 import { useEditorContext, useImageUploadContext } from "@/lib/context";
 import React, { useCallback } from "react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
 import { Element } from "@/lib/type";
 import { v4 as uuidv4 } from "uuid";
 
@@ -10,7 +10,7 @@ type Props = {};
 const ImageUpload = (props: Props) => {
   const { uploadImages, setUploadImages } = useImageUploadContext();
   const { dispatch } = useEditorContext();
-  
+
   const handleRemoveImage = (index: number) => {
     const newImages = uploadImages.filter((_, i) => i !== index);
     setUploadImages(newImages);
@@ -21,7 +21,7 @@ const ImageUpload = (props: Props) => {
       const img = new Image();
       img.src = uploadImages[index];
       img.onload = () => {
-        const aspectRatio = img.naturalWidth / img.naturalHeight; 
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
         const fixedWidth = 200;
         const calculatedHeight = fixedWidth / aspectRatio;
         const newElement: Element = {

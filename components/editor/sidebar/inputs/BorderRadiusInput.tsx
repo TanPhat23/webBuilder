@@ -9,7 +9,7 @@ type Props = {
 
 const BorderRadiusInput = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
-  const [borderRadius, setBorderRadius] = React.useState<number | string>(0);
+  const [borderRadius, setBorderRadius] = React.useState<number | string>(0); 
   const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
     setBorderRadius(parseInt(e.currentTarget.value));
   };
@@ -35,7 +35,7 @@ const BorderRadiusInput = ({ selectedElement }: Props) => {
       setBorderRadius(selectedElement?.styles?.borderRadius || "0");
   }, []);
   return (
-    <div>
+    <div >
       <Input value={borderRadius} onChange={handleInput} onBlur={handleBlur} />
     </div>
   );
