@@ -69,3 +69,5 @@ export type EditorAction =
   | { type: "REDO"; payload: EditorElement[] };
 
 export type TextAlign = "left" | "center" | "right" | "justify";
+
+export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";

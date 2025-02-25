@@ -453,7 +453,7 @@ const Editor = () => {
       onMouseUp={onMouseUp}
       onPaste={(e) => handlePaste(e)}
       tabIndex={0}
-      className="w-full h-full bg-slate-300 relative"
+      className="w-full h-full bg-slate-300 relative overflow-auto"
     >
       {elements.map((element) => (
         <div
@@ -474,7 +474,7 @@ const Editor = () => {
             height: element.styles?.height || "100px",
           }}
           className={` ${
-            element.isSelected
+            element.isSelected  
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
           } ${

@@ -48,9 +48,9 @@ const placeHolderComponents: Component[] = [
   },
 ];
 
-export function SideBar2() {
+export function EditorSideBar2() {
   return (
-    <Sidebar>
+    <Sidebar side="left">
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroup>
           <SidebarGroupLabel asChild>
@@ -61,23 +61,19 @@ export function SideBar2() {
           </SidebarGroupLabel>
           <CollapsibleContent>
             <SidebarGroupContent>
-              <SidebarMenu className="grid grid-cols-3 transition ease-linear duration-1000">
+              <div className="grid grid-cols-3 transition ease-linear duration-1000">
                 {placeHolderComponents.map((component, index) => (
-                  <SidebarMenuItem key={index}>
-                    <div>
-                      <div
-                        key={index}
-                        className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center text-sm"
-                      >
-                        <div className="hover:cursor-pointer">
-                          {component.component}
-                        </div>
-                        <div>{component.label}</div>
+                    <div
+                      key={index}
+                      className="flex flex-col items-center justify-center space-y border-black border-2 h-[75px] w-[75px] m-2 rounded-lg text-center text-sm"
+                    >
+                      <div className="hover:cursor-pointer">
+                        {component.component}
                       </div>
+                      <div>{component.label}</div>
                     </div>
-                  </SidebarMenuItem>
                 ))}
-              </SidebarMenu>
+              </div>
             </SidebarGroupContent>
           </CollapsibleContent>
         </SidebarGroup>
@@ -92,9 +88,7 @@ export function SideBar2() {
           </SidebarGroupLabel>
           <CollapsibleContent>
             <SidebarGroupContent>
-              <SidebarMenu>
-                <ImageUpload />
-              </SidebarMenu>
+              <ImageUpload />
             </SidebarGroupContent>
           </CollapsibleContent>
         </SidebarGroup>
@@ -109,9 +103,7 @@ export function SideBar2() {
           </SidebarGroupLabel>
           <CollapsibleContent>
             <SidebarGroupContent>
-              <SidebarMenu>
-                <Configuration />
-              </SidebarMenu>
+              <Configuration />
             </SidebarGroupContent>
           </CollapsibleContent>
         </SidebarGroup>

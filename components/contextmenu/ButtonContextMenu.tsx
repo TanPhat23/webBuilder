@@ -19,8 +19,8 @@ const ButtonContextMenu = ({x, y}: Props) => {
 
   return (
     <div
-      className="z-50 absolute min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2 "
-      style={{ top: y, left: x + 150 }}
+      className="z-50 relative min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2 "
+      // style={{ top: y, left: x + 150 }}
     >
       <Input
         onChange={(e) => setSearch(e.target.value)}

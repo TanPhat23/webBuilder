@@ -1,5 +1,6 @@
-"use client"
-import { SideBar2 } from "@/components/editor/sidebar/SideBar";
+"use client";
+import { EditorSideBar2 } from "@/components/editor/sidebar/EditorSideBar";
+import LayoutSideBar from "@/components/editor/sidebar/LayoutSideBar";
 import EditorProvider from "@/components/provider/EditorProvider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -10,11 +11,12 @@ export default function EditorLayout({
     <SidebarProvider>
       <EditorProvider>
         <div className="flex w-screen h-screen">
-          <SideBar2 />
+          <EditorSideBar2 />
           <main className="w-full">
             <SidebarTrigger />
             {children}
           </main>
+          <LayoutSideBar/>
         </div>
       </EditorProvider>
     </SidebarProvider>

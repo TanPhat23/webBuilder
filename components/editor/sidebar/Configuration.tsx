@@ -164,7 +164,7 @@ const Configuration = () => {
           </>
         ) : (
           <>
-            <div className="flex flex-row gap-1 flex-wrap">
+            <div className="flex flex-row gap-1 flex-wrap mr-4">
               <FlexDirectionSelect selectedElement={selectedElement} />
               <AlignItemSelect selectedElement={selectedElement} />
               <JustifyContentSelect selectedElement={selectedElement} />

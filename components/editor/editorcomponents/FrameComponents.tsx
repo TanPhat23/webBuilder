@@ -17,9 +17,9 @@ const FrameComponents = ({
   setMenuPosition,
 }: Props) => {
   const { dispatch } = useEditorContext();
-  const { selectedElement, setSelectedElement } = useEditorContextProvider();
+  const { setSelectedElement } = useEditorContextProvider();
   const rootElement = element as FrameElement;
-
+  
   const handleDrop = React.useCallback(
     (e: React.DragEvent<HTMLDivElement>, element: EditorElement) => {
       e.preventDefault();
@@ -120,9 +120,9 @@ const FrameComponents = ({
             contentEditable={element.isSelected}
             onContextMenu={(e) => handleContextMenu(e, element)}
             suppressContentEditableWarning
-            className={
+            className={`scale-x-75 ${
               element.isSelected ? "border-black border-2 border-solid" : ""
-            }
+            }`}
           >
             {element.content}
           </button>
@@ -133,9 +133,9 @@ const FrameComponents = ({
             key={element.id}
             style={{ ...element.styles }}
             onDoubleClick={(e) => handleDoubleClick(e, element)}
-            className={
+            className={`scale-x-75 ${
               element.isSelected ? "border-black border-2 border-solid" : ""
-            }
+            }`}
           >
             {(element as ListElement).items?.map((item) => (
               <li key={item.id} style={{ ...item.styles }}>
@@ -149,9 +149,9 @@ const FrameComponents = ({
           <div
             key={element.id}
             style={{ ...element.styles }}
-            className={
+            className={`scale-x-75 ${
               element.isSelected ? "border-black border-2 border-solid" : ""
-            }
+            }`}
             contentEditable={element.isSelected}
             onContextMenu={(e) => handleContextMenu(e, element)}
             suppressContentEditableWarning
@@ -172,7 +172,9 @@ const FrameComponents = ({
       onDragOver={(e) => e.preventDefault()}
       onContextMenu={(e) => handleContextMenu(e, element)}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
-      className={element.isSelected ? "border-black border-2 border-solid" : ""}
+      className={` ${
+        element.isSelected ? "border-black border-2 border-solid " : ""
+      }`}
     >
       {(element as FrameElement).elements?.map((childElement) =>
         renderElement(childElement)

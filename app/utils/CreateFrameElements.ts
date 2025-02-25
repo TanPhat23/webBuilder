@@ -8,6 +8,7 @@ import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 const commonStyles: CSSProperties = {
+  display:"flex",
   justifyContent: "center",
   alignItems: "center",
   textAlign: "center",
@@ -29,8 +30,8 @@ const createElements = (name: string): EditorElement => {
     y: 0,
     styles: {
       ...commonStyles,
-      height: "50px",
-      width: "100px",
+      height: "100%",
+      width: "200px",
     },
   };
 

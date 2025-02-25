@@ -54,14 +54,14 @@ const TextColorInput = ({ selectedElement }: Props) => {
     }
   }, [selectedElement]);
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-2">
+    <div className="flex flex-col gap-2 ">
+      <div className="flex flex-row gap-2 items-center justify-center">
         <Input
           id="colorPicker"
           type="color"
           value={color}
           onChange={handleColorChange}
-          className="w-12 h-8 "
+          className="w-8 h-6 p-1 "
         />
         <Input
           type="text"
