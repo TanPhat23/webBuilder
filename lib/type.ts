@@ -8,7 +8,6 @@ export interface Element {
   styles?: React.CSSProperties;
   x: number;
   y: number;
-  parentElement?: string;
   src?: string;
   href?: string;
 }
@@ -16,13 +15,7 @@ export interface Element {
 export interface FrameElement extends Element {
   elements: EditorElement[];
 }
-export interface ButtonElement extends Element {
-  type: "Button";
-  events?: {
-    onClick?: () => void;
-    onHover?: () => void;
-    onFocus?: () => void;
-  };
+export interface ButtonElement extends Element {  
 }
 
 export interface ListItem {
@@ -32,7 +25,6 @@ export interface ListItem {
   styles?: React.CSSProperties;
 }
 export interface ListElement extends Element {
-  type: "List";
   items: ListItem[];
 }
 

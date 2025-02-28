@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/react-context-menu";
 import React, { useCallback, useState } from "react";
 import { useEditorContext } from "@/lib/context";
-import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
+// import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
 import { v4 as uuidv4 } from "uuid";
 
 type Props = {
@@ -172,7 +172,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
           }}
         />
       )}
-      {addEvent && <ButtonContextMenu x={x} y={y} />}
+      {/* {addEvent && <ButtonContextMenu x={x} y={y} />} */}
     </ContextMenu>
   );
 };

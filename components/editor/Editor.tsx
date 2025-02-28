@@ -474,7 +474,7 @@ const Editor = () => {
             height: element.styles?.height || "100px",
           }}
           className={` ${
-            element.isSelected  
+            element.isSelected
               ? "border-2 border-black hover:cursor-text "
               : "hover:cursor-pointer"
           } ${
@@ -489,8 +489,6 @@ const Editor = () => {
               contentEditable={element.isSelected}
               suppressContentEditableWarning={true}
               onBlur={(e) => handleInput(e, element.id)}
-              onClick={(element as ButtonElement).events?.onClick}
-              onMouseOver={(element as ButtonElement).events?.onHover}
               style={{
                 pointerEvents: "none",
                 ...element.styles,
