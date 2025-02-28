@@ -38,8 +38,8 @@ const createElements = (name: string): EditorElement => {
   switch (name) {
     case "ListItem": {
       const listElement: ListElement = {
-        ...baseElement,
         type: "List",
+        ...baseElement,
         styles: {
           display: "flex",
           ...baseElement.styles,
@@ -71,8 +71,8 @@ const createElements = (name: string): EditorElement => {
 
     case "Button": {
       const buttonElement: ButtonElement = {
-        ...baseElement,
         type: "Button",
+        ...baseElement,
         styles: {
           ...baseElement.styles,
         },
@@ -82,8 +82,8 @@ const createElements = (name: string): EditorElement => {
 
     case "Frame": {
       const frameElement: FrameElement = {
-        ...baseElement,
         type: "Frame",
+        ...baseElement,
         styles: {
           ...baseElement.styles,
           height: "200px",
@@ -99,8 +99,8 @@ const createElements = (name: string): EditorElement => {
 
     default: {
       const element: EditorElement = {
-        ...baseElement,
         type: name,
+        ...baseElement,
       };
       return element;
     }

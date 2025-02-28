@@ -37,8 +37,8 @@ export const createElements = (
   switch (name) {
     case "ListItem": {
       const listElement: ListElement = {
-        ...baseElement,
         type: "List",
+        ...baseElement,
         styles: {
           display: "flex",
           ...baseElement.styles,
@@ -74,8 +74,8 @@ export const createElements = (
 
     case "Button": {
       const buttonElement: ButtonElement = {
-        ...baseElement,
         type: "Button",
+        ...baseElement,
         styles: {
           ...baseElement.styles,
         },
@@ -88,8 +88,8 @@ export const createElements = (
     }
     case "Frame": {
       const element: FrameElement = {
-        ...baseElement,
         type: "Frame",
+        ...baseElement,
         x: 0,
         y: 0,
         styles: {
@@ -109,8 +109,8 @@ export const createElements = (
     }
     default: {
       const element: Element = {
-        ...baseElement,
         type: name,
+        ...baseElement,
       };
       dispatch({
         type: "ADD_ELEMENT",
