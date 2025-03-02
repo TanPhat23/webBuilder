@@ -3,7 +3,6 @@ import {
   EditorAction,
   EditorElement,
   FrameElement,
-  ListElement,
 } from "./type";
 
 export const elementsReducer = (
@@ -119,21 +118,6 @@ export const elementsReducer = (
 
       return state.map(updateSelectedElement);
     }
-
-    case "UPDATE_LIST_ITEM":
-      return state.map((element) => {
-        if (element.type === "List" && element.id === action.payload.listId) {
-          return {
-            ...element,
-            items: (element as ListElement).items.map((item) =>
-              item.id === action.payload.itemId
-                ? { ...item, ...action.payload.updates }
-                : item
-            ),
-          };
-        }
-        return element;
-      });
 
     case "UPDATE_FRAME_ELEMENT": {
       const { childUpdates, updates } = action.payload;

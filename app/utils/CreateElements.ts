@@ -1,4 +1,4 @@
-import { ButtonElement, Element, FrameElement, ListElement } from "@/lib/type";
+import { ButtonElement, Element, FrameElement } from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -35,42 +35,6 @@ export const createElements = (
   };
 
   switch (name) {
-    case "ListItem": {
-      const listElement: ListElement = {
-        type: "List",
-        ...baseElement,
-        styles: {
-          display: "flex",
-          ...baseElement.styles,
-          flexDirection: "column",
-        },
-        items: [
-          {
-            content: "Item 1",
-            id: `Item-${uuidv4()}`,
-            isSelected: false,
-            styles: listItemStyles,
-          },
-          {
-            content: "Item 2",
-            id: `Item-${uuidv4()}`,
-            isSelected: false,
-            styles: listItemStyles,
-          },
-          {
-            content: "Item 3",
-            id: `Item-${uuidv4()}`,
-            isSelected: false,
-            styles: listItemStyles,
-          },
-        ],
-      };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: listElement,
-      });
-      break;
-    }
 
     case "Button": {
       const buttonElement: ButtonElement = {

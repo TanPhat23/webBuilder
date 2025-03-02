@@ -18,21 +18,11 @@ export interface FrameElement extends Element {
 export interface ButtonElement extends Element {  
 }
 
-export interface ListItem {
-  id: string;
-  content: string;
-  isSelected: boolean;
-  styles?: React.CSSProperties;
-}
-export interface ListElement extends Element {
-  items: ListItem[];
-}
-
 export type EditorElement =
   | Element
   | FrameElement
   | ButtonElement
-  | ListElement;
+
 
 export type EditorAction =
   | { type: "ADD_ELEMENT"; payload: EditorElement }
@@ -45,10 +35,6 @@ export type EditorAction =
   | { type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE"; payload: EditorElement[] }
   | { type: "UPDATE_ALL_ELEMENTS"; payload: Partial<EditorElement> }
   | { type: "UPDATE_ALL_SELECTED_ELEMENTS"; payload: Partial<EditorElement> }
-  | {
-      type: "UPDATE_LIST_ITEM";
-      payload: { listId: string; itemId: string; updates: Partial<ListItem> };
-    }
   | {
       type: "UPDATE_FRAME_ELEMENT";
       payload: {

@@ -6,10 +6,9 @@ import {
   useEditorContextProvider,
   useImageUploadContext,
 } from "@/lib/context";
-import { ButtonElement, EditorElement } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
-import ListItemComponents from "./editorcomponents/ListItemComponents";
 import { v4 as uuidv4 } from "uuid";
 import FrameComponents from "./editorcomponents/FrameComponents";
 
@@ -218,38 +217,6 @@ const Editor = () => {
     [dispatch]
   );
 
-  // const handleKeyDown = useCallback(
-  //   (e: React.KeyboardEvent<HTMLDivElement>, element: EditorElement) => {
-  //     console.log("Key down:", e.key);
-  //     e.preventDefault();
-  //     const id = element.id;
-  //     if (e.key === "Backspace") {
-  //       dispatch({ type: "DELETE_ELEMENT", payload: id });
-  //     }
-  //     if (e.key === "Escape") {
-  //       dispatch({
-  //         type: "UPDATE_ELEMENT",
-  //         payload: { id, updates: { isSelected: false } },
-  //       });
-  //     }
-  //   },
-  //   [dispatch]
-  // );
-  const handleEditorKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "z" && e.ctrlKey) {
-        e.preventDefault();
-
-        dispatch({ type: "UNDO", payload: elements });
-      }
-      if (e.key === "y" && e.ctrlKey) {
-        e.preventDefault();
-        dispatch({ type: "REDO", payload: elements });
-      }
-    },
-    [dispatch, elements, selectedElement]
-  );
-
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>, id: string) => {
       e.currentTarget.focus();
@@ -333,10 +300,6 @@ const Editor = () => {
 
         const elementWidth = parseInt(
           element.styles?.width?.toString() || "100",
-          10
-        );
-        const elementHeight = parseInt(
-          element.styles?.height?.toString() || "50",
           10
         );
 
@@ -447,7 +410,6 @@ const Editor = () => {
         if (showContextMenu) setShowContextMenu(false);
       }}
       onDrop={onDrop}
-      onKeyDown={(e) => handleEditorKeyDown(e)}
       onDragOver={(e) => e.preventDefault()}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
@@ -463,7 +425,6 @@ const Editor = () => {
             handleDoubleClick(e, element.id);
           }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
-          // onKeyDown={(e) => handleKeyDown(e, element)}
           onCopy={(e) => handleCopy(e)}
           tabIndex={0}
           style={{
@@ -547,16 +508,6 @@ const Editor = () => {
             >
               {element.content}
             </a>
-          )}
-          {element.type === "List" && (
-            <ul
-              id={element.id}
-              style={{
-                ...element.styles,
-              }}
-            >
-              <ListItemComponents element={element} />
-            </ul>
           )}
           {element.type === "Frame" && (
             <FrameComponents

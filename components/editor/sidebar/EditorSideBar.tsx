@@ -10,7 +10,6 @@ import {
 import TextHolder from "./sidebarcomponentholders/TextHolder";
 import LinkHolder from "./sidebarcomponentholders/LinkHolder";
 import ButtonHolder from "./sidebarcomponentholders/ButtonHolder";
-import ListItemHolder from "./sidebarcomponentholders/ListItemHolder";
 import FrameHolder from "./sidebarcomponentholders/FrameHolder";
 import {
   Collapsible,
@@ -37,10 +36,6 @@ const placeHolderComponents: Component[] = [
   {
     component: <ButtonHolder />,
     label: "Button",
-  },
-  {
-    component: <ListItemHolder />,
-    label: "ListItem",
   },
   {
     component: <FrameHolder />,
