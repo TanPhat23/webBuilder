@@ -2,12 +2,14 @@ import {
   EditorElement,
   ButtonElement,
   FrameElement,
+  EditorAction,
 } from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Create } from "../api/element/route";
 
 const commonStyles: CSSProperties = {
-  display:"flex",
+  display: "flex",
   justifyContent: "center",
   alignItems: "center",
   textAlign: "center",
@@ -20,9 +22,15 @@ export const listItemStyles: CSSProperties = {
   textAlign: "center",
 };
 
-const createElements = (name: string): EditorElement => {
+const createElements = async (
+  name: string,
+  dispatch: React.Dispatch<EditorAction>,
+  parentElement: FrameElement
+) => {
+  const tempId = `${name}-${uuidv4()}`;
+
   const baseElement = {
-    id: `${name}-${uuidv4()}`,
+    id: tempId,
     content: name,
     isSelected: false,
     x: 0,
@@ -32,23 +40,25 @@ const createElements = (name: string): EditorElement => {
       height: "100%",
       width: "200px",
     },
+    parentId: parentElement.id,
   };
 
-  switch (name) {
+  let newElement: EditorElement;
 
+  switch (name) {
     case "Button": {
-      const buttonElement: ButtonElement = {
+      newElement = {
         type: "Button",
         ...baseElement,
         styles: {
           ...baseElement.styles,
         },
       };
-      return buttonElement;
+      break;
     }
 
     case "Frame": {
-      const frameElement: FrameElement = {
+      newElement = {
         type: "Frame",
         ...baseElement,
         styles: {
@@ -61,16 +71,44 @@ const createElements = (name: string): EditorElement => {
         },
         elements: [],
       };
-      return frameElement;
+      break;
     }
 
     default: {
-      const element: EditorElement = {
+      newElement = {
         type: name,
         ...baseElement,
       };
-      return element;
+      break;
     }
+  }
+
+  const parentElementCopy = { ...parentElement };
+  parentElementCopy.elements.push(newElement);
+  dispatch({
+    type: "UPDATE_ELEMENT",
+    payload: {
+      id: parentElement.id,
+      updates: {
+        elements: parentElementCopy.elements,
+      },
+    },
+  });
+  try {
+    await Create(newElement);
+  } catch (error) {
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: parentElement.id,
+        updates: {
+          elements: parentElement.elements.filter(
+            (element) => element.id !== newElement.id
+          ),
+        },
+      },
+    });
+    console.log(error);
   }
 };
 

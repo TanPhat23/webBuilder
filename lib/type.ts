@@ -10,6 +10,7 @@ export interface Element {
   y: number;
   src?: string;
   href?: string;
+  parentId?: string;
 }
 
 export interface FrameElement extends Element {

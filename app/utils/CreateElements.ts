@@ -1,6 +1,7 @@
-import { ButtonElement, Element, FrameElement } from "@/lib/type";
+import { EditorAction, EditorElement } from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Create } from "../api/element/route";
 
 const commonStyles: CSSProperties = {
   justifyContent: "center",
@@ -15,14 +16,16 @@ export const listItemStyles: CSSProperties = {
   textAlign: "center",
 };
 
-export const createElements = (
+export const createElements = async (
   name: string,
-  dispatch: Function,
+  dispatch: React.Dispatch<EditorAction>,
   x: number,
   y: number
 ) => {
+  const tempId = `${name}-${uuidv4()}`;
+
   const baseElement = {
-    id: `${name}-${uuidv4()}`,
+    id: tempId,
     content: name,
     isSelected: false,
     x,
@@ -34,24 +37,21 @@ export const createElements = (
     },
   };
 
-  switch (name) {
+  let newElement: EditorElement;
 
+  switch (name) {
     case "Button": {
-      const buttonElement: ButtonElement = {
+      newElement = {
         type: "Button",
         ...baseElement,
         styles: {
           ...baseElement.styles,
         },
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: buttonElement,
-      });
       break;
     }
     case "Frame": {
-      const element: FrameElement = {
+      newElement = {
         type: "Frame",
         ...baseElement,
         x: 0,
@@ -65,22 +65,29 @@ export const createElements = (
         },
         elements: [],
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: element,
-      });
       break;
     }
     default: {
-      const element: Element = {
+      newElement = {
         type: name,
         ...baseElement,
       };
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: element,
-      });
       break;
     }
+  }
+
+  dispatch({
+    type: "ADD_ELEMENT",
+    payload: newElement,
+  });
+
+  try {
+    await Create(newElement);
+  } catch (error) {
+    dispatch({
+      type: "DELETE_ELEMENT",
+      payload: tempId,
+    });
+    console.error(error);
   }
 };

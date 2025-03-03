@@ -1,6 +1,6 @@
 import createElements from "@/app/utils/CreateFrameElements";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
-import { EditorElement, FrameElement, ListElement } from "@/lib/type";
+import { EditorElement, FrameElement } from "@/lib/type";
 import React from "react";
 
 type Props = {
@@ -26,18 +26,7 @@ const FrameComponents = ({
       e.stopPropagation();
       const elementType = e.dataTransfer.getData("elementType");
 
-      const newElement: EditorElement = createElements(elementType);
-
-      (element as FrameElement).elements?.push(newElement);
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            elements: (element as FrameElement).elements,
-          },
-        },
-      });
+      createElements(elementType, dispatch, element as FrameElement);
     },
     [dispatch]
   );
@@ -126,23 +115,6 @@ const FrameComponents = ({
           >
             {element.content}
           </button>
-        );
-      case "List":
-        return (
-          <ul
-            key={element.id}
-            style={{ ...element.styles }}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            className={`scale-x-75 ${
-              element.isSelected ? "border-black border-2 border-solid" : ""
-            }`}
-          >
-            {(element as ListElement).items?.map((item) => (
-              <li key={item.id} style={{ ...item.styles }}>
-                {item.content}
-              </li>
-            ))}
-          </ul>
         );
       default:
         return (
