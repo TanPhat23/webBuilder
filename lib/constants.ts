@@ -10,6 +10,6 @@ export const links = [
 ];
 
 export const authLinks = [
-  { title: "Login", path: "/login" },
-  { title: "Sign Up", path: "/signup" },
+  { title: "Login", path: "/sign-in" },
+  { title: "Sign Up", path: "/sign-up" },
 ];
