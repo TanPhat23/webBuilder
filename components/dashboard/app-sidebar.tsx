@@ -102,18 +102,58 @@ const data = {
       name: "Recents",
       url: "#",
       icon: Clock,
+      type: "recent",
     },
     {
       name: "All Projects",
       url: "#",
       icon: MenuIcon,
+      type: "all",
     },
     {
       name: "Important",
       url: "#",
       icon: ArchiveRestoreIcon,
+      type: "important",
     },
   ],
+  projectItems: [
+    {
+      id: "1",
+      name: "Landing Page",
+      url: "/projects/landing-page",
+      lastModified: new Date(2023, 6, 25, 14, 30),
+      isImportant: false,
+    },
+    {
+      id: "2",
+      name: "E-commerce Store",
+      url: "/projects/ecommerce",
+      lastModified: new Date(2023, 6, 28, 9, 15),
+      isImportant: true,
+    },
+    {
+      id: "3",
+      name: "Portfolio Site",
+      url: "/projects/portfolio",
+      lastModified: new Date(2023, 6, 27, 16, 45),
+      isImportant: false,
+    },
+    {
+      id: "4",
+      name: "Blog Template",
+      url: "/projects/blog",
+      lastModified: new Date(2023, 6, 29, 11, 20),
+      isImportant: true,
+    },
+    {
+      id: "5",
+      name: "Dashboard UI",
+      url: "/projects/dashboard",
+      lastModified: new Date(2023, 6, 26, 10, 0),
+      isImportant: false,
+    }
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -136,7 +176,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.projects} projectItems={data.projectItems} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={userData} />
