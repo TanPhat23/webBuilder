@@ -25,7 +25,8 @@ export const listItemStyles: CSSProperties = {
 const createElements = async (
   name: string,
   dispatch: React.Dispatch<EditorAction>,
-  parentElement: FrameElement
+  parentElement: FrameElement,
+  projectId: string
 ) => {
   const tempId = `${name}-${uuidv4()}`;
 
@@ -53,6 +54,7 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
         },
+        projectId: projectId,
       };
       break;
     }
@@ -70,6 +72,7 @@ const createElements = async (
           flexDirection: "column",
         },
         elements: [],
+        projectId: projectId,
       };
       break;
     }
@@ -78,6 +81,7 @@ const createElements = async (
       newElement = {
         type: name,
         ...baseElement,
+        projectId: projectId,
       };
       break;
     }

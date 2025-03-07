@@ -20,7 +20,8 @@ export const createElements = async (
   name: string,
   dispatch: React.Dispatch<EditorAction>,
   x: number,
-  y: number
+  y: number,
+  projectId: string
 ) => {
   const tempId = `${name}-${uuidv4()}`;
 
@@ -35,6 +36,7 @@ export const createElements = async (
       height: "50px",
       width: "100px",
     },
+    projectId: projectId,
   };
 
   let newElement: EditorElement;

@@ -16,6 +16,8 @@ type EditorProviderProps = {
   setSelectedElement: React.Dispatch<
     React.SetStateAction<EditorElement | undefined>
   >;
+  projectId: string;
+  setProjectId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const EditorContext = createContext<ElementsContextType | null>(null);

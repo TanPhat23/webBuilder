@@ -1,4 +1,6 @@
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
+"use client";
+import { GetAll } from "@/app/api/project/route";
+import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,15 +8,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { appProjectTypes } from "@/lib/type";
+import { useRouter } from "next/navigation";
+import useSWR from "swr";
 
 export default function Page() {
+  const router = useRouter();
+  const { data: projects, error, isLoading } = useSWR<appProjectTypes[]>(
+    process.env.NEXT_PUBLIC_API_URL + "/projects",
+    GetAll
+  );
+  if (error) console.log(error);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -44,9 +56,26 @@ export default function Page() {
             <div className="aspect-video rounded-xl bg-muted/50" />
             <div className="aspect-video rounded-xl bg-muted/50" />
           </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min ">
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : (
+              <ul className="m-4 grid gap-4 grid-cols-6">
+                {projects?.map((project) => (
+                  <li key={project.id}>
+                    <Button
+                      className="w-32 h-32"
+                      onClick={() => router.push(`/editor/${project.id}`)}
+                    >
+                      {project.name}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

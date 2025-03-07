@@ -8,7 +8,6 @@ import {
 } from "@radix-ui/react-context-menu";
 import React, { useCallback, useState } from "react";
 import { useEditorContext } from "@/lib/context";
-// import ButtonContextMenu from "../contextmenu/ButtonContextMenu";
 import { v4 as uuidv4 } from "uuid";
 
 type Props = {
@@ -77,7 +76,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
       .then((text) => {
         try {
           const clipboardText: EditorElement = JSON.parse(text);
-          const newElement = {
+          const newElement : EditorElement = {
             type: clipboardText.type,
             id: `${clipboardText.type}-${uuidv4()}`,
             content: clipboardText.content,
@@ -87,6 +86,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
             styles: {
               ...clipboardText.styles,
             },
+            projectId: clipboardText.projectId,
           };
           dispatch({
             type: "ADD_ELEMENT",

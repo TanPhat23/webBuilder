@@ -1,6 +1,6 @@
 "use server";
 import { EditorElement } from "@/lib/type";
-import { auth, clerkClient, verifyToken } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 const URL = "http://localhost:5232/api/elements";
 
@@ -31,19 +31,23 @@ export const Create = async (data: EditorElement) => {
 
 export const Update = async (data: EditorElement) => {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("User not found");
-
+    const { userId, sessionId } = await auth();
+    if (!userId || !sessionId) throw new Error("User not found");
+    const client = await clerkClient();
+    const token = await client.sessions.getToken(sessionId, "templeUser");
     const response = await fetch(`${URL}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token.jwt}`,
       },
       body: JSON.stringify(data),
     });
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update element");
+    } else {
+      console.log("Updated element successfully");
     }
   } catch (error: any) {
     throw new Error(error);
@@ -67,19 +71,26 @@ export const Delete = async (id: string) => {
   }
 };
 
-export const GetAll = async () => {
+export const GetAll = async (url: string) => {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("User not found");
+    const { userId, sessionId } = await auth();
+    if (!userId || !sessionId) throw new Error("User not found");
 
-    const response = await fetch(URL);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to fetch elements");
-    }
+    const client = await clerkClient();
+    const token = await client.sessions.getToken(sessionId, "templeUser");
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.jwt}`,
+      },
+    });
+
     const data: EditorElement[] = await response.json();
     return data;
   } catch (error: any) {
-    throw new Error(error);
+    console.error("Error in GetAll:", error.message);
+    throw error;
   }
 };

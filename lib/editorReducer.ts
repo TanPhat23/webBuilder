@@ -64,6 +64,7 @@ export const elementsReducer = (
       localStorage.setItem("elements", JSON.stringify(state));
       return state;
 
+
     case "LOAD_ELEMENTS_FROM_LOCAL_STORAGE":
       return action.payload;
 
@@ -90,6 +91,8 @@ export const elementsReducer = (
 
       return state.map(updateElement);
     }
+    case "LOAD_ELEMENTS_FROM_DB":
+      return action.payload;
 
     case "UPDATE_ALL_SELECTED_ELEMENTS": {
       const { payload: updates } = action;

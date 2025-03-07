@@ -9,9 +9,11 @@ type Props = {
   setMenuPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
+  projectId: string;
 };
 
 const FrameComponents = ({
+  projectId,
   element,
   setShowContextMenu,
   setMenuPosition,
@@ -19,14 +21,35 @@ const FrameComponents = ({
   const { dispatch } = useEditorContext();
   const { setSelectedElement } = useEditorContextProvider();
   const rootElement = element as FrameElement;
-  
+  const normalizeHtmlContent = (html: string): string => {
+    html = html.replace(/&nbsp;/g, " ");
+
+    html = html.replace(/<div>/g, "<br>").replace(/<\/div>/g, "");
+
+    html = html.replace(/<br>\s*<br>/g, "<br>");
+
+    return html;
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      document.execCommand("insertHTML", false, "<br><br>");
+    } else if (e.key === " ") {
+      e.preventDefault();
+      document.execCommand("insertText", false, " ");
+    }
+  };
   const handleDrop = React.useCallback(
     (e: React.DragEvent<HTMLDivElement>, element: EditorElement) => {
       e.preventDefault();
       e.stopPropagation();
       const elementType = e.dataTransfer.getData("elementType");
 
-      createElements(elementType, dispatch, element as FrameElement);
+      createElements(elementType, dispatch, element as FrameElement, projectId);
     },
     [dispatch]
   );
@@ -50,34 +73,23 @@ const FrameComponents = ({
     [dispatch]
   );
 
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent) => {
-      e.stopPropagation();
-    },
-    [dispatch, element]
-  );
-  const handleInput = React.useCallback(
-    (e: React.FormEvent<HTMLElement>, element: EditorElement) => {
-      e.preventDefault();
-      e.stopPropagation();
-      let newContent = e.currentTarget.innerHTML;
-
-      if (newContent.includes("<br>")) {
-        newContent = newContent.replace(/<br>/g, "");
-      }
-
-      dispatch({
-        type: "UPDATE_FRAME_ELEMENT",
-        payload: {
-          childUpdates: element.id,
-          parentElement: rootElement,
-          updates: { content: newContent },
-        },
-      });
-    },
-    [dispatch]
-  );
-
+  const handleInput = (
+    e: React.FormEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let newContent = e.currentTarget.innerHTML;
+    newContent = normalizeHtmlContent(newContent);
+    dispatch({
+      type: "UPDATE_FRAME_ELEMENT",
+      payload: {
+        childUpdates: element.id,
+        parentElement: rootElement,
+        updates: { content: newContent },
+      },
+    });
+  };
   const handleContextMenu = React.useCallback(
     (e: React.MouseEvent, element: EditorElement) => {
       e.preventDefault();
@@ -93,6 +105,7 @@ const FrameComponents = ({
       case "Frame":
         return (
           <FrameComponents
+            projectId={projectId}
             key={element.id}
             element={element}
             setShowContextMenu={setShowContextMenu}
@@ -105,7 +118,7 @@ const FrameComponents = ({
             key={element.id}
             style={{ ...element.styles }}
             onDoubleClick={(e) => handleDoubleClick(e, element)}
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => handleKeyDown(e, element)}
             contentEditable={element.isSelected}
             onContextMenu={(e) => handleContextMenu(e, element)}
             suppressContentEditableWarning
@@ -126,6 +139,7 @@ const FrameComponents = ({
             }`}
             contentEditable={element.isSelected}
             onContextMenu={(e) => handleContextMenu(e, element)}
+            onKeyDown={(e) => handleKeyDown(e, element)}
             suppressContentEditableWarning
             onBlur={(e) => handleInput(e, element)}
             onDoubleClick={(e) => handleDoubleClick(e, element)}

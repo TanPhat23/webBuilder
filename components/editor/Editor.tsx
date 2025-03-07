@@ -1,4 +1,10 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  startTransition,
+} from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
 import {
@@ -11,12 +17,19 @@ import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
 import { v4 as uuidv4 } from "uuid";
 import FrameComponents from "./editorcomponents/FrameComponents";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+
+type Props = {
+  projectId: string;
+};
 
 const loadedFonts = new Set<string>();
-const Editor = () => {
+const Editor = ({ projectId }: Props) => {
   const { elements, dispatch } = useEditorContext();
-  const { uploadImages, setUploadImages } = useImageUploadContext();
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
 
+  const { uploadImages, setUploadImages } = useImageUploadContext();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const { selectedElement, setSelectedElement } = useEditorContextProvider();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -38,26 +51,8 @@ const Editor = () => {
   const gridSize = 20;
 
   const editableRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const savedElements = localStorage.getItem("elements");
-    if (savedElements) {
-      try {
-        dispatch({
-          type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE",
-          payload: JSON.parse(savedElements),
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, []);
 
   useEffect(() => {
-    dispatch({
-      type: "SAVE_ELEMENTS_TO_LOCAL_STORAGE",
-      payload: elements,
-    });
-
     const fontsToLoad = new Set<string>();
     elements.forEach((element) => {
       const fontFamily = element.styles?.fontFamily;
@@ -66,7 +61,9 @@ const Editor = () => {
         loadedFonts.add(fontFamily);
       }
     });
-  }, [elements, dispatch]);
+
+    fontsToLoad.forEach((font) => {});
+  }, [elements]);
 
   const onContextMenu = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, id: string) => {
@@ -87,97 +84,99 @@ const Editor = () => {
       e.preventDefault();
       const newElement = e.dataTransfer.getData("elementType");
       if (newElement) {
-        createElements(newElement, dispatch, e.clientX, e.clientY);
+        createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
       }
     },
     [dispatch]
   );
-  const handleCopy = useCallback(
-    (e: React.ClipboardEvent<HTMLDivElement>) => {
-      const selectedElement = elements.find((element) => element.isSelected);
-      if (selectedElement) {
-        const textToCopy = JSON.stringify(selectedElement);
+  // const handleCopy = useCallback(
+  //   (e: React.ClipboardEvent<HTMLDivElement>) => {
+  //     const selectedElement = elements.find((element) => element.isSelected);
+  //     if (selectedElement) {
+  //       const textToCopy = JSON.stringify(selectedElement);
 
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(textToCopy).then(() => {
-            console.log("Element copied to clipboard:", selectedElement);
-          });
-        }
-      }
-      setShowContextMenu(false);
-    },
-    [elements]
-  );
+  //       if (navigator.clipboard) {
+  //         navigator.clipboard.writeText(textToCopy).then(() => {
+  //           console.log("Element copied to clipboard:", selectedElement);
+  //         });
+  //       }
+  //     }
+  //     setShowContextMenu(false);
+  //   },
+  //   [elements]
+  // );
 
-  const handlePaste = useCallback(
-    async (e: React.ClipboardEvent<HTMLDivElement>) => {
-      try {
-        const clipboardItems = await navigator.clipboard.read();
+  // const handlePaste = useCallback(
+  //   async (e: React.ClipboardEvent<HTMLDivElement>) => {
+  //     try {
+  //       const clipboardItems = await navigator.clipboard.read();
 
-        for (const item of clipboardItems) {
-          if (item.types.includes("image/png")) {
-            const blob = await item.getType("image/png");
-            const base64 = await blobToBase64(blob);
+  //       for (const item of clipboardItems) {
+  //         if (item.types.includes("image/png")) {
+  //           const blob = await item.getType("image/png");
+  //           const base64 = await blobToBase64(blob);
 
-            setUploadImages([...uploadImages, base64]);
-            const newElement: EditorElement = {
-              type: "Img",
-              id: `Img-${uuidv4()}`,
-              content: "",
-              isSelected: false,
-              x: 50,
-              y: 50,
-              styles: {
-                height: "50px",
-                width: "100px",
-                textAlign: "center",
-              },
-              src: base64,
-            };
+  //           setUploadImages([...uploadImages, base64]);
+  //           const newElement: EditorElement = {
+  //             type: "Img",
+  //             id: `Img-${uuidv4()}`,
+  //             content: "",
+  //             isSelected: false,
+  //             x: 50,
+  //             y: 50,
+  //             styles: {
+  //               height: "50px",
+  //               width: "100px",
+  //               textAlign: "center",
+  //             },
+  //             src: base64,
+  //             projectId: projectId,
+  //           };
 
-            dispatch({
-              type: "ADD_ELEMENT",
-              payload: newElement,
-            });
+  //           dispatch({
+  //             type: "ADD_ELEMENT",
+  //             payload: newElement,
+  //           });
 
-            return;
-          }
+  //           return;
+  //         }
 
-          if (item.types.includes("text/plain")) {
-            const text = await item.getType("text/plain");
-            const textContent = await text.text();
+  //         if (item.types.includes("text/plain")) {
+  //           const text = await item.getType("text/plain");
+  //           const textContent = await text.text();
 
-            try {
-              const clipboardText: EditorElement = JSON.parse(textContent);
-              const newElement: EditorElement = {
-                type: clipboardText.type,
-                id: `${clipboardText.type}-${uuidv4()}`,
-                content: clipboardText.content,
-                isSelected: false,
-                x: clipboardText.x + 50,
-                y: clipboardText.y + 50,
-                styles: {
-                  ...clipboardText.styles,
-                },
-                src: clipboardText.src,
-                href: clipboardText.href,
-              };
+  //           try {
+  //             const clipboardText: EditorElement = JSON.parse(textContent);
+  //             const newElement: EditorElement = {
+  //               type: clipboardText.type,
+  //               id: `${clipboardText.type}-${uuidv4()}`,
+  //               content: clipboardText.content,
+  //               isSelected: false,
+  //               x: clipboardText.x + 50,
+  //               y: clipboardText.y + 50,
+  //               styles: {
+  //                 ...clipboardText.styles,
+  //               },
+  //               src: clipboardText.src,
+  //               href: clipboardText.href,
+  //               projectId: projectId,
+  //             };
 
-              dispatch({
-                type: "ADD_ELEMENT",
-                payload: newElement,
-              });
-            } catch (err) {
-              console.error("Failed to parse clipboard text as JSON:", err);
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Failed to read clipboard data:", err);
-      }
-    },
-    [dispatch]
-  );
+  //             dispatch({
+  //               type: "ADD_ELEMENT",
+  //               payload: newElement,
+  //             });
+  //           } catch (err) {
+  //             console.error("Failed to parse clipboard text as JSON:", err);
+  //           }
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to read clipboard data:", err);
+  //     }
+  //   },
+  //   [dispatch]
+  // );
 
   const onResizeHandleMouseDown = useCallback(
     (
@@ -205,16 +204,11 @@ const Editor = () => {
     (e: React.FormEvent<HTMLElement>, id: string) => {
       let newContent = e.currentTarget.innerHTML;
 
-      if (newContent.includes("<br>")) {
-        newContent = newContent.replace(/<br>/g, "");
-      }
-
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: { id, updates: { content: newContent } },
+      startTransition(() => {
+        updateElementOptimistically(id, { content: newContent });
       });
     },
-    [dispatch]
+    [updateElementOptimistically, elements]
   );
 
   // const handleKeyDown = useCallback(
@@ -450,7 +444,7 @@ const Editor = () => {
       onDragOver={(e) => e.preventDefault()}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}
-      onPaste={(e) => handlePaste(e)}
+      // onPaste={(e) => handlePaste(e)}
       tabIndex={0}
       className="w-full h-full bg-slate-300 relative overflow-auto"
     >
@@ -463,7 +457,7 @@ const Editor = () => {
           }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
           // onKeyDown={(e) => handleKeyDown(e, element)}
-          onCopy={(e) => handleCopy(e)}
+          // onCopy={(e) => handleCopy(e)}
           tabIndex={0}
           style={{
             position: "absolute",
@@ -552,6 +546,7 @@ const Editor = () => {
               element={element}
               setShowContextMenu={setShowContextMenu}
               setMenuPosition={setMenuPosition}
+              projectId={projectId}
             />
           )}
           {element.isSelected && (

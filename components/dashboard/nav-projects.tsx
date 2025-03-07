@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Folder,
@@ -7,7 +7,7 @@ import {
   Plus,
   Trash2,
   type LucideIcon,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -24,18 +24,23 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import useSWR from "swr";
+import CreateProjectPopover from "./createprojectpopover";
 
 export function NavProjects({
   projects,
 }: {
   projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[]
+    name: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
+  const handleCreateProject = () => {};
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -44,13 +49,14 @@ export function NavProjects({
       </div>
       <SidebarMenu>
         <SidebarMenuItem className="mb-2">
-          <a 
-            href="/editor"
+          {/* <Button 
+            onClick={() => console.log("New Project")}
             className="flex w-full items-center gap-2 rounded-md bg-sidebar-primary px-3 py-2 text-sidebar-primary-foreground hover:bg-sidebar-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
             <Plus className="h-4 w-4" />
             <span className="font-medium">New Project</span>
-          </a>
+          </Button>  */}
+          <CreateProjectPopover />
         </SidebarMenuItem>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
@@ -91,5 +97,5 @@ export function NavProjects({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

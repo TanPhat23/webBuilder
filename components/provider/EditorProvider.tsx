@@ -15,49 +15,52 @@ const EditorProvider: React.FC<Props> = ({ children }) => {
   const [elements, dispatch] = React.useReducer(elementsReducer, []);
   const [uploadImages, setUploadImages] = React.useState<string[]>([]);
   const [selectedElement, setSelectedElement] = React.useState<EditorElement>();
-
+  const [projectId, setProjectId] = React.useState<string>("");
   const editorValue = React.useMemo(() => ({ elements, dispatch }), [elements]);
   const imageUploadValue = React.useMemo(
     () => ({ uploadImages, setUploadImages }),
     [uploadImages]
   );
   const editorProviderValue = React.useMemo(
-    () => ({ selectedElement, setSelectedElement }),
+    () => ({ selectedElement, setSelectedElement, projectId, setProjectId }),
     [selectedElement]
   );
 
-  const findAndUpdateSelectedElement = (
-    elements: EditorElement[],
-    selectedElement: EditorElement
-  ): EditorElement | undefined => {
-    for (const element of elements) {
-      if (element.id === selectedElement.id) {
-        return element;
-      }
-      if (element.type === "Frame" && (element as any).elements) {
-        const foundElement = findAndUpdateSelectedElement(
-          (element as any).elements,
-          selectedElement
-        );
-        if (foundElement) {
-          return foundElement;
+  const findAndUpdateSelectedElement = React.useCallback(
+    (
+      elements: EditorElement[],
+      selectedElement: EditorElement
+    ): EditorElement | undefined => {
+      for (const element of elements) {
+        if (element.id === selectedElement.id) {
+          return element;
+        }
+        if (element.type === "Frame" && (element as any).elements) {
+          const foundElement = findAndUpdateSelectedElement(
+            (element as any).elements,
+            selectedElement
+          );
+          if (foundElement) {
+            return foundElement;
+          }
         }
       }
-    }
-    return undefined;
-  };
+      return undefined;
+    },
+    []
+  );
   React.useEffect(() => {
     if (selectedElement) {
       const updatedElement = findAndUpdateSelectedElement(
         elements,
         selectedElement
       );
-      
+
       if (updatedElement) {
         setSelectedElement(updatedElement);
       }
     }
-  }, [elements]); 
+  }, [elements]);
   return (
     <EditorContext.Provider value={editorValue}>
       <ImageUploadContext.Provider value={imageUploadValue}>
