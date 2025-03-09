@@ -1,8 +1,9 @@
 import { useEditorContext } from "@/lib/context";
 import { EditorElement, Element, TextAlign } from "@/lib/type";
-import React from "react";
+import React, { startTransition } from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -20,7 +21,8 @@ const TextAlignButton = ({ selectedElement }: Props) => {
   const alignmentKeys = Object.keys(alignType) as (keyof typeof alignType)[];
   const [currentAlignmentKey, setCurrentAlignmentKey] =
     React.useState<keyof typeof alignType>("left");
-
+  const { optimisticElements, updateElementOptimistically } =
+      useOptimisticElement();
   const handleAlign = () => {
     if (!selectedElement) return;
 
@@ -32,18 +34,15 @@ const TextAlignButton = ({ selectedElement }: Props) => {
     const nextAlignmentKey = alignmentKeys[nextIndex];
     setCurrentAlignmentKey(nextAlignmentKey);
 
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            textAlign: alignType[nextAlignmentKey].type as TextAlign,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          textAlign: alignType[nextAlignmentKey].type as TextAlign,
         },
-      },
+      });
     });
+    
   };
 
   React.useEffect(() => {

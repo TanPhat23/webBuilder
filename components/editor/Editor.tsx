@@ -195,7 +195,7 @@ const Editor = ({ projectId }: Props) => {
           startWidth: parseInt(element.styles.width?.toString() || "100", 10),
           startHeight: parseInt(element.styles.height?.toString() || "50", 10),
         });
-      }
+      } 
     },
     [elements]
   );
@@ -254,7 +254,7 @@ const Editor = ({ projectId }: Props) => {
       });
     },
     [dispatch]
-  );
+  )
 
   const handleDeselectAll = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -298,14 +298,11 @@ const Editor = ({ projectId }: Props) => {
       ) {
         return;
       }
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id,
-          updates: {
-            styles: { ...element.styles },
-          },
-        },
+
+      startTransition(() => {
+        updateElementOptimistically(id, {
+          styles: { ...element.styles },
+        });
       });
       setDraggingElement({ id, offsetX, offsetY });
     }
@@ -415,19 +412,19 @@ const Editor = ({ projectId }: Props) => {
         const x = Math.round(element.x / gridSize) * gridSize;
         const y = Math.round(element.y / gridSize) * gridSize;
 
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: draggingElement.id,
-            updates: { x, y, styles: { ...element.styles } },
-          },
+        startTransition(() => {
+          updateElementOptimistically(draggingElement.id, {
+            x,
+            y,
+            styles: { ...element.styles },
+          });
         });
       }
       setDraggingElement(null);
     } else if (resizingElement) {
       setResizingElement(null);
     }
-  }, [draggingElement, resizingElement, elements, dispatch, gridSize]);
+  }, [draggingElement, resizingElement, elements, updateElementOptimistically, gridSize]);
 
   return (
     <div

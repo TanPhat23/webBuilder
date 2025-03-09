@@ -7,29 +7,28 @@ import {
 } from "@/components/ui/select";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
-import React from "react";
+import React, { startTransition } from "react";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   selectedElement: EditorElement | undefined;
 };
 
+
 const AlignItemSelect = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
   const currentItem = selectedElement?.styles?.alignItems || "center";
   const handleItemChange = (value: string) => {
     if (!selectedElement) return;
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            alignItems: value,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          alignItems: value,
         },
-      },
+      });
     });
   };
   return (

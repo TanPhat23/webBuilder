@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/select";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
-import React from "react";
+import React, { startTransition } from "react";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -17,20 +18,19 @@ const JustifyContentSelect = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const currentJustifyContent =
     selectedElement?.styles?.justifyContent || "center";
+
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
+
   const handleJustifyContentChange = (value: string) => {
     if (!selectedElement) return;
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            justifyContent: value,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          justifyContent: value,
         },
-      },
+      });
     });
   };
   return (

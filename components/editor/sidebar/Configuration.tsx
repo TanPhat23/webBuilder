@@ -1,5 +1,5 @@
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import { Input } from "../../ui/input";
 import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
 import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
@@ -12,6 +12,9 @@ import BorderWeightPopover from "./popovers/BorderWeightPopover";
 import FlexDirectionSelect from "./selects/FlexDirectionSelect";
 import AlignItemSelect from "./selects/AlignItemSelect";
 import JustifyContentSelect from "./selects/JustifyContentSelect";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { start } from "repl";
+
 
 const Configuration = () => {
   const { elements, dispatch } = useEditorContext();
@@ -27,6 +30,8 @@ const Configuration = () => {
   const [localFontSize, setLocalFontSize] = useState(
     selectedElement?.styles?.fontSize || ""
   );
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
 
   useEffect(() => {
     setLocalWidth(selectedElement?.styles?.width || "");
@@ -39,17 +44,13 @@ const Configuration = () => {
     setLocalWidth(newWidth);
 
     if (!selectedElement) return;
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            width: newWidth,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          width: newWidth,
         },
-      },
+      });
     });
   };
 
@@ -58,17 +59,13 @@ const Configuration = () => {
     setLocalHeight(newHeight);
 
     if (!selectedElement) return;
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            height: newHeight,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          height: newHeight,
         },
-      },
+      });
     });
   };
 
@@ -95,17 +92,13 @@ const Configuration = () => {
     if (!selectedElement) return;
     const newFontSize = e.currentTarget.value;
     setLocalFontSize(newFontSize);
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            fontSize: newFontSize,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          fontSize: newFontSize,
         },
-      },
+      });
     });
   };
 

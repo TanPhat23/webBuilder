@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { startTransition, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,8 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { fontSize } from "@/lib/constants";
 import { EditorElement} from "@/lib/type";
 import { useEditorContext } from "@/lib/context";
-
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { start } from "repl";
 type Props = {
   selectedElement: EditorElement | undefined;
 };
@@ -29,7 +30,8 @@ const FontSizeComboBox = (props: Props) => {
   const [value, setValue] = React.useState<number | null>(null);
 
   const { elements, dispatch } = useEditorContext();
-
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
   useEffect(() => {
     if (selectedElement) {
       const fontSize = selectedElement.styles?.fontSize;
@@ -42,18 +44,14 @@ const FontSizeComboBox = (props: Props) => {
     setValue(size);
 
     if (selectedElement) {
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: selectedElement.id,
-            updates: {
-              styles: {
-                ...selectedElement.styles,
-                fontSize: size,
-              },
-            },
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            fontSize: size,
           },
         });
+      }); 
     }
   };
 
