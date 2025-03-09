@@ -122,32 +122,6 @@ export const elementsReducer = (
       return state.map(updateSelectedElement);
     }
 
-    case "UPDATE_FRAME_ELEMENT": {
-      const { childUpdates, updates } = action.payload;
-
-      const updateChildElement = (element: EditorElement): EditorElement => {
-        if (element.id === childUpdates) {
-          return {
-            ...element,
-            ...updates,
-          };
-        }
-
-        if (element.type === "Frame" && (element as FrameElement).elements) {
-          return {
-            ...element,
-            elements: (element as FrameElement).elements.map(
-              updateChildElement
-            ),
-          };
-        }
-
-        return element;
-      };
-
-      return state.map(updateChildElement);
-    }
-
     case "UNDO":
       return state.slice(0, -1);
 

@@ -1,17 +1,42 @@
-import { useOptimistic } from "react";
-import { EditorElement } from "@/lib/type";
+import React, { useOptimistic } from "react";
+import { EditorElement, FrameElement } from "@/lib/type";
 import { Update } from "@/app/api/element/route";
 import { useEditorContext } from "@/lib/context";
 
 export function useOptimisticElement() {
   const { elements, dispatch } = useEditorContext();
 
+  const updateFrameElement = React.useCallback(
+    (
+      elements: EditorElement[],
+      update: { id: string; updates: Partial<EditorElement> }
+    ): EditorElement[] => {
+      return elements.map((element) => {
+        if (element.id === update.id) {
+          return { ...element, ...update.updates };
+        } else if (
+          element.type === "Frame" &&
+          (element as FrameElement).elements
+        ) {
+          return {
+            ...element,
+            elements: updateFrameElement(
+              (element as FrameElement).elements,
+              update
+            ),
+          };
+        } else {
+          return element;
+        }
+      });
+    },
+    []
+  );
+
   const [optimisticElements, addOptimisticUpdate] = useOptimistic(
     elements,
     (state, update: { id: string; updates: Partial<EditorElement> }) => {
-      return state.map((element) =>
-        element.id === update.id ? { ...element, ...update.updates } : element
-      );
+      return updateFrameElement(state, update);
     }
   );
 
@@ -21,22 +46,37 @@ export function useOptimisticElement() {
   ) => {
     addOptimisticUpdate({ id, updates });
 
-    const updatedElement = optimisticElements.find((e) => e.id === id);
+    const updatedElement = findElementById(optimisticElements, id);
     if (!updatedElement) return;
 
-    console.log("Updated Element:", updatedElement);
-
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: { id, updates },
+    });
     try {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: { id, updates },
-      });
-
       const latestElement = { ...updatedElement, ...updates };
       await Update(latestElement);
     } catch (error) {
       console.error("Failed to update element:", error);
     }
+  };
+
+  const findElementById = (
+    elements: EditorElement[],
+    id: string
+  ): EditorElement | null => {
+    for (const element of elements) {
+      if (element.id === id) {
+        return element;
+      } else if (
+        element.type === "Frame" &&
+        (element as FrameElement).elements
+      ) {
+        const found = findElementById((element as FrameElement).elements, id);
+        if (found) return found;
+      }
+    }
+    return null;
   };
 
   return {

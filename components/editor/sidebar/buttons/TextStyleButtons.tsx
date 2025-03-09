@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import { Bold, Italic, Strikethrough, Underline } from "lucide-react";
-import React from "react";
+import React, { startTransition } from "react";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -18,6 +19,7 @@ const TextStyle = [
 
 const TextStyleButtons = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
+  const { updateElementOptimistically } = useOptimisticElement();
   const [activeStyles, setActiveStyles] = React.useState<
     Record<string, boolean>
   >({
@@ -73,19 +75,28 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
       default:
         newValue = "none";
     }
-    
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            [style]: newValue,
-          },
+
+    // dispatch({
+    //   type: "UPDATE_ELEMENT",
+    //   payload: {
+    //     id: selectedElement.id,
+    //     updates: {
+    //       styles: {
+    //         ...selectedElement.styles,
+    //         [style]: newValue,
+    //       },
+    //     },
+    //   },
+    // });
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          [style]: newValue,
         },
-      },
+      });
     });
+
     console.log(selectedElement.styles);
 
     setActiveStyles((prev) => ({

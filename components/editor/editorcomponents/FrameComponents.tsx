@@ -1,7 +1,8 @@
 import createElements from "@/app/utils/CreateFrameElements";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { EditorElement, FrameElement } from "@/lib/type";
-import React from "react";
+import React, { startTransition } from "react";
 
 type Props = {
   element: EditorElement;
@@ -20,7 +21,7 @@ const FrameComponents = ({
 }: Props) => {
   const { dispatch } = useEditorContext();
   const { setSelectedElement } = useEditorContextProvider();
-  const rootElement = element as FrameElement;
+  const { updateElementOptimistically } = useOptimisticElement();
   const normalizeHtmlContent = (html: string): string => {
     html = html.replace(/&nbsp;/g, " ");
 
@@ -60,10 +61,9 @@ const FrameComponents = ({
       e.stopPropagation();
       if (!element.isSelected) setSelectedElement(element);
       dispatch({
-        type: "UPDATE_FRAME_ELEMENT",
+        type: "UPDATE_ELEMENT",
         payload: {
-          parentElement: rootElement,
-          childUpdates: element.id,
+          id: element.id,
           updates: {
             isSelected: !element.isSelected,
           },
@@ -81,13 +81,8 @@ const FrameComponents = ({
     e.stopPropagation();
     let newContent = e.currentTarget.innerHTML;
     newContent = normalizeHtmlContent(newContent);
-    dispatch({
-      type: "UPDATE_FRAME_ELEMENT",
-      payload: {
-        childUpdates: element.id,
-        parentElement: rootElement,
-        updates: { content: newContent },
-      },
+    startTransition(() => {
+      updateElementOptimistically(element.id, { content: newContent });
     });
   };
   const handleContextMenu = React.useCallback(

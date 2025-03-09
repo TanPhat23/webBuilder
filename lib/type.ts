@@ -32,14 +32,6 @@ export type EditorAction =
   | { type: "LOAD_ELEMENTS_FROM_LOCAL_STORAGE"; payload: EditorElement[] }
   | { type: "UPDATE_ALL_ELEMENTS"; payload: Partial<EditorElement> }
   | { type: "UPDATE_ALL_SELECTED_ELEMENTS"; payload: Partial<EditorElement> }
-  | {
-      type: "UPDATE_FRAME_ELEMENT";
-      payload: {
-        parentElement: EditorElement;
-        childUpdates: string;
-        updates: Partial<EditorElement>;
-      };
-    }
   | { type: "UNDO"; payload: EditorElement[] }
   | { type: "REDO"; payload: EditorElement[] }
   | { type: "LOAD_ELEMENTS_FROM_DB"; payload: EditorElement[]};

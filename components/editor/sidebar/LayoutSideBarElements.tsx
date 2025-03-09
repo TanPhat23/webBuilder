@@ -3,7 +3,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { SidebarGroup } from "@/components/ui/sidebar";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { FrameElement, EditorElement } from "@/lib/type";
 import { ChevronDown } from "lucide-react";

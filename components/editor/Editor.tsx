@@ -244,13 +244,13 @@ const Editor = ({ projectId }: Props) => {
   );
 
   const handleDoubleClick = useCallback(
-    (e: React.MouseEvent<HTMLElement>, id: string) => {
+    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
       e.currentTarget.focus();
       e.stopPropagation();
-
+      setSelectedElement(element);
       dispatch({
         type: "UPDATE_ELEMENT",
-        payload: { id, updates: { isSelected: true } },
+        payload: { id: element.id, updates: { isSelected: true } },
       });
     },
     [dispatch]
@@ -453,7 +453,7 @@ const Editor = ({ projectId }: Props) => {
           key={element.id}
           onContextMenu={(e) => onContextMenu(e, element.id)}
           onDoubleClick={(e) => {
-            handleDoubleClick(e, element.id);
+            handleDoubleClick(e, element);
           }}
           onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
           // onKeyDown={(e) => handleKeyDown(e, element)}
