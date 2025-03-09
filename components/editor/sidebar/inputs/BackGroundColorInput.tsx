@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { startTransition, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement, Element } from "@/lib/type";
-
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { start } from "repl";
 type Props = {
   selectedElement: EditorElement | undefined;
 };
@@ -11,6 +12,9 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
   const { dispatch } = useEditorContext();
   const [color, setColor] = useState("#000000");
   const [backColor, setBackColor] = useState("#000000");
+
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
@@ -31,17 +35,13 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
 
   const updateElementColor = (color: string) => {
     if (!selectedElement) return;
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            backgroundColor: color,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          backgroundColor: color,
         },
-      },
+      });
     });
   };
 

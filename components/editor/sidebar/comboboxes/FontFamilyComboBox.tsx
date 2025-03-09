@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { EditorElement } from "@/lib/type";
 import { useEditorContext } from "@/lib/context";
 import { loadFont } from "@/app/utils/LoadFont";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -30,7 +31,8 @@ const FontFamilyComboBox = (props: Props) => {
   const [selectedFontFamily, setSelectedFontFamily] = useState<string | null>(
     null
   );
-
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
   const { dispatch } = useEditorContext();
 
   useEffect(() => {
@@ -44,17 +46,13 @@ const FontFamilyComboBox = (props: Props) => {
     setSelectedFontFamily(selectedFamily);
     loadFont(selectedFamily);
     if (selectedElement) {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: selectedElement.id,
-          updates: {
-            styles: {
-              ...selectedElement.styles,
-              fontFamily: selectedFamily,
-            },
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            fontFamily: selectedFamily,
           },
-        },
+        });
       });
     }
   };

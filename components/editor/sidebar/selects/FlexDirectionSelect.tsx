@@ -6,9 +6,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EditorElement } from "@/lib/type";
-import React from "react";
+import React, { startTransition } from "react";
 import { useEditorContext } from "@/lib/context";
 import { Property } from "csstype";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -19,20 +20,19 @@ const FlexDirectionSelect = ({ selectedElement }: Props) => {
 
   const currentFlexDirection = selectedElement?.styles?.flexDirection || "row";
 
+  const { optimisticElements, updateElementOptimistically } =
+      useOptimisticElement();
+  
+
   const handleFlexDirectionChange = (value: Property.FlexDirection) => {
     if (!selectedElement) return;
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            flexDirection: value,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          flexDirection: value,
         },
-      },
+      });
     });
   };
 

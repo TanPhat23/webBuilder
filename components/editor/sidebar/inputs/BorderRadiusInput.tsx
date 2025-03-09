@@ -1,8 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
-import React, { useEffect } from "react";
-
+import React, { startTransition, useEffect } from "react";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 type Props = {
   selectedElement: EditorElement | undefined;
 };
@@ -14,19 +14,18 @@ const BorderRadiusInput = ({ selectedElement }: Props) => {
     setBorderRadius(parseInt(e.currentTarget.value));
   };
 
+  const { optimisticElements, updateElementOptimistically } =
+    useOptimisticElement();
+
   const handleBlur = () => {
     if (!selectedElement) return;
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: {
-          styles: {
-            ...selectedElement.styles,
-            borderRadius: borderRadius,
-          },
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          borderRadius: borderRadius,
         },
-      },
+      });
     });
   };
 

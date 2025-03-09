@@ -55,8 +55,7 @@ const EditorProvider: React.FC<Props> = ({ children }) => {
         elements,
         selectedElement
       );
-
-      if (updatedElement) {
+      if (updatedElement && JSON.stringify(updatedElement) !== JSON.stringify(selectedElement)) {
         setSelectedElement(updatedElement);
       }
     }
