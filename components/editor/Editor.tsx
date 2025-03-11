@@ -195,7 +195,7 @@ const Editor = ({ projectId }: Props) => {
           startWidth: parseInt(element.styles.width?.toString() || "100", 10),
           startHeight: parseInt(element.styles.height?.toString() || "50", 10),
         });
-      } 
+      }
     },
     [elements]
   );
@@ -254,11 +254,12 @@ const Editor = ({ projectId }: Props) => {
       });
     },
     [dispatch]
-  )
+  );
 
   const handleDeselectAll = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
+      setSelectedElement(undefined);
     },
     [dispatch]
   );
@@ -424,7 +425,13 @@ const Editor = ({ projectId }: Props) => {
     } else if (resizingElement) {
       setResizingElement(null);
     }
-  }, [draggingElement, resizingElement, elements, updateElementOptimistically, gridSize]);
+  }, [
+    draggingElement,
+    resizingElement,
+    elements,
+    updateElementOptimistically,
+    gridSize,
+  ]);
 
   return (
     <div
@@ -580,7 +587,6 @@ const Editor = ({ projectId }: Props) => {
         <ContextMenu
           x={menuPosition.x}
           y={menuPosition.y}
-          selectedElement={selectedElement}
           onClose={() => setShowContextMenu(false)}
         />
       )}

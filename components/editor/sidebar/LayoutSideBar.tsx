@@ -17,10 +17,16 @@ import {
 import { ChevronDown } from "lucide-react";
 import React from "react";
 import LayoutSideBarElements from "./LayoutSideBarElements";
+import { useParams, useRouter } from "next/navigation";
 
 type Props = {};
 
 function LayoutSideBar({}: Props) {
+  const router = useRouter();
+  const params = useParams();
+  React.useEffect(() => {
+    console.log(params);
+  });
   return (
     <Sidebar side="right">
       <SidebarContent>
@@ -43,7 +49,10 @@ function LayoutSideBar({}: Props) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="bg-purple-500 font-bold">
+            <SidebarMenuButton
+              className="bg-purple-500 font-bold"
+              onClick={() => router.push("/preview/" + params.slug)}
+            >
               Preview
             </SidebarMenuButton>
           </SidebarMenuItem>

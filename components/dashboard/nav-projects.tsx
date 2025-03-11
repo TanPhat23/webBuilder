@@ -25,10 +25,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+
 import Link from "next/link";
-import { Button } from "../ui/button";
-import useSWR from "swr";
-import CreateProjectPopover from "./createprojectpopover";
+import CreatePojectDialog from "./dialog/createprojectpopover";
+import React, { useState } from "react";
+import DeleteProjectDialog from "./dialog/deleteprojectpopover";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogPortal, DialogTrigger } from "../ui/dialog";
 
 export function NavProjects({
   projects,
@@ -40,7 +43,6 @@ export function NavProjects({
   }[];
 }) {
   const { isMobile } = useSidebar();
-  const handleCreateProject = () => {};
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -49,50 +51,50 @@ export function NavProjects({
       </div>
       <SidebarMenu>
         <SidebarMenuItem className="mb-2">
-          {/* <Button 
-            onClick={() => console.log("New Project")}
-            className="flex w-full items-center gap-2 rounded-md bg-sidebar-primary px-3 py-2 text-sidebar-primary-foreground hover:bg-sidebar-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="font-medium">New Project</span>
-          </Button>  */}
-          <CreateProjectPopover />
+          <CreatePojectDialog />
         </SidebarMenuItem>
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48 rounded-lg"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
-              >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Dialog>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuAction showOnHover>
+                    <MoreHorizontal />
+                    <span className="sr-only">More</span>
+                  </SidebarMenuAction>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  className="w-48 rounded-lg"
+                  side={isMobile ? "bottom" : "right"}
+                  align={isMobile ? "end" : "start"}
+                >
+                  <DropdownMenuItem>
+                    <Folder className="text-muted-foreground" />
+                    <span>View Project</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Forward className="text-muted-foreground" />
+                    <span>Share Project</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DialogTrigger>
+                    <DropdownMenuItem>
+                      <Trash2 />
+                      <span>Delete Project</span>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DialogPortal>
+                <DeleteProjectDialog />
+              </DialogPortal>
+            </Dialog>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

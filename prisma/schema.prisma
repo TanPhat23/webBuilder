@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Elements {
+  Id             String     @id(map: "PK_Elements")
+  Type           String     @db.VarChar(8)
+  Content        String?
+  IsSelected     Boolean
+  Styles         String
+  X              Int
+  Y              Int
+  Src            String?
+  Href           String?
+  ParentId       String?
+  ProjectId      String
+  Elements       Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
+  other_Elements Elements[] @relation("ElementsToElements")
+  Projects       Projects   @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Projects_ProjectId")
+
+  @@index([ParentId], map: "IX_Elements_ParentId")
+  @@index([ProjectId], map: "IX_Elements_ProjectId")
+}
+
+model Projects {
+  Id          String     @id(map: "PK_Projects")
+  Name        String
+  Description String?
+  OwnerId     String
+  Elements    Elements[]
+  Users       Users      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
+
+  @@index([OwnerId], map: "IX_Projects_OwnerId")
+}
+
+model Users {
+  Id        String     @id(map: "PK_Users")
+  Email     String
+  FirstName String
+  LastName  String
+  ImageUrl  String
+  CreatedAt DateTime   @db.Timestamptz(6)
+  UpdatedAt DateTime   @db.Timestamptz(6)
+  Projects  Projects[]
+}
+
+model EFMigrationsHistory {
+  MigrationId    String @id(map: "PK___EFMigrationsHistory") @db.VarChar(150)
+  ProductVersion String @db.VarChar(32)
+
+  @@map("__EFMigrationsHistory")
+}

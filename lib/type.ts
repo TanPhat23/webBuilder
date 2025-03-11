@@ -38,7 +38,7 @@ export type EditorAction =
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
-export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";
+export type ElementTypes = "Text" | "A" | "Button" | "Frame" | "List";
 
 export interface appProjectTypes {
   id?: string;

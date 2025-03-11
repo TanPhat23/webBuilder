@@ -7,13 +7,13 @@ import {
   ContextMenuItem,
 } from "@radix-ui/react-context-menu";
 import React, { useCallback, useState } from "react";
-import { useEditorContext } from "@/lib/context";
+import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
+import { Delete } from "@/app/api/element/route";
 
 type Props = {
   x: number;
   y: number;
-  selectedElement: Element | undefined;
   onClose: () => void;
 };
 
@@ -21,7 +21,8 @@ const EditorContextMenu = ({ ...props }: Props) => {
   const [link, setLink] = useState("");
   const [addLink, setAddLink] = useState(false);
   const [addEvent, setAddEvent] = useState(false);
-  const { onClose, x, y, selectedElement } = props;
+  const { selectedElement, setSelectedElement } = useEditorContextProvider();
+  const { onClose, x, y } = props;
   const elementType = selectedElement?.type;
 
   const { elements, dispatch } = useEditorContext();
@@ -50,6 +51,13 @@ const EditorContextMenu = ({ ...props }: Props) => {
       e.preventDefault();
       if (selectedElement) {
         dispatch({ type: "DELETE_ELEMENT", payload: selectedElement.id });
+        const tempElement = selectedElement;
+        try {
+          Delete(selectedElement.id);
+        } catch (error) {
+          console.error("Failed to delete element:", error);
+          dispatch({ type: "ADD_ELEMENT", payload: tempElement });
+        }
       }
       onClose();
     },
@@ -76,7 +84,7 @@ const EditorContextMenu = ({ ...props }: Props) => {
       .then((text) => {
         try {
           const clipboardText: EditorElement = JSON.parse(text);
-          const newElement : EditorElement = {
+          const newElement: EditorElement = {
             type: clipboardText.type,
             id: `${clipboardText.type}-${uuidv4()}`,
             content: clipboardText.content,

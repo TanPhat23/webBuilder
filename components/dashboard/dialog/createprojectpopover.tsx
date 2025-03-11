@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import React from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { z } from "zod";
 import {
   Form,
@@ -34,7 +34,7 @@ const formSchema = z.object({
   description: z.string(),
 });
 
-const CreateProjectPopover = (props: Props) => {
+const CreatePojectDialog = (props: Props) => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,4 +99,4 @@ const CreateProjectPopover = (props: Props) => {
   );
 };
 
-export default CreateProjectPopover;
+export default CreatePojectDialog;

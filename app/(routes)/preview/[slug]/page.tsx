@@ -3,15 +3,17 @@ import React from "react";
 import jsonData from "@/test.json";
 import { EditorElement, ElementTypes, FrameElement } from "@/lib/type";
 import useSWR from "swr";
-import { GetAll } from "../../api/element/route";
+import { useParams } from "next/navigation";
+import { GetAll } from "@/app/api/element/route";
 
 function PreviewPage() {
+  const params = useParams();
   const {
     data: elements,
     error,
     isLoading,
   } = useSWR<EditorElement[]>(
-    process.env.NEXT_PUBLIC_API_URL + "/elements",
+    `${process.env.NEXT_PUBLIC_API_URL}/elements/${params.slug}`,
     GetAll
   );
   if (error) console.log(error);
@@ -40,7 +42,7 @@ function PreviewPage() {
                   {childElement.content}
                 </p>
               );
-            case "Link":
+            case "A":
               return (
                 <a
                   key={childElement.id}

@@ -2,7 +2,7 @@
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-const URL = "http://localhost:5232/api/elements";
+const URL = `${process.env.NEXT_PUBLIC_API_URL}/elements`;
 
 export const Create = async (data: EditorElement) => {
   try {
@@ -10,7 +10,7 @@ export const Create = async (data: EditorElement) => {
     if (!userId) throw new Error("User not found");
 
     const client = await clerkClient();
-    const token = await client.sessions.getToken(sessionId, "templeUser");
+    const token = await client.sessions.getToken(sessionId, "usertemp");
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -34,7 +34,7 @@ export const Update = async (data: EditorElement) => {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");
     const client = await clerkClient();
-    const token = await client.sessions.getToken(sessionId, "templeUser");
+    const token = await client.sessions.getToken(sessionId, "usertemp");
     const response = await fetch(`${URL}`, {
       method: "PUT",
       headers: {
@@ -56,10 +56,15 @@ export const Update = async (data: EditorElement) => {
 
 export const Delete = async (id: string) => {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("User not found");
-
+    const { userId, sessionId } = await auth();
+    if (!userId || !sessionId) throw new Error("User not found");
+    const client = await clerkClient();
+    const token = await client.sessions.getToken(sessionId, "usertemp");
     const response = await fetch(`${URL}/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.jwt}`,
+      },
       method: "DELETE",
     });
     if (!response.ok) {
@@ -77,7 +82,7 @@ export const GetAll = async (url: string) => {
     if (!userId || !sessionId) throw new Error("User not found");
 
     const client = await clerkClient();
-    const token = await client.sessions.getToken(sessionId, "templeUser");
+    const token = await client.sessions.getToken(sessionId, "usertemp");
 
     const response = await fetch(url, {
       method: "GET",
