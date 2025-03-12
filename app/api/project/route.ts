@@ -3,7 +3,7 @@
 import { appProjectTypes } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-const URL = process.env.NEXT_PUBLIC_API_URL + "/elements";
+const URL = process.env.NEXT_PUBLIC_API_URL + "/projects";
 
 export const Create = async (data: appProjectTypes) => {
   try {

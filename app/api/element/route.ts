@@ -45,7 +45,7 @@ export const Update = async (data: EditorElement) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update element");
+      throw new Error(errorData.message || `Failed to update element + ${JSON.stringify(data)} at ${URL}`);
     } else {
       console.log("Updated element successfully");
     }

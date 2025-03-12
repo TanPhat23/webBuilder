@@ -3,6 +3,7 @@ import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { EditorElement, FrameElement } from "@/lib/type";
 import React, { startTransition } from "react";
+import DOMPurify from "dompurify";
 
 type Props = {
   element: EditorElement;
@@ -22,15 +23,6 @@ const FrameComponents = ({
   const { dispatch } = useEditorContext();
   const { setSelectedElement } = useEditorContextProvider();
   const { updateElementOptimistically } = useOptimisticElement();
-  const normalizeHtmlContent = (html: string): string => {
-    html = html.replace(/&nbsp;/g, " ");
-
-    html = html.replace(/<div>/g, "<br>").replace(/<\/div>/g, "");
-
-    html = html.replace(/<br>\s*<br>/g, "<br>");
-
-    return html;
-  };
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLElement>,
@@ -80,7 +72,6 @@ const FrameComponents = ({
     e.preventDefault();
     e.stopPropagation();
     let newContent = e.currentTarget.innerHTML;
-    newContent = normalizeHtmlContent(newContent);
     startTransition(() => {
       updateElementOptimistically(element.id, { content: newContent });
     });
@@ -120,8 +111,10 @@ const FrameComponents = ({
             className={`scale-x-75 ${
               element.isSelected ? "border-black border-2 border-solid" : ""
             }`}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(element.content),
+            }}
           >
-            {element.content}
           </button>
         );
       default:
@@ -138,8 +131,10 @@ const FrameComponents = ({
             suppressContentEditableWarning
             onBlur={(e) => handleInput(e, element)}
             onDoubleClick={(e) => handleDoubleClick(e, element)}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(element.content),
+            }}
           >
-            {element.content}
           </div>
         );
     }
