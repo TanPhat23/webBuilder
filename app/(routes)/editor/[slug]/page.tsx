@@ -4,7 +4,7 @@ import Editor from "@/components/editor/Editor";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import React from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export default function EditorPage({
   params,
@@ -15,8 +15,6 @@ export default function EditorPage({
   const { dispatch } = useEditorContext();
   const {
     data: elements,
-    error,
-    isLoading,
   } = useSWR<EditorElement[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
     GetAll
