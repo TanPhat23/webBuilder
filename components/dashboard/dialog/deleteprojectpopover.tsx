@@ -1,22 +1,14 @@
 import { Delete, GetAll } from "@/app/api/project/route";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { appProjectTypes } from "@/lib/type";
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 

@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/select";
 import { EditorElement } from "@/lib/type";
 import React, { startTransition } from "react";
-import { useEditorContext } from "@/lib/context";
 import { Property } from "csstype";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
@@ -16,11 +15,10 @@ type Props = {
 };
 
 const FlexDirectionSelect = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
 
   const currentFlexDirection = selectedElement?.styles?.flexDirection || "row";
 
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
       useOptimisticElement();
   
 
