@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { EditorElement } from "@/lib/type";
-import { useEditorContext } from "@/lib/context";
+
 import { loadFont } from "@/app/utils/LoadFont";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
@@ -31,9 +31,8 @@ const FontFamilyComboBox = (props: Props) => {
   const [selectedFontFamily, setSelectedFontFamily] = useState<string | null>(
     null
   );
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
-  const { dispatch } = useEditorContext();
 
   useEffect(() => {
     if (selectedElement) {

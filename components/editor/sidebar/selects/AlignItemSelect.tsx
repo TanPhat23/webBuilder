@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEditorContext } from "@/lib/context";
+
 import { EditorElement } from "@/lib/type";
 import React, { startTransition } from "react";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
@@ -16,8 +16,8 @@ type Props = {
 
 
 const AlignItemSelect = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
-  const { optimisticElements, updateElementOptimistically } =
+
+  const {  updateElementOptimistically } =
     useOptimisticElement();
   const currentItem = selectedElement?.styles?.alignItems || "center";
   const handleItemChange = (value: string) => {

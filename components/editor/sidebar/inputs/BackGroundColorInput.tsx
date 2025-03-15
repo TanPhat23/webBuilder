@@ -1,15 +1,13 @@
 import React, { startTransition, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useEditorContext } from "@/lib/context";
-import { EditorElement, Element } from "@/lib/type";
+import { EditorElement} from "@/lib/type";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { start } from "repl";
 type Props = {
   selectedElement: EditorElement | undefined;
 };
 
 const BackGroundColorInput = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
+
   const [color, setColor] = useState("#000000");
   const [backColor, setBackColor] = useState("#000000");
 
