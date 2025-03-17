@@ -1,5 +1,4 @@
 import {
-  ButtonElement,
   EditorAction,
   EditorElement,
   FrameElement,

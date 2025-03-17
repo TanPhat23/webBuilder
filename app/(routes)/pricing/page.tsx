@@ -14,7 +14,7 @@ const PricingPage = () => {
           What will you pay?
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Choose the perfect plan for your needs. Always know what you'll pay.
+          Choose the perfect plan for your needs. Always know what you will pay.
         </p>
       </div>
 

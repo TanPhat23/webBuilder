@@ -4,7 +4,7 @@ import Editor from "@/components/editor/Editor";
 import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import React from "react";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 export default function EditorPage({
   params,
@@ -23,7 +23,7 @@ export default function EditorPage({
   React.useEffect(() => {
     if (elements)
       dispatch({ type: "LOAD_ELEMENTS_FROM_DB", payload: elements });
-  }, [elements]);
+  }, [elements, dispatch]);
   
-  return <Editor projectId={slug} />;
+return <Editor projectId={slug} />;
 }

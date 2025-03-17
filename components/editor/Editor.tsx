@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
+import { ZoomOut } from "lucide-react";
 
 type Props = {
   projectId: string;
@@ -33,6 +34,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
     "DESKTOP"
   );
+  const [lockedTransformOrigin, setLockedTransformOrigin] =
+    useState<string>("0px 0px");
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [debouncedWidth, setDebouncedWidth] = useState(100);
   const [debouncedHeight, setDebouncedHeight] = useState(100);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,6 +49,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
   } | null>(null);
+  
   const [resizingElement, setResizingElement] = useState<{
     element: EditorElement;
     direction: "nw" | "ne" | "sw" | "se";
@@ -55,7 +60,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   } | null>(null);
 
   const editableRef = useRef<HTMLDivElement>(null);
-  const draggingContraintRef = useRef<HTMLDivElement>(null);
+  const draggingConstraintRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fontsToLoad = new Set<string>();
     elements.forEach((element) => {
@@ -250,17 +255,35 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     setResizingElement(null);
   }, []);
 
-  const handleZoom = useCallback((event: React.WheelEvent<HTMLElement>) => {
-    if (event.ctrlKey) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.deltaY > 0) {
-        setZoom((prev) => prev - 0.1);
-      } else {
-        setZoom((prev) => prev + 0.1);
+  const handleZoom = useCallback(
+    (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const delta = event.deltaY > 0 ? -0.1 : 0.1;
+        const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        setLockedTransformOrigin(`${x}px ${y}px`);
+        setZoom(newZoom);
       }
-    }
-  }, []);
+    },
+    [zoom]
+  );
+
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      handleZoom(event);
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, [handleZoom]);
 
   useEffect(() => {
     if (resizingElement) {
@@ -278,8 +301,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   }, [resizingElement, handleResize, handleResizeEnd]);
 
   return (
-    <div className="flex flex-col h-full">
-      <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
+    <div className="flex flex-col h-full ">
+      <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
+        <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
+      </div>
       <div className="flex-1 overflow-hidden bg-gray-200 flex justify-center">
         <div
           style={{
@@ -292,14 +317,13 @@ const Editor: React.FC<Props> = ({ projectId }) => {
               deviceView !== "DESKTOP" ? "0 0 20px rgba(0,0,0,0.1)" : "none",
           }}
           className={`bg-white ${deviceView !== "DESKTOP" ? "rounded-md" : ""}`}
-          ref={draggingContraintRef}
+          ref={draggingConstraintRef}
         >
           <motion.div
             style={{
               transform: `scale(${zoom})`,
-              transformOrigin: "top left",
+              transformOrigin: lockedTransformOrigin,
             }}
-            onWheel={handleZoom}
             id="canvas"
             onContextMenu={(e) => {
               e.preventDefault();
@@ -334,7 +358,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   x: element.x,
                   y: element.y,
                 }}
-                dragConstraints={draggingContraintRef}
+                dragConstraints={draggingConstraintRef}
                 style={{
                   position: "relative",
                   width: element.styles?.width || "100px",
@@ -348,11 +372,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   draggingElement ? "border-dashed border-black border-2" : ""
                 }`}
               >
-                {element.type !== "Frame" ? (
+                {element.type === "Text" && (
                   <div
                     id={element.id}
-                    role="textbox"
-                    aria-multiline="true"
                     contentEditable={element.isSelected}
                     suppressContentEditableWarning={true}
                     onBlur={(e) => handleInput(e, element.id)}
@@ -367,12 +389,20 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     }}
                     ref={editableRef}
                   />
-                ) : (
+                )}
+                {element.type === "Frame" && (
                   <FrameComponents
-                    element={element}
-                    setShowContextMenu={setShowContextMenu}
                     setMenuPosition={setMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    element={element}
                     projectId={projectId}
+                  />
+                )}
+                {element.type === "Image" && (
+                  <img
+                    src={element.src}
+                    alt={`image-${element.id}`}
+                    style={{ ...element.styles }}
                   />
                 )}
                 {element.isSelected && (

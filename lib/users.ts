@@ -4,7 +4,9 @@ import prisma from "./prisma";
 async function createUser(data: Users) {
   try {
     const user = await prisma.users.create({ data });
+    console.log("User created: ", user);
     return { user };
+    
   } catch (error) {
     return { error };
   }
