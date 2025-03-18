@@ -49,7 +49,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
   } | null>(null);
-  
+
   const [resizingElement, setResizingElement] = useState<{
     element: EditorElement;
     direction: "nw" | "ne" | "sw" | "se";
@@ -301,7 +301,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   }, [resizingElement, handleResize, handleResizeEnd]);
 
   return (
-    <div className="flex flex-col h-full ">
+    <div className="flex flex-col h-full w-full canva-component">
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
         <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
       </div>

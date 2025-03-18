@@ -1,4 +1,4 @@
-import { Image, MousePointerClick } from "lucide-react";
+import { MousePointerClick } from "lucide-react";
 import React from "react";
 
 type Props = {};
@@ -11,7 +11,12 @@ const ButtonHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div draggable onDragStart={(e) => onDragStart(e, "Button")}>
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, "Button")}
+      className="flex flex-row justify-between items-center w-full"
+    >
+      <div>Button</div>
       <MousePointerClick />
     </div>
   );

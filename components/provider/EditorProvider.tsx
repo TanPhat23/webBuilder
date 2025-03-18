@@ -15,15 +15,15 @@ const EditorProvider: React.FC<Props> = ({ children }) => {
   const [elements, dispatch] = React.useReducer(elementsReducer, []);
   const [uploadImages, setUploadImages] = React.useState<string[]>([]);
   const [selectedElement, setSelectedElement] = React.useState<EditorElement>();
-  const [projectId, setProjectId] = React.useState<string>("");
+  const [startTour, setStartTour] = React.useState(false);
   const editorValue = React.useMemo(() => ({ elements, dispatch }), [elements]);
   const imageUploadValue = React.useMemo(
     () => ({ uploadImages, setUploadImages }),
     [uploadImages]
   );
   const editorProviderValue = React.useMemo(
-    () => ({ selectedElement, setSelectedElement, projectId, setProjectId }),
-    [selectedElement]
+    () => ({ selectedElement, setSelectedElement, startTour, setStartTour }),
+    [selectedElement, startTour]
   );
 
   const findAndUpdateSelectedElement = React.useCallback(
@@ -55,7 +55,10 @@ const EditorProvider: React.FC<Props> = ({ children }) => {
         elements,
         selectedElement
       );
-      if (updatedElement && JSON.stringify(updatedElement) !== JSON.stringify(selectedElement)) {
+      if (
+        updatedElement &&
+        JSON.stringify(updatedElement) !== JSON.stringify(selectedElement)
+      ) {
         setSelectedElement(updatedElement);
       }
     }

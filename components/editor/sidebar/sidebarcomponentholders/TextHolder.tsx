@@ -11,7 +11,12 @@ const TextHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div draggable onDragStart={(e) => onDragStart(e, "Text")}>
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, "Text")}
+      className="flex flex-row justify-between items-center w-full"
+    >
+      <div>Text</div>
       <TypeIcon />
     </div>
   );

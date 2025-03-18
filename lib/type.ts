@@ -5,13 +5,15 @@ export interface Element {
   id: string;
   content: string;
   isSelected: boolean;
+  name?: string;
   styles?: React.CSSProperties;
+  tailwindStyle?: string;
   x: number;
   y: number;
   src?: string;
   href?: string;
   parentId?: string;
-  projectId: string;
+  projectId?: string;
 }
 
 export interface FrameElement extends Element {
@@ -34,7 +36,7 @@ export type EditorAction =
   | { type: "UPDATE_ALL_SELECTED_ELEMENTS"; payload: Partial<EditorElement> }
   | { type: "UNDO"; payload: EditorElement[] }
   | { type: "REDO"; payload: EditorElement[] }
-  | { type: "LOAD_ELEMENTS_FROM_DB"; payload: EditorElement[]};
+  | { type: "LOAD_ELEMENTS_FROM_DB"; payload: EditorElement[] };
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
