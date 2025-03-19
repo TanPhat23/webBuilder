@@ -23,6 +23,7 @@ const EditorJoyRide: React.FC<Props> = ({ start, onTourEnd, setStartTour }) => {
 
   const steps: Step[] = [
     {
+      
       target: ".editor-component",
       content: (
         <div className="tour-content">

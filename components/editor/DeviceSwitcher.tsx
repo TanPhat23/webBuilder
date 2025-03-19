@@ -1,5 +1,6 @@
 import React from "react";
 import { Smartphone, Tablet, Monitor } from "lucide-react";
+import { DEVICE_SIZES } from "@/lib/constants";
 
 type DeviceViewType = "PHONE" | "TABLET" | "DESKTOP";
 
@@ -21,7 +22,7 @@ const DeviceSwitcher: React.FC<DeviceSwitcherProps> = ({
             ? "bg-blue-100 text-blue-600"
             : "hover:bg-gray-100"
         }`}
-        title="Phone view"
+        title={`width: ${DEVICE_SIZES.PHONE.width} height: ${DEVICE_SIZES.PHONE.height}`}
       >
         <Smartphone size={18} />
       </button>
@@ -32,7 +33,7 @@ const DeviceSwitcher: React.FC<DeviceSwitcherProps> = ({
             ? "bg-blue-100 text-blue-600"
             : "hover:bg-gray-100"
         }`}
-        title="Tablet view"
+        title={`width: ${DEVICE_SIZES.TABLET.width} height: ${DEVICE_SIZES.TABLET.height}`}
       >
         <Tablet size={18} />
       </button>
@@ -43,7 +44,7 @@ const DeviceSwitcher: React.FC<DeviceSwitcherProps> = ({
             ? "bg-blue-100 text-blue-600"
             : "hover:bg-gray-100"
         }`}
-        title="Desktop view"
+        title={`width: ${DEVICE_SIZES.DESKTOP.width} height: ${DEVICE_SIZES.DESKTOP.height}`}
       >
         <Monitor size={18} />
       </button>

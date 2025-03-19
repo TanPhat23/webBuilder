@@ -1,8 +1,8 @@
 import { EditorElement } from "./type";
 import { v4 as uuidv4 } from "uuid";
 
-interface CustomComponent {
-  component: Partial<EditorElement>;
+export interface CustomComponent {
+  component: EditorElement;
 }
 
 const navbarComponent: CustomComponent = {
@@ -17,13 +17,12 @@ const navbarComponent: CustomComponent = {
     styles: {
       height: "50px",
       width: "100%",
-      backgroundColor: "black",
+      backgroundColor: "white",
       display: "flex",
       flexDirection: "row",
-      justifyContent: "space-between",
       alignItems: "center",
     },
-    tailwindStyle: "flex flex-row justify-between items-center",
+    tailwindStyle: "flex flex-row items-center w-full",
     elements: [
       {
         type: "Link",
@@ -33,7 +32,24 @@ const navbarComponent: CustomComponent = {
         x: 0,
         y: 0,
         styles: {
-          color: "white",
+          color: "black",
+          margin: "0 10px",
+        },
+        tailwindStyle: "m-0",
+        href: "/",
+        src: "",
+        parentId: "",
+        projectId: "",
+      },
+      {
+        type: "Link",
+        content: "About",
+        id: "2",
+        isSelected: false,
+        x: 0,
+        y: 0,
+        styles: {
+          color: "black",
           margin: "0 10px",
         },
         tailwindStyle: "m-0",
@@ -50,4 +66,4 @@ const navbarComponent: CustomComponent = {
   },
 };
 
-const customComponents: CustomComponent[] = [navbarComponent];
+export const customComponents: CustomComponent[] = [navbarComponent];

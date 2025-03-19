@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Component } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import TextHolder from "../sidebarcomponentholders/TextHolder";
 import LinkHolder from "../sidebarcomponentholders/LinkHolder";
 import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
+import { customComponents } from "@/lib/styleconstants";
 interface Component {
   component: React.ReactNode;
   label?: string;
@@ -40,20 +41,40 @@ const placeHolderComponents: Component[] = [
     label: "Frame",
   },
 ];
+const onDragStart = (
+  e: React.DragEvent<HTMLDivElement>,
+  elementType: string | undefined
+) => {
+  if (elementType) e.dataTransfer.setData("customElement", elementType);
+};
 
 export const SearchCombobox: React.FC = () => {
   return (
     <Command>
-      <CommandInput placeholder="Search framework..." />
+      <CommandInput placeholder="Search components..." />
       <CommandList>
-        <CommandEmpty>No framework found.</CommandEmpty>
         <CommandGroup>
           {placeHolderComponents.map((framework) => (
-            <CommandItem
-              key={framework.label}
-              value={framework.label}
-            >
+            <CommandItem key={framework.label} value={framework.label}>
               {framework.component}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup>
+          {customComponents.map((components) => (
+            <CommandItem
+              onDrop={(e) => {}}
+              key={components.component.name}
+              value={components.component.name}
+            >
+              <div
+                className="flex justify-between w-full"
+                draggable
+                onDragStart={(e) => onDragStart(e, components.component.name)}
+              >
+                <div>{components.component.name}</div>
+                <Component />
+              </div>
             </CommandItem>
           ))}
         </CommandGroup>

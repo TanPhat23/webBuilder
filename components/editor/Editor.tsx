@@ -22,6 +22,7 @@ import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
 import { ZoomOut } from "lucide-react";
+import { customComponents } from "@/lib/styleconstants";
 
 type Props = {
   projectId: string;
@@ -36,12 +37,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   );
   const [lockedTransformOrigin, setLockedTransformOrigin] =
     useState<string>("0px 0px");
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [debouncedWidth, setDebouncedWidth] = useState(100);
   const [debouncedHeight, setDebouncedHeight] = useState(100);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { uploadImages, setUploadImages } = useImageUploadContext();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const { setSelectedElement } = useEditorContextProvider();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -121,8 +120,23 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       const newElement = e.dataTransfer.getData("elementType");
+      const newCustomElement = e.dataTransfer.getData("customElement");
       if (newElement) {
         createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
+      }
+      if (newCustomElement) {
+        const customComponent = customComponents.find(
+          (component) => component.component.name === newCustomElement
+        );
+        console.log(customComponents);
+        if (customComponent) {
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: {
+              ...customComponent.component,
+            },
+          });
+        }
       }
     },
     [dispatch]
