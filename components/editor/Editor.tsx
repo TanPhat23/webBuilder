@@ -1,3 +1,4 @@
+"use client";
 import React, {
   useRef,
   useState,
@@ -13,34 +14,43 @@ import {
   useImageUploadContext,
 } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
-import { blobToBase64 } from "@/app/utils/HandleImage";
 import { createElements } from "@/app/utils/CreateElements";
-import { v4 as uuidv4 } from "uuid";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { motion } from "framer-motion";
+import ResizeHandle from "./ResizeHandle";
+import DeviceSwitcher from "./DeviceSwitcher";
+import { DEVICE_SIZES } from "@/lib/constants";
+import { ZoomOut } from "lucide-react";
+import { customComponents } from "@/lib/styleconstants";
 
 type Props = {
   projectId: string;
 };
 
 const loadedFonts = new Set<string>();
-const Editor = ({ projectId }: Props) => {
+const Editor: React.FC<Props> = ({ projectId }) => {
   const { elements, dispatch } = useEditorContext();
-  const { optimisticElements, updateElementOptimistically } =
-    useOptimisticElement();
+  const { updateElementOptimistically } = useOptimisticElement();
+  const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
+    "DESKTOP"
+  );
+  const [lockedTransformOrigin, setLockedTransformOrigin] =
+    useState<string>("0px 0px");
+  const [debouncedWidth, setDebouncedWidth] = useState(100);
+  const [debouncedHeight, setDebouncedHeight] = useState(100);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { uploadImages, setUploadImages } = useImageUploadContext();
   const [showContextMenu, setShowContextMenu] = useState(false);
-  const { selectedElement, setSelectedElement } = useEditorContextProvider();
+  const { setSelectedElement } = useEditorContextProvider();
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
-    offsetX: number;
-    offsetY: number;
   } | null>(null);
 
   const [resizingElement, setResizingElement] = useState<{
-    id: string;
+    element: EditorElement;
     direction: "nw" | "ne" | "sw" | "se";
     startX: number;
     startY: number;
@@ -48,10 +58,8 @@ const Editor = ({ projectId }: Props) => {
     startHeight: number;
   } | null>(null);
 
-  const gridSize = 20;
-
   const editableRef = useRef<HTMLDivElement>(null);
-
+  const draggingConstraintRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fontsToLoad = new Set<string>();
     elements.forEach((element) => {
@@ -79,125 +87,59 @@ const Editor = ({ projectId }: Props) => {
     [elements]
   );
 
+  const handleDragStart = useCallback(
+    (event: any, info: any, element: EditorElement) => {
+      setDraggingElement({
+        id: element.id,
+      });
+    },
+    [setDraggingElement]
+  );
+
+  const handleDragEnd = useCallback(
+    (event: any, info: any, element: EditorElement) => {
+      const gridSize = 20;
+      const newX = element.x + info.offset.x;
+      const newY = element.y + info.offset.y;
+
+      const x = Math.round(newX / gridSize) * gridSize;
+      const y = Math.round(newY / gridSize) * gridSize;
+      startTransition(() => {
+        updateElementOptimistically(element.id, {
+          x: x,
+          y: y,
+        });
+      });
+
+      setDraggingElement(null);
+    },
+    [updateElementOptimistically]
+  );
+
   const onDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       const newElement = e.dataTransfer.getData("elementType");
+      const newCustomElement = e.dataTransfer.getData("customElement");
       if (newElement) {
         createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
       }
-    },
-    [dispatch]
-  );
-  // const handleCopy = useCallback(
-  //   (e: React.ClipboardEvent<HTMLDivElement>) => {
-  //     const selectedElement = elements.find((element) => element.isSelected);
-  //     if (selectedElement) {
-  //       const textToCopy = JSON.stringify(selectedElement);
-
-  //       if (navigator.clipboard) {
-  //         navigator.clipboard.writeText(textToCopy).then(() => {
-  //           console.log("Element copied to clipboard:", selectedElement);
-  //         });
-  //       }
-  //     }
-  //     setShowContextMenu(false);
-  //   },
-  //   [elements]
-  // );
-
-  // const handlePaste = useCallback(
-  //   async (e: React.ClipboardEvent<HTMLDivElement>) => {
-  //     try {
-  //       const clipboardItems = await navigator.clipboard.read();
-
-  //       for (const item of clipboardItems) {
-  //         if (item.types.includes("image/png")) {
-  //           const blob = await item.getType("image/png");
-  //           const base64 = await blobToBase64(blob);
-
-  //           setUploadImages([...uploadImages, base64]);
-  //           const newElement: EditorElement = {
-  //             type: "Img",
-  //             id: `Img-${uuidv4()}`,
-  //             content: "",
-  //             isSelected: false,
-  //             x: 50,
-  //             y: 50,
-  //             styles: {
-  //               height: "50px",
-  //               width: "100px",
-  //               textAlign: "center",
-  //             },
-  //             src: base64,
-  //             projectId: projectId,
-  //           };
-
-  //           dispatch({
-  //             type: "ADD_ELEMENT",
-  //             payload: newElement,
-  //           });
-
-  //           return;
-  //         }
-
-  //         if (item.types.includes("text/plain")) {
-  //           const text = await item.getType("text/plain");
-  //           const textContent = await text.text();
-
-  //           try {
-  //             const clipboardText: EditorElement = JSON.parse(textContent);
-  //             const newElement: EditorElement = {
-  //               type: clipboardText.type,
-  //               id: `${clipboardText.type}-${uuidv4()}`,
-  //               content: clipboardText.content,
-  //               isSelected: false,
-  //               x: clipboardText.x + 50,
-  //               y: clipboardText.y + 50,
-  //               styles: {
-  //                 ...clipboardText.styles,
-  //               },
-  //               src: clipboardText.src,
-  //               href: clipboardText.href,
-  //               projectId: projectId,
-  //             };
-
-  //             dispatch({
-  //               type: "ADD_ELEMENT",
-  //               payload: newElement,
-  //             });
-  //           } catch (err) {
-  //             console.error("Failed to parse clipboard text as JSON:", err);
-  //           }
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to read clipboard data:", err);
-  //     }
-  //   },
-  //   [dispatch]
-  // );
-
-  const onResizeHandleMouseDown = useCallback(
-    (
-      e: React.MouseEvent<HTMLDivElement>,
-      id: string,
-      direction: "nw" | "ne" | "sw" | "se"
-    ) => {
-      e.stopPropagation();
-      const element = elements.find((element) => element.id === id);
-      if (element && element.styles) {
-        setResizingElement({
-          id,
-          direction,
-          startX: e.clientX,
-          startY: e.clientY,
-          startWidth: parseInt(element.styles.width?.toString() || "100", 10),
-          startHeight: parseInt(element.styles.height?.toString() || "50", 10),
-        });
+      if (newCustomElement) {
+        const customComponent = customComponents.find(
+          (component) => component.component.name === newCustomElement
+        );
+        console.log(customComponents);
+        if (customComponent) {
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: {
+              ...customComponent.component,
+            },
+          });
+        }
       }
     },
-    [elements]
+    [dispatch]
   );
 
   const handleInput = useCallback(
@@ -209,38 +151,6 @@ const Editor = ({ projectId }: Props) => {
       });
     },
     [updateElementOptimistically, elements]
-  );
-
-  // const handleKeyDown = useCallback(
-  //   (e: React.KeyboardEvent<HTMLDivElement>, element: EditorElement) => {
-  //     console.log("Key down:", e.key);
-  //     e.preventDefault();
-  //     const id = element.id;
-  //     if (e.key === "Backspace") {
-  //       dispatch({ type: "DELETE_ELEMENT", payload: id });
-  //     }
-  //     if (e.key === "Escape") {
-  //       dispatch({
-  //         type: "UPDATE_ELEMENT",
-  //         payload: { id, updates: { isSelected: false } },
-  //       });
-  //     }
-  //   },
-  //   [dispatch]
-  // );
-  const handleEditorKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "z" && e.ctrlKey) {
-        e.preventDefault();
-
-        dispatch({ type: "UNDO", payload: elements });
-      }
-      if (e.key === "y" && e.ctrlKey) {
-        e.preventDefault();
-        dispatch({ type: "REDO", payload: elements });
-      }
-    },
-    [dispatch, elements, selectedElement]
   );
 
   const handleDoubleClick = useCallback(
@@ -264,88 +174,29 @@ const Editor = ({ projectId }: Props) => {
     [dispatch]
   );
 
-  const onMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>,
-    id: string,
-    selected: boolean
-  ) => {
-    const element = elements.find((element) => element.id === id);
-
-    const target = e.target as HTMLElement;
-    if (
-      (target.closest("button") ||
-        target.closest("input") ||
-        target.closest("a")) &&
-      !selected
-    ) {
-      return;
-    }
-    if (selected) {
+  const handleResizeStart = useCallback(
+    (
+      e: React.MouseEvent<HTMLDivElement>,
+      element: EditorElement,
+      direction: "nw" | "ne" | "sw" | "se"
+    ) => {
       e.stopPropagation();
-      return;
-    }
-    if (element) {
-      const canvas = document.getElementById("canvas");
-
-      const offsetX = e.clientX - element.x;
-      const offsetY = e.clientY - element.y;
-
-      if (!canvas) return;
-      if (
-        offsetX > canvas?.getBoundingClientRect().width - 20 ||
-        offsetY > canvas?.getBoundingClientRect().height - 20 ||
-        offsetX < 20 ||
-        offsetY < 20
-      ) {
-        return;
-      }
-
-      startTransition(() => {
-        updateElementOptimistically(id, {
-          styles: { ...element.styles },
-        });
+      setResizingElement({
+        element: element,
+        direction,
+        startX: e.clientX,
+        startY: e.clientY,
+        startWidth: parseInt(element.styles?.width?.toString() || "100", 10),
+        startHeight: parseInt(element.styles?.height?.toString() || "100", 10),
       });
-      setDraggingElement({ id, offsetX, offsetY });
-    }
-  };
+    },
+    [resizingElement]
+  );
 
-  const onMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (draggingElement) {
-        const canvas = document.getElementById("canvas");
-        if (!canvas) return;
-
-        const canvasRect = canvas.getBoundingClientRect();
-        const element = elements.find((e) => e.id === draggingElement.id);
-        if (!element) return;
-
-        const newX = e.clientX - draggingElement.offsetX;
-        const newY = e.clientY - draggingElement.offsetY;
-
-        const elementWidth = parseInt(
-          element.styles?.width?.toString() || "100",
-          10
-        );
-        const elementHeight = parseInt(
-          element.styles?.height?.toString() || "50",
-          10
-        );
-
-        const boundedX = Math.max(
-          0,
-          Math.min(newX, canvasRect.width - elementWidth)
-        );
-        const boundedY = Math.max(0, Math.min(newY, canvasRect.height + 5));
-
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: draggingElement.id,
-            updates: { x: boundedX, y: boundedY },
-          },
-        });
-      } else if (resizingElement) {
-        const { id, direction, startX, startY, startWidth, startHeight } =
+  const handleResize = useCallback(
+    (e: MouseEvent) => {
+      if (resizingElement) {
+        const { element, direction, startX, startY, startWidth, startHeight } =
           resizingElement;
         const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
@@ -371,225 +222,259 @@ const Editor = ({ projectId }: Props) => {
             newHeight = startHeight - deltaY;
             break;
         }
-
-        const canvas = document.getElementById("canvas");
-        if (canvas) {
-          const canvasRect = canvas.getBoundingClientRect();
-          const element = elements.find((e) => e.id === id);
-          if (element) {
-            newWidth = Math.max(
-              50,
-              Math.min(newWidth, canvasRect.width - element.x)
-            );
-            newHeight = Math.max(
-              50,
-              Math.min(newHeight, canvasRect.height - element.y)
-            );
-          }
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current);
         }
 
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id,
-            updates: {
-              styles: {
-                ...elements.find((element) => element.id === id)?.styles,
-                width: `${newWidth}px`,
-                height: `${newHeight}px`,
+        debounceTimerRef.current = setTimeout(() => {
+          dispatch({
+            type: "UPDATE_ELEMENT",
+            payload: {
+              id: element.id,
+              updates: {
+                styles: {
+                  ...element.styles,
+                  width: `${newWidth}px`,
+                  height: `${newHeight}px`,
+                },
               },
             },
+          });
+        }, 100);
+        setDebouncedWidth(newWidth);
+        setDebouncedHeight(newHeight);
+
+        element.styles = {
+          ...element.styles,
+          width: `${newWidth}px`,
+          height: `${newHeight}px`,
+        };
+      }
+    },
+    [resizingElement, updateElementOptimistically]
+  );
+
+  const handleResizeEnd = useCallback(() => {
+    startTransition(() => {
+      if (resizingElement) {
+        updateElementOptimistically(resizingElement.element.id, {
+          styles: {
+            ...resizingElement.element.styles,
+            width: `${debouncedWidth}px`,
+            height: `${debouncedHeight}px`,
           },
         });
       }
+    });
+    setResizingElement(null);
+  }, []);
+
+  const handleZoom = useCallback(
+    (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const delta = event.deltaY > 0 ? -0.1 : 0.1;
+        const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        setLockedTransformOrigin(`${x}px ${y}px`);
+        setZoom(newZoom);
+      }
     },
-    [draggingElement, resizingElement, dispatch, elements]
+    [zoom]
   );
 
-  const onMouseUp = useCallback(() => {
-    if (draggingElement) {
-      const element = elements.find((e) => e.id === draggingElement.id);
-      if (element) {
-        const x = Math.round(element.x / gridSize) * gridSize;
-        const y = Math.round(element.y / gridSize) * gridSize;
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      handleZoom(event);
+    };
 
-        startTransition(() => {
-          updateElementOptimistically(draggingElement.id, {
-            x,
-            y,
-            styles: { ...element.styles },
-          });
-        });
-      }
-      setDraggingElement(null);
-    } else if (resizingElement) {
-      setResizingElement(null);
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, [handleZoom]);
+
+  useEffect(() => {
+    if (resizingElement) {
+      window.addEventListener("mousemove", handleResize);
+      window.addEventListener("mouseup", handleResizeEnd);
+    } else {
+      window.removeEventListener("mousemove", handleResize);
+      window.removeEventListener("mouseup", handleResizeEnd);
     }
-  }, [
-    draggingElement,
-    resizingElement,
-    elements,
-    updateElementOptimistically,
-    gridSize,
-  ]);
+
+    return () => {
+      window.removeEventListener("mousemove", handleResize);
+      window.removeEventListener("mouseup", handleResizeEnd);
+    };
+  }, [resizingElement, handleResize, handleResizeEnd]);
 
   return (
-    <div
-      id="canvas"
-      onContextMenu={(e) => {
-        e.preventDefault();
-      }}
-      onDoubleClick={(e) => {
-        handleDeselectAll(e);
-        if (showContextMenu) setShowContextMenu(false);
-      }}
-      onDrop={onDrop}
-      onKeyDown={(e) => handleEditorKeyDown(e)}
-      onDragOver={(e) => e.preventDefault()}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
-      // onPaste={(e) => handlePaste(e)}
-      tabIndex={0}
-      className="w-full h-full bg-slate-300 relative overflow-auto"
-    >
-      {elements.map((element) => (
+    <div className="flex flex-col h-full w-full canva-component">
+      <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
+        <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
+      </div>
+      <div className="flex-1 overflow-hidden bg-gray-200 flex justify-center">
         <div
-          key={element.id}
-          onContextMenu={(e) => onContextMenu(e, element.id)}
-          onDoubleClick={(e) => {
-            handleDoubleClick(e, element);
-          }}
-          onMouseDown={(e) => onMouseDown(e, element.id, element.isSelected)}
-          // onKeyDown={(e) => handleKeyDown(e, element)}
-          // onCopy={(e) => handleCopy(e)}
-          tabIndex={0}
           style={{
-            position: "absolute",
-            left: element.x,
-            top: element.y,
-            width: element.styles?.width || "100px",
-            height: element.styles?.height || "100px",
+            width: DEVICE_SIZES[deviceView].width,
+            height: DEVICE_SIZES[deviceView].height,
+            transition: "width 0.3s ease",
+            maxHeight: "100%",
+            overflow: "auto",
+            boxShadow:
+              deviceView !== "DESKTOP" ? "0 0 20px rgba(0,0,0,0.1)" : "none",
           }}
-          className={` ${
-            element.isSelected
-              ? "border-2 border-black hover:cursor-text "
-              : "hover:cursor-pointer"
-          } ${
-            draggingElement || resizingElement
-              ? "border-dashed border-black border-2"
-              : ""
-          }`}
+          className={`bg-white ${deviceView !== "DESKTOP" ? "rounded-md" : ""}`}
+          ref={draggingConstraintRef}
         >
-          {element.type === "Button" && (
-            <button
-              id={element.id}
-              contentEditable={element.isSelected}
-              suppressContentEditableWarning={true}
-              onBlur={(e) => handleInput(e, element.id)}
-              style={{
-                pointerEvents: "none",
-                ...element.styles,
-              }}
-            >
-              {element.content}
-            </button>
-          )}
-          {element.type === "Text" && (
-            <div
-              id={element.id}
-              role="textbox"
-              aria-multiline="true"
-              contentEditable={element.isSelected}
-              suppressContentEditableWarning={true}
-              onBlur={(e) => handleInput(e, element.id)}
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(element.content),
-              }}
-              style={{
-                fontFamily: `"${element.styles?.fontFamily}"`,
-                height: "100%",
-                width: "100%",
-                ...element.styles,
-              }}
-              ref={editableRef}
-            />
-          )}
-          {element.type === "Img" && element.src && (
-            <div className="flex justify-center items-center h-full w-full">
-              <img
-                src={element.src}
-                alt="uploaded"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  pointerEvents: "none",
+          <motion.div
+            style={{
+              transform: `scale(${zoom})`,
+              transformOrigin: lockedTransformOrigin,
+            }}
+            id="canvas"
+            onContextMenu={(e) => {
+              e.preventDefault();
+            }}
+            onDoubleClick={(e) => {
+              handleDeselectAll(e);
+              if (showContextMenu) setShowContextMenu(false);
+            }}
+            onDrop={onDrop}
+            onDragOver={(e) => e.preventDefault()}
+            tabIndex={0}
+            className="w-full h-full bg-slate-300 relative overflow-auto"
+          >
+            {elements.map((element) => (
+              <motion.div
+                key={element.id}
+                onContextMenu={(e) => onContextMenu(e, element.id)}
+                onDoubleClick={(e) => {
+                  handleDoubleClick(e, element);
                 }}
-              />
-            </div>
-          )}
-          {element.type === "A" && (
-            <a
-              id={element.id}
-              href={element.href}
-              contentEditable={element.isSelected}
-              suppressContentEditableWarning={true}
-              onBlur={(e) => handleInput(e, element.id)}
-              style={{
-                width: "90%",
-                height: "90%",
-                ...element.styles,
-                pointerEvents: "none",
-              }}
-            >
-              {element.content}
-            </a>
-          )}
-          {element.type === "Frame" && (
-            <FrameComponents
-              element={element}
-              setShowContextMenu={setShowContextMenu}
-              setMenuPosition={setMenuPosition}
-              projectId={projectId}
-            />
-          )}
-          {element.isSelected && (
-            <>
-              <div
-                className="resize-handle resize-handle-se"
-                onMouseDown={(e) =>
-                  onResizeHandleMouseDown(e, element.id, "se")
+                onDragEnd={(event, info) => handleDragEnd(event, info, element)}
+                onDragStart={(event, info) =>
+                  handleDragStart(event, info, element)
                 }
+                drag={!element.isSelected}
+                draggable={!element.isSelected}
+                dragMomentum={false}
+                initial={{ x: element.x, y: element.y }}
+                whileDrag={{ cursor: "grabbing" }}
+                tabIndex={0}
+                animate={{
+                  x: element.x,
+                  y: element.y,
+                }}
+                dragConstraints={draggingConstraintRef}
+                style={{
+                  position: "relative",
+                  width: element.styles?.width || "100px",
+                  height: element.styles?.height || "100px",
+                }}
+                className={`hover:bg-white ${
+                  element.isSelected
+                    ? "border-2 border-black hover:cursor-text "
+                    : "hover:cursor-pointer"
+                } ${
+                  draggingElement ? "border-dashed border-black border-2" : ""
+                }`}
+              >
+                {element.type === "Text" && (
+                  <div
+                    id={element.id}
+                    contentEditable={element.isSelected}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleInput(e, element.id)}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(element.content),
+                    }}
+                    style={{
+                      fontFamily: `"${element.styles?.fontFamily}"`,
+                      height: "100%",
+                      width: "100%",
+                      ...element.styles,
+                    }}
+                    ref={editableRef}
+                  />
+                )}
+                {element.type === "Frame" && (
+                  <FrameComponents
+                    setMenuPosition={setMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    element={element}
+                    projectId={projectId}
+                  />
+                )}
+                {element.type === "Image" && (
+                  <img
+                    src={element.src}
+                    alt={`image-${element.id}`}
+                    style={{ ...element.styles }}
+                  />
+                )}
+                {element.isSelected && (
+                  <>
+                    <ResizeHandle
+                      direction="nw"
+                      onMouseDown={(direction) =>
+                        handleResizeStart(
+                          window.event as any,
+                          element,
+                          direction
+                        )
+                      }
+                    />
+                    <ResizeHandle
+                      direction="ne"
+                      onMouseDown={(direction) =>
+                        handleResizeStart(
+                          window.event as any,
+                          element,
+                          direction
+                        )
+                      }
+                    />
+                    <ResizeHandle
+                      direction="sw"
+                      onMouseDown={(direction) =>
+                        handleResizeStart(
+                          window.event as any,
+                          element,
+                          direction
+                        )
+                      }
+                    />
+                    <ResizeHandle
+                      direction="se"
+                      onMouseDown={(direction) =>
+                        handleResizeStart(
+                          window.event as any,
+                          element,
+                          direction
+                        )
+                      }
+                    />
+                  </>
+                )}
+              </motion.div>
+            ))}
+            {showContextMenu && (
+              <ContextMenu
+                x={menuPosition.x}
+                y={menuPosition.y}
+                onClose={() => setShowContextMenu(false)}
               />
-              <div
-                className="resize-handle resize-handle-sw"
-                onMouseDown={(e) =>
-                  onResizeHandleMouseDown(e, element.id, "sw")
-                }
-              />
-              <div
-                className="resize-handle resize-handle-ne"
-                onMouseDown={(e) =>
-                  onResizeHandleMouseDown(e, element.id, "ne")
-                }
-              />
-              <div
-                className="resize-handle resize-handle-nw"
-                onMouseDown={(e) =>
-                  onResizeHandleMouseDown(e, element.id, "nw")
-                }
-              />
-            </>
-          )}
+            )}
+          </motion.div>
         </div>
-      ))}
-      {showContextMenu && (
-        <ContextMenu
-          x={menuPosition.x}
-          y={menuPosition.y}
-          onClose={() => setShowContextMenu(false)}
-        />
-      )}
+      </div>
     </div>
   );
 };

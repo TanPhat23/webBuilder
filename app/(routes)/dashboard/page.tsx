@@ -26,6 +26,7 @@ export default function Page() {
     process.env.NEXT_PUBLIC_API_URL + "/projects",
     GetAll
   );
+  
   if (error) console.log(error);
   return (
     <SidebarProvider>
@@ -62,13 +63,17 @@ export default function Page() {
             ) : (
               <ul className="m-4 grid gap-4 grid-cols-6">
                 {projects?.map((project) => (
-                  <li key={project.id}>
-                    <Button
-                      className="w-32 h-32"
-                      onClick={() => router.push(`/editor/${project.id}`)}
-                    >
-                      {project.name}
-                    </Button>
+                  <li key={project.id} className="bg-white rounded-lg shadow-md">
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold">{project.name}</h3>
+                      <p className="text-sm">{project.description}</p>
+                      <Button
+                        onClick={() => router.push(`/editor/${project.id}`)}
+                        className="mt-4"
+                      >
+                        Edit
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>

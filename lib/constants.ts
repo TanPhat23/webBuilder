@@ -13,3 +13,9 @@ export const authLinks = [
   { title: "Login", path: "/sign-in" },
   { title: "Sign Up", path: "/sign-up" },
 ];
+
+export const DEVICE_SIZES = {
+  PHONE: { width: 375, height: "100%" },
+  TABLET: { width: 768, height: "100%" },
+  DESKTOP: { width: "100%", height: "100%" },
+};

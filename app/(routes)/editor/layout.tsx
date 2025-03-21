@@ -10,13 +10,13 @@ export default function EditorLayout({
   return (
     <SidebarProvider>
       <EditorProvider>
-        <div className="flex w-screen h-screen">
+        <div className="flex w-screen h-screen editor-component">
           <EditorSideBar2 />
-          <main className="w-full">
-            <SidebarTrigger />
+          <main className="w-full relative ">
+            <SidebarTrigger className="absolute top-0 z-10" />
             {children}
           </main>
-          <LayoutSideBar/>
+          <LayoutSideBar />
         </div>
       </EditorProvider>
     </SidebarProvider>

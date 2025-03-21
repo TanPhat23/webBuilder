@@ -1,6 +1,5 @@
 import React, { startTransition, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 type Props = {
@@ -8,10 +7,9 @@ type Props = {
 };
 
 const TextColorInput = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
   const [color, setColor] = useState("#000000");
   const [colorText, setColorText] = useState("#000000");
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;

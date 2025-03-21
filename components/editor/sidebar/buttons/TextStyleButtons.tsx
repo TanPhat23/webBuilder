@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { useEditorContext } from "@/lib/context";
+
 import { EditorElement } from "@/lib/type";
 import { Bold, Italic, Strikethrough, Underline } from "lucide-react";
 import React, { startTransition } from "react";
@@ -17,7 +17,6 @@ const TextStyle = [
 ];
 
 const TextStyleButtons = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
   const { updateElementOptimistically } = useOptimisticElement();
   const [activeStyles, setActiveStyles] = React.useState<
     Record<string, boolean>

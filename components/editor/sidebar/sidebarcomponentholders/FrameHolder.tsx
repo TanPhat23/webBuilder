@@ -12,7 +12,12 @@ const FrameHolder = (props: Props) => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div draggable onDragStart={(e) => onDragStart(e, "Frame")}>
+    <div
+      draggable
+      onDragStart={(e) => onDragStart(e, "Frame")}
+      className="flex flex-row justify-between items-center w-full"
+    >
+      <div>Frame</div>
       <Frame />
     </div>
   );

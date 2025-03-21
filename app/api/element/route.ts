@@ -45,7 +45,10 @@ export const Update = async (data: EditorElement) => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update element");
+      throw new Error(
+        errorData.message ||
+          `Failed to update element + ${JSON.stringify(data)} at ${URL}`
+      );
     } else {
       console.log("Updated element successfully");
     }
@@ -76,7 +79,7 @@ export const Delete = async (id: string) => {
   }
 };
 
-export const GetAll = async (url: string) => {
+export const GetAll = async (url: string): Promise<EditorElement[]> => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");

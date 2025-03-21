@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -113,44 +114,6 @@
     @apply bg-background text-foreground;
   }
 }
-.poppins-extrabold {
-  font-family: "Poppins", serif;
-  font-weight: 800;
-  font-style: normal;
-}
-
-.resize-handle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background-color: black;
-  z-index: 1;
-}
-
-.resize-handle-se {
-  right: -5px;
-  bottom: -5px;
-  cursor: se-resize;
-}
-
-.resize-handle-sw {
-  left: -5px;
-  bottom: -5px;
-  cursor: sw-resize;
-}
-
-.resize-handle-ne {
-  right: -5px;
-  top: -5px;
-  cursor: ne-resize;
-}
-
-.resize-handle-nw {
-  left: -5px;
-  top: -5px;
-  cursor: nw-resize;
-}
-
 
 
 @layer base {
@@ -161,3 +124,8 @@
     @apply bg-background text-foreground;
   }
 }
+html, body {
+  height: auto;
+  overflow-y: auto;
+}
+

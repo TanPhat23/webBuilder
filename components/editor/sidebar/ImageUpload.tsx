@@ -2,15 +2,17 @@ import { useEditorContext, useImageUploadContext } from "@/lib/context";
 import React, { useCallback } from "react";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
-import { Element } from "@/lib/type";
+import { EditorElement, Element } from "@/lib/type";
 import { v4 as uuidv4 } from "uuid";
+import { useParams, useRouter } from "next/navigation";
 
 type Props = {};
 
 const ImageUpload = (props: Props) => {
   const { uploadImages, setUploadImages } = useImageUploadContext();
   const { dispatch } = useEditorContext();
-
+  const params = useParams();
+  const { slug } = params;
   const handleRemoveImage = (index: number) => {
     const newImages = uploadImages.filter((_, i) => i !== index);
     setUploadImages(newImages);
@@ -24,7 +26,7 @@ const ImageUpload = (props: Props) => {
         const aspectRatio = img.naturalWidth / img.naturalHeight;
         const fixedWidth = 200;
         const calculatedHeight = fixedWidth / aspectRatio;
-        const newElement: Element = {
+        const newElement: EditorElement = {
           type: "Img",
           id: `Img-${uuidv4()}`,
           isSelected: false,
@@ -36,6 +38,7 @@ const ImageUpload = (props: Props) => {
             height: `${calculatedHeight}px`,
           },
           src: uploadImages[index],
+          projectId: slug as string,
         };
         dispatch({ type: "ADD_ELEMENT", payload: newElement });
       };
