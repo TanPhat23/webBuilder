@@ -23,6 +23,7 @@ interface Component {
   label?: string;
 }
 
+
 const placeHolderComponents: Component[] = [
   {
     component: <TextHolder />,
