@@ -8,15 +8,15 @@ import { EditorElement, FrameElement } from "@/lib/type";
 
 type Props = {
   element: EditorElement;
-  setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  setMenuPosition: React.Dispatch<
+  setContextMenuPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
+  setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
   projectId: string;
 };
 
 const FrameComponents = React.memo(
-  ({ projectId, element, setShowContextMenu, setMenuPosition }: Props) => {
+  ({ projectId, element, setShowContextMenu, setContextMenuPosition }: Props) => {
     const { dispatch } = useEditorContext();
     const { setSelectedElement } = useEditorContextProvider();
     const { updateElementOptimistically } = useOptimisticElement();
@@ -27,7 +27,7 @@ const FrameComponents = React.memo(
       useState<EditorElement | null>(null);
     const dragConstraint = useRef<HTMLDivElement>(null);
 
-    const swapElements = () =>{
+    const swapElements = () => {
       if (!hoveredElement || !draggingElement || !element) return;
 
       const frameElements = [...(element as FrameElement).elements];
@@ -57,7 +57,7 @@ const FrameComponents = React.memo(
 
       setDraggingElement(null);
       setHoveredElement(null);
-    }
+    };
 
     const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLElement>, element: EditorElement) => {
@@ -72,7 +72,6 @@ const FrameComponents = React.memo(
       []
     );
 
-    // Handle drop events for adding new elements
     const handleDrop = useCallback(
       (e: React.DragEvent<HTMLDivElement>, element: EditorElement) => {
         e.preventDefault();
@@ -112,24 +111,23 @@ const FrameComponents = React.memo(
         e.preventDefault();
         e.stopPropagation();
         const newContent = e.currentTarget.innerHTML;
-        startTransition(()=>{
+        startTransition(() => {
           updateElementOptimistically(element.id, { content: newContent });
-        })
+        });
       },
       [updateElementOptimistically]
     );
 
     const handleContextMenu = useCallback(
-      (e: React.MouseEvent, element: EditorElement) => {
+      (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
         e.preventDefault();
         e.stopPropagation();
         setSelectedElement(element);
-        setMenuPosition({ x: e.clientX, y: e.clientY });
         setShowContextMenu(true);
+        setContextMenuPosition({ x: e.clientX, y: e.clientY });
       },
-      [setSelectedElement, setMenuPosition, setShowContextMenu]
+      [setSelectedElement, setShowContextMenu,]
     );
-
 
     const handleMouseEnter = useCallback(
       (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
@@ -141,7 +139,6 @@ const FrameComponents = React.memo(
       [draggingElement]
     );
 
-   
     const handleMouseLeave = useCallback(
       (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();

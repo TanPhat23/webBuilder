@@ -1,5 +1,5 @@
 import { EditorElement } from "./type";
-import { v4 as uuidv4 } from "uuid";  
+import { v4 as uuidv4 } from "uuid";
 export interface CustomComponent {
   component: EditorElement;
 }
@@ -72,21 +72,22 @@ const footerComponent: CustomComponent = {
     id: "",
     content: "",
     isSelected: false,
-    x: 0, 
-    y: 590, 
+    x: 0,
+    y: 590,
     styles: {
       position: "absolute",
       bottom: "0",
-      height: "80px", 
+      height: "80px",
       width: "100%",
-      backgroundColor: "#333", 
+      backgroundColor: "#333",
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-around", 
-      padding: "20px 0", 
+      justifyContent: "space-around",
+      padding: "20px 0",
     },
-    tailwindStyle: "flex flex-row items-center justify-around w-full p-5 bg-gray-800",
+    tailwindStyle:
+      "flex flex-row items-center justify-around w-full p-5 bg-gray-800",
     elements: [
       {
         type: "Text",
@@ -153,21 +154,22 @@ const footerComponent2: CustomComponent = {
     id: "",
     content: "",
     isSelected: false,
-    x: 0, 
-    y: 590, 
+    x: 0,
+    y: 590,
     styles: {
       position: "absolute",
       bottom: "0",
-      height: "100px", 
+      height: "100px",
       width: "100%",
       backgroundColor: "#2c3e50",
       display: "flex",
-      flexDirection: "column", 
+      flexDirection: "column",
       alignItems: "center",
-      justifyContent: "center", 
-      padding: "20px 0", 
+      justifyContent: "center",
+      padding: "20px 0",
     },
-    tailwindStyle: "flex flex-col items-center justify-center w-full p-5 bg-blue-900",
+    tailwindStyle:
+      "flex flex-col items-center justify-center w-full p-5 bg-blue-900",
     elements: [
       {
         type: "Text",
@@ -178,7 +180,7 @@ const footerComponent2: CustomComponent = {
         y: 0,
         styles: {
           color: "white",
-          marginBottom: "10px", 
+          marginBottom: "10px",
         },
         tailwindStyle: "text-white mb-2",
         href: "",
@@ -202,7 +204,7 @@ const footerComponent2: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -218,21 +220,22 @@ const footerComponent3: CustomComponent = {
     id: "",
     content: "",
     isSelected: false,
-    x: 0, 
-    y: 590, 
+    x: 0,
+    y: 590,
     styles: {
       position: "absolute",
       bottom: "0",
-      height: "90px", 
+      height: "90px",
       width: "100%",
-      backgroundColor: "#8e44ad", 
+      backgroundColor: "#8e44ad",
       display: "flex",
-      flexDirection: "row", 
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       padding: "20px 0",
     },
-    tailwindStyle: "flex flex-row items-center justify-center w-full p-5 bg-purple-700",
+    tailwindStyle:
+      "flex flex-row items-center justify-center w-full p-5 bg-purple-700",
     elements: [
       {
         type: "Text",
@@ -243,7 +246,7 @@ const footerComponent3: CustomComponent = {
         y: 0,
         styles: {
           color: "white",
-          marginRight: "10px", 
+          marginRight: "10px",
         },
         tailwindStyle: "text-white mr-2",
         href: "",
@@ -269,7 +272,7 @@ const footerComponent3: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -285,21 +288,22 @@ const footerComponent4: CustomComponent = {
     id: "",
     content: "",
     isSelected: false,
-    x: 0, 
-    y: 590, 
+    x: 0,
+    y: 590,
     styles: {
       position: "absolute",
       bottom: "0",
-      height: "70px", 
+      height: "70px",
       width: "100%",
-      backgroundColor: "#4a4a4a", 
+      backgroundColor: "#4a4a4a",
       display: "flex",
-      flexDirection: "row", 
+      flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       padding: "20px 40px",
     },
-    tailwindStyle: "flex flex-row items-center justify-between w-full p-5 bg-gray-700",
+    tailwindStyle:
+      "flex flex-row items-center justify-between w-full p-5 bg-gray-700",
     elements: [
       {
         type: "Text",
@@ -367,7 +371,7 @@ const footerComponent4: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -386,17 +390,18 @@ const headerComponent: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "70px", 
+      height: "70px",
       width: "100%",
       backgroundColor: "#e3f2fd",
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "space-between", 
-      padding: "0 20px", 
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", 
+      justifyContent: "space-between",
+      padding: "0 20px",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     },
-    tailwindStyle: "flex flex-row items-center justify-between w-full p-4 bg-blue-100 shadow-md",
+    tailwindStyle:
+      "flex flex-row items-center justify-between w-full p-4 bg-blue-100 shadow-md",
     elements: [
       {
         type: "Text",
@@ -407,8 +412,8 @@ const headerComponent: CustomComponent = {
         y: 0,
         styles: {
           color: "#0d47a1",
-          fontSize: "28px", 
-          fontWeight: "bold", 
+          fontSize: "28px",
+          fontWeight: "bold",
         },
         tailwindStyle: "text-blue-900 text-3xl font-bold",
         href: "",
@@ -425,8 +430,8 @@ const headerComponent: CustomComponent = {
         y: 0,
         styles: {
           color: "#0d47a1",
-          margin: "0 10px", 
-          fontSize: "18px", 
+          margin: "0 10px",
+          fontSize: "18px",
         },
         tailwindStyle: "m-2 text-blue-900 text-lg",
         href: "/",
@@ -451,7 +456,7 @@ const headerComponent: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -476,11 +481,12 @@ const headerComponent2: CustomComponent = {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center", 
+      justifyContent: "center",
       padding: "0 20px",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     },
-    tailwindStyle: "flex flex-row items-center justify-center w-full p-4 bg-gray-900 shadow-md",
+    tailwindStyle:
+      "flex flex-row items-center justify-center w-full p-4 bg-gray-900 shadow-md",
     elements: [
       {
         type: "Text",
@@ -535,7 +541,7 @@ const headerComponent2: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -560,11 +566,12 @@ const headerComponent3: CustomComponent = {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "flex-start", 
+      justifyContent: "flex-start",
       padding: "0 20px",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     },
-    tailwindStyle: "flex flex-row items-center justify-start w-full p-4 bg-green-500 shadow-md",
+    tailwindStyle:
+      "flex flex-row items-center justify-start w-full p-4 bg-green-500 shadow-md",
     elements: [
       {
         type: "Text",
@@ -619,7 +626,7 @@ const headerComponent3: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
@@ -628,4 +635,13 @@ const headerComponent3: CustomComponent = {
   },
 };
 
-export const customComponents: CustomComponent[] = [navbarComponent, footerComponent, footerComponent2, footerComponent3, footerComponent4, headerComponent, headerComponent2, headerComponent3];
+export const customComponents: CustomComponent[] = [
+  navbarComponent,
+  footerComponent,
+  footerComponent2,
+  footerComponent3,
+  footerComponent4,
+  headerComponent,
+  headerComponent2,
+  headerComponent3,
+];

@@ -29,6 +29,34 @@ export const Create = async (data: EditorElement) => {
   }
 };
 
+export const BatchCreate = async (elements: EditorElement[]) => {
+  try {
+    const { userId, sessionId } = await auth();
+    if (!userId) throw new Error("User not found");
+
+    const client = await clerkClient();
+    const token = await client.sessions.getToken(sessionId, "usertemp");
+
+    const response = await fetch(`${URL}/batch`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token.jwt}`,
+      },
+      body: JSON.stringify({ elements }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(errorData || "Failed to create elements in batch");
+    }
+  } catch (error: any) {
+    throw new Error(
+      error.message || "Failed to process batch element creation"
+    );
+  }
+};
+
 export const Update = async (data: EditorElement) => {
   try {
     const { userId, sessionId } = await auth();
@@ -49,8 +77,6 @@ export const Update = async (data: EditorElement) => {
         errorData.message ||
           `Failed to update element + ${JSON.stringify(data)} at ${URL}`
       );
-    } else {
-      console.log("Updated element successfully");
     }
   } catch (error: any) {
     throw new Error(error);
