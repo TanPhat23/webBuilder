@@ -65,8 +65,13 @@ export async function POST(req: NextRequest) {
       UpdatedAt: new Date(),
     };
 
-    await createUser(user as Users);
-  }else if (eventType === "user.deleted") {
+    const error = await createUser(user as Users);
+    if (error){
+      return new NextResponse("Error occurred -- creating user", {
+        status: 400,
+      });
+    }
+  } else if (eventType === "user.deleted") {
     const { id } = evt.data;
 
     if (!id) {
@@ -76,7 +81,7 @@ export async function POST(req: NextRequest) {
     }
     console.log("Deleting user with ID: ", id);
     await deleteUser(id);
-  }else if (eventType === "user.updated"){
+  } else if (eventType === "user.updated") {
     const { id, email_addresses, last_name, first_name, image_url } = evt.data;
 
     if (!id || !email_addresses) {

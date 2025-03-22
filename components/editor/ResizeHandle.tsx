@@ -1,29 +1,54 @@
-import React from 'react';
+import React, { forwardRef } from "react";
 
 type ResizeHandleProps = {
-  direction: 'nw' | 'ne' | 'sw' | 'se';
-  onMouseDown: (direction: 'nw' | 'ne' | 'sw' | 'se') => void;
+  direction: "nw" | "ne" | "sw" | "se";
+  onResizeStart?: (direction: string) => void;
 };
 
-const ResizeHandle: React.FC<ResizeHandleProps> = ({ direction, onMouseDown }) => {
-  const getPosition = () => {
-    switch (direction) {
-      case 'nw': return 'top-[-5px] left-[-5px] cursor-nwse-resize';
-      case 'ne': return 'top-[-5px] right-[-5px] cursor-nesw-resize';
-      case 'sw': return 'bottom-[-5px] left-[-5px] cursor-nesw-resize';
-      case 'se': return 'bottom-[-5px] right-[-5px] cursor-nwse-resize';
-    }
-  };
+const ResizeHandle = forwardRef<HTMLDivElement, ResizeHandleProps>(
+  ({ direction, onResizeStart }, ref) => {
+    const handleMouseDown = React.useCallback(() => {
+      if (onResizeStart) onResizeStart(direction);
+    }, [direction, onResizeStart]);
 
-  return (
-    <div
-      className={`absolute w-[10px] h-[10px] bg-blue-500 rounded-full ${getPosition()}`}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-        onMouseDown(direction);
-      }}
-    />
-  );
-};
+    return (
+      <div
+        ref={ref}
+        className={`resize-handle resize-handle-${direction}`}
+        onMouseDown={handleMouseDown}
+        style={{
+          position: "absolute",
+          width: "10px",
+          height: "10px",
+          background: "white",
+          border: "1px solid black",
+          borderRadius: "50%",
+          ...(direction === "nw" && {
+            top: "-5px",
+            left: "-5px",
+            cursor: "nw-resize",
+          }),
+          ...(direction === "ne" && {
+            top: "-5px",
+            right: "-5px",
+            cursor: "ne-resize",
+          }),
+          ...(direction === "sw" && {
+            bottom: "-5px",
+            left: "-5px",
+            cursor: "sw-resize",
+          }),
+          ...(direction === "se" && {
+            bottom: "-5px",
+            right: "-5px",
+            cursor: "se-resize",
+          }),
+        }}
+      />
+    );
+  }
+);
+
+ResizeHandle.displayName = "ResizeHandle";
 
 export default ResizeHandle;

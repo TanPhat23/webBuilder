@@ -14,7 +14,7 @@ const LinkHolder = (props: Props) => {
   return (
     <div
       draggable
-      onDragStart={(e) => onDragStart(e, "A")}
+      onDragStart={(e) => onDragStart(e, "Link")}
       className="flex flex-row justify-between items-center w-full"
     >
       <div>Link</div>

@@ -8,11 +8,7 @@ import React, {
 } from "react";
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
-import {
-  useEditorContext,
-  useEditorContextProvider,
-  useImageUploadContext,
-} from "@/lib/context";
+import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import { createElements } from "@/app/utils/CreateElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
@@ -21,8 +17,10 @@ import { motion } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
-import { ZoomOut } from "lucide-react";
 import { customComponents } from "@/lib/styleconstants";
+import { CreateCustomComponents } from "@/lib/utils/createCustomComponents";
+import { Delete } from "@/app/api/element/route";
+import Link from "next/link";
 
 type Props = {
   projectId: string;
@@ -37,26 +35,26 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   );
   const [lockedTransformOrigin, setLockedTransformOrigin] =
     useState<string>("0px 0px");
-  const [debouncedWidth, setDebouncedWidth] = useState(100);
-  const [debouncedHeight, setDebouncedHeight] = useState(100);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+
   const { setSelectedElement } = useEditorContextProvider();
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+
   const [zoom, setZoom] = useState(1);
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
   } | null>(null);
 
-  const [resizingElement, setResizingElement] = useState<{
-    element: EditorElement;
-    direction: "nw" | "ne" | "sw" | "se";
-    startX: number;
-    startY: number;
-    startWidth: number;
-    startHeight: number;
-  } | null>(null);
+  const resizingElement = useRef<HTMLDivElement>(null);
+  const resizeDirection = useRef<"nw" | "ne" | "sw" | "se">("nw");
+  const nwRef = useRef<HTMLDivElement>(null);
+  const neRef = useRef<HTMLDivElement>(null);
+  const swRef = useRef<HTMLDivElement>(null);
+  const seRef = useRef<HTMLDivElement>(null);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const draggingConstraintRef = useRef<HTMLDivElement>(null);
@@ -73,19 +71,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     fontsToLoad.forEach((font) => {});
   }, [elements]);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>, id: string) => {
-      e.preventDefault();
-
-      const selectElement = elements.find((element) => element.id === id);
-      if (selectElement?.isSelected) {
-        setMenuPosition({ x: e.clientX, y: e.clientY });
-        setShowContextMenu(true);
-        setSelectedElement(selectElement);
-      }
-    },
-    [elements]
-  );
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setShowContextMenu(true);
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+  };
 
   const handleDragStart = useCallback(
     (event: any, info: any, element: EditorElement) => {
@@ -115,7 +105,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     },
     [updateElementOptimistically]
   );
-
   const onDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
@@ -128,14 +117,12 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         const customComponent = customComponents.find(
           (component) => component.component.name === newCustomElement
         );
-        console.log(customComponents);
         if (customComponent) {
-          dispatch({
-            type: "ADD_ELEMENT",
-            payload: {
-              ...customComponent.component,
-            },
-          });
+          CreateCustomComponents(
+            customComponent.component,
+            dispatch,
+            projectId
+          );
         }
       }
     },
@@ -174,101 +161,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     [dispatch]
   );
 
-  const handleResizeStart = useCallback(
-    (
-      e: React.MouseEvent<HTMLDivElement>,
-      element: EditorElement,
-      direction: "nw" | "ne" | "sw" | "se"
-    ) => {
-      e.stopPropagation();
-      setResizingElement({
-        element: element,
-        direction,
-        startX: e.clientX,
-        startY: e.clientY,
-        startWidth: parseInt(element.styles?.width?.toString() || "100", 10),
-        startHeight: parseInt(element.styles?.height?.toString() || "100", 10),
-      });
-    },
-    [resizingElement]
-  );
-
-  const handleResize = useCallback(
-    (e: MouseEvent) => {
-      if (resizingElement) {
-        const { element, direction, startX, startY, startWidth, startHeight } =
-          resizingElement;
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-
-        let newWidth = startWidth;
-        let newHeight = startHeight;
-
-        switch (direction) {
-          case "se":
-            newWidth = startWidth + deltaX;
-            newHeight = startHeight + deltaY;
-            break;
-          case "sw":
-            newWidth = startWidth - deltaX;
-            newHeight = startHeight + deltaY;
-            break;
-          case "ne":
-            newWidth = startWidth + deltaX;
-            newHeight = startHeight - deltaY;
-            break;
-          case "nw":
-            newWidth = startWidth - deltaX;
-            newHeight = startHeight - deltaY;
-            break;
-        }
-        if (debounceTimerRef.current) {
-          clearTimeout(debounceTimerRef.current);
-        }
-
-        debounceTimerRef.current = setTimeout(() => {
-          dispatch({
-            type: "UPDATE_ELEMENT",
-            payload: {
-              id: element.id,
-              updates: {
-                styles: {
-                  ...element.styles,
-                  width: `${newWidth}px`,
-                  height: `${newHeight}px`,
-                },
-              },
-            },
-          });
-        }, 100);
-        setDebouncedWidth(newWidth);
-        setDebouncedHeight(newHeight);
-
-        element.styles = {
-          ...element.styles,
-          width: `${newWidth}px`,
-          height: `${newHeight}px`,
-        };
-      }
-    },
-    [resizingElement, updateElementOptimistically]
-  );
-
-  const handleResizeEnd = useCallback(() => {
-    startTransition(() => {
-      if (resizingElement) {
-        updateElementOptimistically(resizingElement.element.id, {
-          styles: {
-            ...resizingElement.element.styles,
-            width: `${debouncedWidth}px`,
-            height: `${debouncedHeight}px`,
-          },
-        });
-      }
-    });
-    setResizingElement(null);
-  }, []);
-
   const handleZoom = useCallback(
     (event: WheelEvent) => {
       if (event.ctrlKey || event.metaKey) {
@@ -286,6 +178,121 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     },
     [zoom]
   );
+  const handleResizeStart = (
+    direction: "nw" | "ne" | "sw" | "se",
+    elementId: string
+  ) => {
+    resizeDirection.current = direction;
+    resizingElement.current = document.getElementById(
+      elementId
+    ) as HTMLDivElement;
+    document.addEventListener("mousemove", handleResize);
+    document.addEventListener("mouseup", handleResizeEnd);
+  };
+
+  const handleResize = React.useCallback(
+    (e: MouseEvent) => {
+      const resizingElementFromRef = resizingElement.current;
+      if (!resizingElementFromRef) return;
+
+      const elementId = resizingElementFromRef.id;
+      if (!elementId) return;
+
+      const targetElement = elements.find((el) => el.id === elementId);
+      if (!targetElement) return;
+
+      const styles = window.getComputedStyle(resizingElementFromRef);
+      const width = parseInt(styles.width, 10);
+      const height = parseInt(styles.height, 10);
+      const dX = e.movementX;
+
+      const dY = e.movementY;
+
+      let newWidth, newHeight;
+
+      switch (resizeDirection.current) {
+        case "nw":
+          newWidth = width - dX;
+          newHeight = height - dY;
+          break;
+        case "ne":
+          newWidth = width + dX;
+          newHeight = height - dY;
+          break;
+        case "sw":
+          newWidth = width - dX;
+          newHeight = height + dY;
+          break;
+        case "se":
+          newWidth = width + dX;
+          newHeight = height + dY;
+          break;
+      }
+
+      dispatch({
+        type: "UPDATE_ELEMENT",
+        payload: {
+          id: elementId,
+          updates: {
+            styles: {
+              ...targetElement.styles,
+              width: `${newWidth}px`,
+              height: `${newHeight}px`,
+            },
+          },
+        },
+      });
+    },
+    [elements, dispatch]
+  );
+
+  const handleResizeEnd = () => {
+    const element = elements.find(
+      (el) => el.id === resizingElement.current?.id
+    );
+    if (!element) return;
+
+    startTransition(() => {
+      updateElementOptimistically(resizingElement.current?.id || "", {
+        styles: {
+          ...element.styles,
+          width: resizingElement.current?.style.width,
+          height: resizingElement.current?.style.height,
+        },
+      } as React.CSSProperties);
+    });
+    document.removeEventListener("mousemove", handleResize);
+    document.removeEventListener("mouseup", handleResizeEnd);
+  };
+
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>, element: EditorElement) => {
+      if ((e.key === "Delete" || e.key === "Backspace") && element.isSelected) {
+        const tempElement: EditorElement = element;
+        try {
+          dispatch({
+            type: "DELETE_ELEMENT",
+            payload: element.id,
+          });
+          Delete(element.id);
+        } catch (error) {
+          console.error("Failed to delete element:", error);
+          dispatch({
+            type: "ADD_ELEMENT",
+            payload: tempElement,
+          });
+        }
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", handleResize);
+      document.removeEventListener("mouseup", handleResizeEnd);
+    };
+  }, []);
 
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
@@ -298,21 +305,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       window.removeEventListener("wheel", handleWheel);
     };
   }, [handleZoom]);
-
-  useEffect(() => {
-    if (resizingElement) {
-      window.addEventListener("mousemove", handleResize);
-      window.addEventListener("mouseup", handleResizeEnd);
-    } else {
-      window.removeEventListener("mousemove", handleResize);
-      window.removeEventListener("mouseup", handleResizeEnd);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleResize);
-      window.removeEventListener("mouseup", handleResizeEnd);
-    };
-  }, [resizingElement, handleResize, handleResizeEnd]);
 
   return (
     <div className="flex flex-col h-full w-full canva-component">
@@ -341,10 +333,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             id="canvas"
             onContextMenu={(e) => {
               e.preventDefault();
+              handleContextMenu(e);
             }}
             onDoubleClick={(e) => {
               handleDeselectAll(e);
-              if (showContextMenu) setShowContextMenu(false);
             }}
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
@@ -354,7 +346,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             {elements.map((element) => (
               <motion.div
                 key={element.id}
-                onContextMenu={(e) => onContextMenu(e, element.id)}
                 onDoubleClick={(e) => {
                   handleDoubleClick(e, element);
                 }}
@@ -362,6 +353,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 onDragStart={(event, info) =>
                   handleDragStart(event, info, element)
                 }
+                onKeyDown={(e) => handleKeyPress(e, element)}
                 drag={!element.isSelected}
                 draggable={!element.isSelected}
                 dragMomentum={false}
@@ -372,13 +364,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   x: element.x,
                   y: element.y,
                 }}
+                ref={resizingElement}
                 dragConstraints={draggingConstraintRef}
                 style={{
                   position: "relative",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
                 }}
-                className={`hover:bg-white ${
+                className={` ${
                   element.isSelected
                     ? "border-2 border-black hover:cursor-text "
                     : "hover:cursor-pointer"
@@ -406,7 +399,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 )}
                 {element.type === "Frame" && (
                   <FrameComponents
-                    setMenuPosition={setMenuPosition}
+                    setContextMenuPosition={setContextMenuPosition}
                     setShowContextMenu={setShowContextMenu}
                     element={element}
                     projectId={projectId}
@@ -419,47 +412,42 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     style={{ ...element.styles }}
                   />
                 )}
+                {element.type === "Link" && (
+                  <Link
+                    href={element.href || "#"}
+                    style={{ ...element.styles }}
+                    contentEditable={element.isSelected}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleInput(e, element.id)}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(element.content),
+                    }}
+                  ></Link>
+                )}
                 {element.isSelected && (
                   <>
                     <ResizeHandle
                       direction="nw"
-                      onMouseDown={(direction) =>
-                        handleResizeStart(
-                          window.event as any,
-                          element,
-                          direction
-                        )
-                      }
+                      ref={nwRef}
+                      onResizeStart={() => handleResizeStart("nw", element.id)}
                     />
+
                     <ResizeHandle
                       direction="ne"
-                      onMouseDown={(direction) =>
-                        handleResizeStart(
-                          window.event as any,
-                          element,
-                          direction
-                        )
-                      }
+                      ref={neRef}
+                      onResizeStart={() => handleResizeStart("ne", element.id)}
                     />
+
                     <ResizeHandle
                       direction="sw"
-                      onMouseDown={(direction) =>
-                        handleResizeStart(
-                          window.event as any,
-                          element,
-                          direction
-                        )
-                      }
+                      ref={swRef}
+                      onResizeStart={() => handleResizeStart("sw", element.id)}
                     />
+
                     <ResizeHandle
                       direction="se"
-                      onMouseDown={(direction) =>
-                        handleResizeStart(
-                          window.event as any,
-                          element,
-                          direction
-                        )
-                      }
+                      ref={seRef}
+                      onResizeStart={() => handleResizeStart("se", element.id)}
                     />
                   </>
                 )}
@@ -467,9 +455,8 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             ))}
             {showContextMenu && (
               <ContextMenu
-                x={menuPosition.x}
-                y={menuPosition.y}
-                onClose={() => setShowContextMenu(false)}
+                setOpen={setShowContextMenu}
+                contextMenuPosition={contextMenuPosition}
               />
             )}
           </motion.div>

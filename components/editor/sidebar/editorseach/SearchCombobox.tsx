@@ -23,7 +23,6 @@ interface Component {
   label?: string;
 }
 
-
 const placeHolderComponents: Component[] = [
   {
     component: <TextHolder />,
@@ -60,8 +59,6 @@ export const SearchCombobox: React.FC = () => {
               {framework.component}
             </CommandItem>
           ))}
-        </CommandGroup>
-        <CommandGroup>
           {customComponents.map((components) => (
             <CommandItem
               onDrop={(e) => {}}
