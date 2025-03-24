@@ -16,8 +16,8 @@ type EditorProviderProps = {
   setSelectedElement: React.Dispatch<
     React.SetStateAction<EditorElement | undefined>
   >;
-  projectId: string;
-  setProjectId: React.Dispatch<React.SetStateAction<string>>;
+  startTour: boolean;
+  setStartTour: (value: boolean) => void;
 };
 
 export const EditorContext = createContext<ElementsContextType | null>(null);

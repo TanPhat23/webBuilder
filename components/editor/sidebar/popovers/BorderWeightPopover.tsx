@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
-import { useEditorContext } from "@/lib/context";
+
 import { EditorElement } from "@/lib/type";
 import React, { startTransition } from "react";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
@@ -29,12 +29,11 @@ const borderStyles = [
 
 
 const BorderWeightPopover = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
 
   const [borderWeight, setBorderWeight] = React.useState<number>(0);
   const [borderStyle, setBorderStyle] = React.useState<string>("solid");
   const [borderColor, setBorderColor] = React.useState<string>("black");
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
   const updateBorder = (weight: number, style: string, color: string) => {
     const newBorder = `${weight}px ${style} ${color}`;

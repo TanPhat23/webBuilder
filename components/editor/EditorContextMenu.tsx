@@ -1,28 +1,36 @@
 import { EditorElement, Element } from "@/lib/type";
 import { Button } from "@/components/ui/button";
-import { ContextMenu } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuPortal,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@radix-ui/react-context-menu";
-import React, { useCallback, useState } from "react";
+import React, { startTransition, useCallback, useState } from "react";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
 import { Delete } from "@/app/api/element/route";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
-  x: number;
-  y: number;
-  onClose: () => void;
+  setOpen: (open: boolean) => void;
+  contextMenuPosition: { x: number; y: number };
 };
 
-const EditorContextMenu = ({ ...props }: Props) => {
+const EditorContextMenu: React.FC<Props> = ({
+  setOpen,
+  contextMenuPosition,
+}) => {
   const [link, setLink] = useState("");
   const [addLink, setAddLink] = useState(false);
   const [addEvent, setAddEvent] = useState(false);
-  const { selectedElement, setSelectedElement } = useEditorContextProvider();
-  const { onClose, x, y } = props;
+  const { selectedElement } = useEditorContextProvider();
+  const { deleteElementOptimistically, updateElementOptimistically } =
+    useOptimisticElement();
   const elementType = selectedElement?.type;
 
   const { elements, dispatch } = useEditorContext();
@@ -31,15 +39,10 @@ const EditorContextMenu = ({ ...props }: Props) => {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (addLink && selectedElement) {
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: selectedElement.id,
-            updates: {
-              href: link,
-            },
-          },
+        updateElementOptimistically(selectedElement.id, {
+          href: link,
         });
+        setAddLink(false);
       }
       setAddLink(false);
     },
@@ -50,18 +53,13 @@ const EditorContextMenu = ({ ...props }: Props) => {
     (e: React.MouseEvent) => {
       e.preventDefault();
       if (selectedElement) {
-        dispatch({ type: "DELETE_ELEMENT", payload: selectedElement.id });
-        const tempElement = selectedElement;
-        try {
-          Delete(selectedElement.id);
-        } catch (error) {
-          console.error("Failed to delete element:", error);
-          dispatch({ type: "ADD_ELEMENT", payload: tempElement });
-        }
+        startTransition(() => {
+          deleteElementOptimistically(selectedElement.id);
+        });
       }
-      onClose();
+      setOpen(false);
     },
-    [selectedElement, dispatch, onClose]
+    [selectedElement, dispatch]
   );
 
   const handleCopy = useCallback(() => {
@@ -75,7 +73,6 @@ const EditorContextMenu = ({ ...props }: Props) => {
         });
       }
     }
-    onClose();
   }, [elements]);
 
   const handlePaste = useCallback(() => {
@@ -103,7 +100,6 @@ const EditorContextMenu = ({ ...props }: Props) => {
         } catch (err) {
           console.error("Failed to parse clipboard content:", err);
         }
-        onClose();
       })
       .catch((err) => {
         console.error("Failed to read clipboard content:", err);
@@ -111,76 +107,63 @@ const EditorContextMenu = ({ ...props }: Props) => {
   }, [dispatch]);
 
   return (
-    <ContextMenu>
-      <ContextMenuContent
-        className="z-50 absolute min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2"
-        style={{ top: y, left: x }}
-        forceMount
-      >
-        {elementType?.includes("A") && (
-          <ContextMenuItem>
-            <Button
-              onClick={(e) => {
-                setAddLink(true);
-                e.stopPropagation();
-              }}
-              className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-            >
-              {selectedElement?.href ? "Update Link" : "Add Link"}
-            </Button>
-          </ContextMenuItem>
-        )}
-        {elementType?.includes("Button") && (
-          <ContextMenuItem>
-            <Button
-              onClick={(e) => {
-                setAddEvent(true);
-                e.stopPropagation();
-              }}
-              className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-            >
-              Add Event
-            </Button>
-          </ContextMenuItem>
-        )}
-        {elementType?.includes("List") && (
-          <ContextMenuItem className="">
-            {/* <AddDeleteItems /> */}
-          </ContextMenuItem>
-        )}
-        <ContextMenuItem className="hover:rounded-lg">
-          <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
-            Delete
-          </Button>
-        </ContextMenuItem>
-        <ContextMenuItem>
-          <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
-            Copy
-          </Button>
-        </ContextMenuItem>
-        <ContextMenuItem>
-          <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
-            Paste
-          </Button>
-        </ContextMenuItem>
-      </ContextMenuContent>
-
-      {addLink && (
-        <Input
-          id="link"
-          type="text"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          onBlur={handleSetLink}
-          className="border border-gray-300 p-1 rounded-lg transition-all duration-300 text-white bg-primary absolute w-[200px]"
-          placeholder="Enter URL"
+    <ContextMenu onOpenChange={setOpen}>
+      <ContextMenuPortal forceMount>
+        <ContextMenuContent
           style={{
-            top: y + 12,
-            left: x + 160,
+            top: contextMenuPosition.y,
+            left: contextMenuPosition.x,
           }}
-        />
-      )}
-      {/* {addEvent && <ButtonContextMenu x={x} y={y} />} */}
+          className={`min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2 z-50 absolute `}
+        >
+          {elementType?.includes("Link") && (
+            <ContextMenuItem>
+              <Button
+                onClick={(e) => {
+                  setAddLink(true);
+                  e.stopPropagation();
+                }}
+                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
+              >
+                {selectedElement?.href ? "Update Link" : "Add Link"}
+              </Button>
+            </ContextMenuItem>
+          )}
+          {elementType?.includes("Button") && (
+            <ContextMenuItem>
+              <Button
+                onClick={(e) => {
+                  setAddEvent(true);
+                  e.stopPropagation();
+                }}
+                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
+              >
+                Add Event
+              </Button>
+            </ContextMenuItem>
+          )}
+          {elementType?.includes("List") && (
+            <ContextMenuItem className="">
+              {/* <AddDeleteItems /> */}
+            </ContextMenuItem>
+          )}
+          <ContextMenuItem className="hover:rounded-lg">
+            <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
+              Delete
+            </Button>
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
+              Copy
+            </Button>
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
+              Paste
+            </Button>
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenuPortal>
     </ContextMenu>
   );
 };

@@ -3,7 +3,7 @@
 import { appProjectTypes } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-const URL = process.env.NEXT_PUBLIC_API_URL + "/elements";
+const URL = process.env.NEXT_PUBLIC_API_URL + "/projects";
 
 export const Create = async (data: appProjectTypes) => {
   try {
@@ -28,7 +28,7 @@ export const Create = async (data: appProjectTypes) => {
   }
 };
 
-export const GetAll = async () => {
+export const GetAll = async () : Promise<appProjectTypes[]> => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");
@@ -36,7 +36,7 @@ export const GetAll = async () => {
     const token = await client.sessions.getToken(sessionId, "usertemp");
 
     const response = await fetch(URL, {
-      method: "GET",
+    method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,

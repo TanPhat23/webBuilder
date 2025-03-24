@@ -18,22 +18,23 @@ import { ChevronDown } from "lucide-react";
 import React from "react";
 import LayoutSideBarElements from "./LayoutSideBarElements";
 import { useParams, useRouter } from "next/navigation";
+import Configuration from "./Configuration";
+import { useEditorContextProvider } from "@/lib/context";
+import { start } from "repl";
 
 type Props = {};
 
 function LayoutSideBar({}: Props) {
   const router = useRouter();
   const params = useParams();
-  React.useEffect(() => {
-    console.log(params);
-  });
+
   return (
     <Sidebar side="right">
       <SidebarContent>
-        <Collapsible defaultOpen className="group/collapsible">
+        <Collapsible className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
-              <CollapsibleTrigger>
+              <CollapsibleTrigger className="sidebar-layout">
                 Layout
                 <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
               </CollapsibleTrigger>
@@ -41,6 +42,21 @@ function LayoutSideBar({}: Props) {
             <CollapsibleContent>
               <SidebarGroupContent>
                 <LayoutSideBarElements />
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        <Collapsible className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="config-components">
+                Configuration
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <Configuration />
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>

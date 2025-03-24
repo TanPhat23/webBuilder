@@ -5,7 +5,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEditorContext } from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import React, { startTransition } from "react";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
@@ -15,11 +14,10 @@ type Props = {
 };
 
 const JustifyContentSelect = ({ selectedElement }: Props) => {
-  const { dispatch } = useEditorContext();
   const currentJustifyContent =
     selectedElement?.styles?.justifyContent || "center";
 
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
 
   const handleJustifyContentChange = (value: string) => {

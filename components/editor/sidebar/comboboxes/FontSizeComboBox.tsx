@@ -17,9 +17,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { fontSize } from "@/lib/constants";
 import { EditorElement } from "@/lib/type";
-import { useEditorContext } from "@/lib/context";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { start } from "repl";
 type Props = {
   selectedElement: EditorElement | undefined;
 };
@@ -29,7 +27,7 @@ const FontSizeComboBox = (props: Props) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<number | null>(null);
 
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
   useEffect(() => {
     if (selectedElement) {

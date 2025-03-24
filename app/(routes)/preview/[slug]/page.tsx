@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import jsonData from "@/test.json";
 import { EditorElement, ElementTypes, FrameElement } from "@/lib/type";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
@@ -42,7 +41,7 @@ function PreviewPage() {
                   {childElement.content}
                 </p>
               );
-            case "A":
+            case "Link":
               return (
                 <a
                   key={childElement.id}
