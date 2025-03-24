@@ -48,7 +48,9 @@ export const BatchCreate = async (elements: EditorElement[]) => {
 
     if (!response.ok) {
       const errorData = await response.text();
-      throw new Error(errorData || "Failed to create elements in batch");
+      throw new Error(
+        errorData || "Failed to create elements in batch" + response.status
+      );
     }
   } catch (error: any) {
     throw new Error(

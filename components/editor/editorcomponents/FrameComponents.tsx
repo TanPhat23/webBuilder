@@ -16,10 +16,16 @@ type Props = {
 };
 
 const FrameComponents = React.memo(
-  ({ projectId, element, setShowContextMenu, setContextMenuPosition }: Props) => {
+  ({
+    projectId,
+    element,
+    setShowContextMenu,
+    setContextMenuPosition,
+  }: Props) => {
     const { dispatch } = useEditorContext();
     const { setSelectedElement } = useEditorContextProvider();
-    const { updateElementOptimistically } = useOptimisticElement();
+    const { updateElementOptimistically } =
+      useOptimisticElement();
     const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
       null
     );
@@ -126,7 +132,7 @@ const FrameComponents = React.memo(
         setShowContextMenu(true);
         setContextMenuPosition({ x: e.clientX, y: e.clientY });
       },
-      [setSelectedElement, setShowContextMenu,]
+      [setSelectedElement, setShowContextMenu]
     );
 
     const handleMouseEnter = useCallback(

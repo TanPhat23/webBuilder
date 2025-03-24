@@ -18,8 +18,6 @@ import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
 import { customComponents } from "@/lib/styleconstants";
-import { CreateCustomComponents } from "@/lib/utils/createCustomComponents";
-import { Delete } from "@/app/api/element/route";
 import Link from "next/link";
 
 type Props = {
@@ -29,7 +27,12 @@ type Props = {
 const loadedFonts = new Set<string>();
 const Editor: React.FC<Props> = ({ projectId }) => {
   const { elements, dispatch } = useEditorContext();
-  const { updateElementOptimistically } = useOptimisticElement();
+  const {
+    optimisticElements,
+    updateElementOptimistically,
+    deleteElementOptimistically,
+    addElementOptimistically,
+  } = useOptimisticElement();
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
     "DESKTOP"
   );
@@ -118,11 +121,13 @@ const Editor: React.FC<Props> = ({ projectId }) => {
           (component) => component.component.name === newCustomElement
         );
         if (customComponent) {
-          CreateCustomComponents(
-            customComponent.component,
-            dispatch,
-            projectId
-          );
+          startTransition(() => {
+            addElementOptimistically(
+              customComponent.component,
+              dispatch,
+              projectId
+            );
+          });
         }
       }
     },
@@ -178,6 +183,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     },
     [zoom]
   );
+
   const handleResizeStart = (
     direction: "nw" | "ne" | "sw" | "se",
     elementId: string
@@ -267,21 +273,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLElement>, element: EditorElement) => {
-      if ((e.key === "Delete" || e.key === "Backspace") && element.isSelected) {
-        const tempElement: EditorElement = element;
-        try {
-          dispatch({
-            type: "DELETE_ELEMENT",
-            payload: element.id,
-          });
-          Delete(element.id);
-        } catch (error) {
-          console.error("Failed to delete element:", error);
-          dispatch({
-            type: "ADD_ELEMENT",
-            payload: tempElement,
-          });
-        }
+      console.log(e.key);
+      if (e.key === "End" && element.isSelected) {
+        startTransition(() => {
+          deleteElementOptimistically(element.id);
+        });
       }
     },
     [dispatch]
@@ -343,7 +339,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             tabIndex={0}
             className="w-full h-full bg-slate-300 relative overflow-auto"
           >
-            {elements.map((element) => (
+            {optimisticElements.map((element) => (
               <motion.div
                 key={element.id}
                 onDoubleClick={(e) => {

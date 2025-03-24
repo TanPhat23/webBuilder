@@ -41,7 +41,7 @@ function PreviewPage() {
                   {childElement.content}
                 </p>
               );
-            case "A":
+            case "Link":
               return (
                 <a
                   key={childElement.id}

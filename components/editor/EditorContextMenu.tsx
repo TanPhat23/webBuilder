@@ -10,10 +10,11 @@ import {
   ContextMenuContent,
   ContextMenuItem,
 } from "@radix-ui/react-context-menu";
-import React, { useCallback, useState } from "react";
+import React, { startTransition, useCallback, useState } from "react";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
 import { Delete } from "@/app/api/element/route";
+import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
   setOpen: (open: boolean) => void;
@@ -28,7 +29,8 @@ const EditorContextMenu: React.FC<Props> = ({
   const [addLink, setAddLink] = useState(false);
   const [addEvent, setAddEvent] = useState(false);
   const { selectedElement } = useEditorContextProvider();
-
+  const { deleteElementOptimistically, updateElementOptimistically } =
+    useOptimisticElement();
   const elementType = selectedElement?.type;
 
   const { elements, dispatch } = useEditorContext();
@@ -37,15 +39,10 @@ const EditorContextMenu: React.FC<Props> = ({
     (e: React.FormEvent) => {
       e.preventDefault();
       if (addLink && selectedElement) {
-        dispatch({
-          type: "UPDATE_ELEMENT",
-          payload: {
-            id: selectedElement.id,
-            updates: {
-              href: link,
-            },
-          },
+        updateElementOptimistically(selectedElement.id, {
+          href: link,
         });
+        setAddLink(false);
       }
       setAddLink(false);
     },
@@ -56,16 +53,11 @@ const EditorContextMenu: React.FC<Props> = ({
     (e: React.MouseEvent) => {
       e.preventDefault();
       if (selectedElement) {
-        dispatch({ type: "DELETE_ELEMENT", payload: selectedElement.id });
-        const tempElement = selectedElement;
-        try {
-          Delete(selectedElement.id);
-        } catch (error) {
-          console.error("Failed to delete element:", error);
-          dispatch({ type: "ADD_ELEMENT", payload: tempElement });
-        }
+        startTransition(() => {
+          deleteElementOptimistically(selectedElement.id);
+        });
       }
-      setOpen(false);  
+      setOpen(false);
     },
     [selectedElement, dispatch]
   );
