@@ -8,7 +8,7 @@ const navbarComponent: CustomComponent = {
   component: {
     type: "Frame",
     name: "NavBar",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -43,7 +43,7 @@ const navbarComponent: CustomComponent = {
       {
         type: "Link",
         content: "About",
-        id: "2",
+        id: "",
         isSelected: false,
         x: 0,
         y: 0,
@@ -69,7 +69,7 @@ const navbarComponent2: CustomComponent = {
   component: {
     type: "Frame",
     name: "NavBar2",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -191,7 +191,7 @@ const navbarComponent3: CustomComponent = {
   component: {
     type: "Frame",
     name: "NavBar3",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -309,7 +309,7 @@ const navbarComponent4: CustomComponent = {
   component: {
     type: "Frame",
     name: "NavBar4",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -439,7 +439,7 @@ const navbarComponent5: CustomComponent = {
   component: {
     type: "Frame",
     name: "NavBar5",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -560,7 +560,7 @@ const footerComponent: CustomComponent = {
   component: {
     type: "Frame",
     name: "Footer",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -642,7 +642,7 @@ const footerComponent2: CustomComponent = {
   component: {
     type: "Frame",
     name: "Footer2",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -708,7 +708,7 @@ const footerComponent3: CustomComponent = {
   component: {
     type: "Frame",
     name: "Footer3",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -776,7 +776,7 @@ const footerComponent4: CustomComponent = {
   component: {
     type: "Frame",
     name: "Footer4",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -875,7 +875,7 @@ const headerComponent: CustomComponent = {
   component: {
     type: "Frame",
     name: "Header",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -960,7 +960,7 @@ const headerComponent2: CustomComponent = {
   component: {
     type: "Frame",
     name: "Header2",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -1000,7 +1000,7 @@ const headerComponent2: CustomComponent = {
       {
         type: "Link",
         content: "Home",
-        id: "1",
+        id: "",
         isSelected: false,
         x: 0,
         y: 0,
@@ -1018,7 +1018,7 @@ const headerComponent2: CustomComponent = {
       {
         type: "Link",
         content: "Portfolio",
-        id: "2",
+        id: "",
         isSelected: false,
         x: 0,
         y: 0,
@@ -1045,7 +1045,7 @@ const headerComponent3: CustomComponent = {
   component: {
     type: "Frame",
     name: "Header3",
-    id: "",
+    id: uuidv4(),
     content: "",
     isSelected: false,
     x: 0,
@@ -1085,7 +1085,7 @@ const headerComponent3: CustomComponent = {
       {
         type: "Link",
         content: "Home",
-        id: "1",
+        id: "",
         isSelected: false,
         x: 0,
         y: 0,
