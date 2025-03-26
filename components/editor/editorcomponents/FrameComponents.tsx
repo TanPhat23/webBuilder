@@ -24,15 +24,14 @@ const FrameComponents = React.memo(
   }: Props) => {
     const { dispatch } = useEditorContext();
     const { setSelectedElement } = useEditorContextProvider();
-    const { updateElementOptimistically } =
-      useOptimisticElement();
+    const { updateElementOptimistically } = useOptimisticElement();
     const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
       null
     );
     const [draggingElement, setDraggingElement] =
       useState<EditorElement | null>(null);
     const dragConstraint = useRef<HTMLDivElement>(null);
-
+  
     const swapElements = () => {
       if (!hoveredElement || !draggingElement || !element) return;
 

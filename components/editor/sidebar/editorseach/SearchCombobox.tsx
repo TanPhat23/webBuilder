@@ -3,11 +3,8 @@
 import * as React from "react";
 import { Check, ChevronsUpDown, Component } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -18,6 +15,7 @@ import LinkHolder from "../sidebarcomponentholders/LinkHolder";
 import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
 import { customComponents } from "@/lib/styleconstants";
+import CarouselHolder from "../sidebarcomponentholders/CarouselHolder";
 interface Component {
   component: React.ReactNode;
   label?: string;
@@ -39,6 +37,10 @@ const placeHolderComponents: Component[] = [
   {
     component: <FrameHolder />,
     label: "Frame",
+  },
+  {
+    component: <CarouselHolder />,
+    label : "Carousel",
   },
 ];
 const onDragStart = (

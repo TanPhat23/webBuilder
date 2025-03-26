@@ -69,6 +69,23 @@ export const createElements = async (
       };
       break;
     }
+    case "Carousel": {
+      newElement = {
+        type: "Carousel",
+        ...baseElement,
+        x: 0,
+        y: 0,
+        styles: {
+          ...baseElement.styles,
+          height: "100px",
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+        },
+        elements: [],
+      };
+      break;
+    }
     default: {
       newElement = {
         type: name,

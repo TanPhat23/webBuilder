@@ -9,7 +9,7 @@ import React, {
 import ContextMenu from "./EditorContextMenu";
 import DOMPurify from "dompurify";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
-import { EditorElement } from "@/lib/type";
+import { CarouselElement, EditorElement } from "@/lib/type";
 import { createElements } from "@/app/utils/CreateElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
@@ -19,6 +19,7 @@ import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
 import { customComponents } from "@/lib/styleconstants";
 import Link from "next/link";
+import CarouselComponent from "./editorcomponents/CarouselComponent";
 
 type Props = {
   projectId: string;
@@ -363,7 +364,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 ref={resizingElement}
                 dragConstraints={draggingConstraintRef}
                 style={{
-                  position: "relative",
+                  position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
                 }}
@@ -399,6 +400,25 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     setShowContextMenu={setShowContextMenu}
                     element={element}
                     projectId={projectId}
+                  />
+                )}
+                {element.type === "Carousel" && (
+                  <CarouselComponent
+                    setContextMenuPosition={setContextMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    element={element as CarouselElement}
+                    projectId={projectId}
+                  />
+                )}
+                {element.type === "Button" && (
+                  <button
+                    style={{ ...element.styles }}
+                    contentEditable={element.isSelected}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleInput(e, element.id)}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(element.content),
+                    }}
                   />
                 )}
                 {element.type === "Image" && (

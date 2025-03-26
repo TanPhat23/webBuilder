@@ -1,4 +1,5 @@
 import {
+  CarouselElement,
   EditorAction,
   EditorElement,
   FrameElement,
@@ -17,12 +18,22 @@ export const elementsReducer = (
 
       const updateElement = (element: EditorElement): EditorElement => {
         if (element.id === id) {
-          return { ...element, ...updates };}
+          return { ...element, ...updates };
+        }
 
         if (element.type === "Frame" && (element as FrameElement).elements) {
           return {
             ...element,
             elements: (element as FrameElement).elements.map(updateElement),
+          };
+        }
+        if (
+          element.type === "Carousel" &&
+          (element as CarouselElement).elements
+        ) {
+          return {
+            ...element,
+            elements: (element as CarouselElement).elements.map(updateElement),
           };
         }
 
@@ -48,6 +59,19 @@ export const elementsReducer = (
             elements: updatedElements,
           };
         }
+        if (
+          element.type === "Carousel" &&
+          (element as CarouselElement).elements
+        ) {
+          const updatedElements = (element as CarouselElement).elements
+            .map(deleteElement)
+            .filter((el): el is EditorElement => el !== null);
+
+          return {
+            ...element,
+            elements: updatedElements,
+          };
+        }
 
         return element;
       };
@@ -62,7 +86,6 @@ export const elementsReducer = (
     case "SAVE_ELEMENTS_TO_LOCAL_STORAGE":
       localStorage.setItem("elements", JSON.stringify(state));
       return state;
-
 
     case "LOAD_ELEMENTS_FROM_LOCAL_STORAGE":
       return action.payload;
@@ -80,6 +103,17 @@ export const elementsReducer = (
           return {
             ...updatedElement,
             elements: (updatedElement as FrameElement).elements.map(
+              updateElement
+            ),
+          };
+        }
+        if (
+          updatedElement.type === "Carousel" &&
+          (updatedElement as CarouselElement).elements
+        ) {
+          return {
+            ...updatedElement,
+            elements: (updatedElement as CarouselElement).elements.map(
               updateElement
             ),
           };
