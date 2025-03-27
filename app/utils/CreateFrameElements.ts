@@ -3,6 +3,7 @@ import {
   ButtonElement,
   FrameElement,
   EditorAction,
+  CarouselElement,
 } from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -25,7 +26,7 @@ export const listItemStyles: CSSProperties = {
 const createElements = async (
   name: string,
   dispatch: React.Dispatch<EditorAction>,
-  parentElement: FrameElement,
+  parentElement: FrameElement | CarouselElement,
   projectId: string
 ) => {
   const tempId = `${name}-${uuidv4()}`;

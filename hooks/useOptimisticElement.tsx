@@ -31,7 +31,7 @@ export function useOptimisticElement() {
         }
       });
     },
-    []
+    [elements]
   );
 
   const [optimisticElements, addOptimisticUpdate] = useOptimistic(
@@ -103,9 +103,6 @@ export function useOptimisticElement() {
     };
 
     const preparedElement = prepareElements(element, undefined);
-    const isDuplicate = optimisticElements.some(
-      (el) => el.id === preparedElement.id
-    );
     addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
 
     dispatch({
@@ -138,7 +135,6 @@ export function useOptimisticElement() {
       type: "UPDATE_ELEMENT",
       payload: { id, updates },
     });
-
     try {
       const latestElement = { ...updatedElement, ...updates };
       await Update(latestElement);

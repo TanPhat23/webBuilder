@@ -5,7 +5,6 @@ import {
   ContextMenuPortal,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Input } from "@/components/ui/input";
 import {
   ContextMenuContent,
   ContextMenuItem,
@@ -13,7 +12,6 @@ import {
 import React, { startTransition, useCallback, useState } from "react";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
-import { Delete } from "@/app/api/element/route";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 
 type Props = {
@@ -52,6 +50,7 @@ const EditorContextMenu: React.FC<Props> = ({
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
+
       if (selectedElement) {
         startTransition(() => {
           deleteElementOptimistically(selectedElement.id);
