@@ -6,14 +6,14 @@ import React, {
   useEffect,
   startTransition,
 } from "react";
-import ContextMenu from "./EditorContextMenu";
+import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { CarouselElement, EditorElement } from "@/lib/type";
 import { createElements } from "@/app/utils/CreateElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { motion } from "framer-motion";
+import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
@@ -81,23 +81,21 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
   };
 
-  const handleDragStart = useCallback(
-    (event: any, info: any, element: EditorElement) => {
-      setDraggingElement({
-        id: element.id,
-      });
-    },
-    [setDraggingElement]
-  );
-
   const handleDragEnd = useCallback(
-    (event: any, info: any, element: EditorElement) => {
+    (
+      event: MouseEvent | TouchEvent | PointerEvent,
+      info: PanInfo,
+      element: EditorElement
+    ) => {
+      if (!info) return;
+
       const gridSize = 20;
       const newX = element.x + info.offset.x;
       const newY = element.y + info.offset.y;
 
       const x = Math.round(newX / gridSize) * gridSize;
       const y = Math.round(newY / gridSize) * gridSize;
+
       startTransition(() => {
         updateElementOptimistically(element.id, {
           x: x,
@@ -343,37 +341,33 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             {optimisticElements.map((element) => (
               <motion.div
                 key={element.id}
-                onDoubleClick={(e) => {
-                  handleDoubleClick(e, element);
-                }}
-                onDragEnd={(event, info) => handleDragEnd(event, info, element)}
-                onDragStart={(event, info) =>
-                  handleDragStart(event, info, element)
-                }
+                onDoubleClick={(e) => handleDoubleClick(e, element)}
+                onDragEnd={(e, info) => handleDragEnd(e, info, element)}
+                onDragStart={() => setDraggingElement({ id: element.id })}
                 onKeyDown={(e) => handleKeyPress(e, element)}
                 drag={!element.isSelected}
-                draggable={!element.isSelected}
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
-                tabIndex={0}
                 animate={{
                   x: element.x,
                   y: element.y,
                 }}
-                ref={resizingElement}
                 dragConstraints={draggingConstraintRef}
                 style={{
                   position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
+                  zIndex: element.isSelected ? 10 : 1,
                 }}
-                className={` ${
+                className={`${
                   element.isSelected
                     ? "border-2 border-black hover:cursor-text "
                     : "hover:cursor-pointer"
                 } ${
-                  draggingElement ? "border-dashed border-black border-2" : ""
+                  draggingElement?.id === element.id
+                    ? "border-dashed border-black border-2"
+                    : ""
                 }`}
               >
                 {element.type === "Text" && (
@@ -425,7 +419,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   <img
                     src={element.src}
                     alt={`image-${element.id}`}
-                    style={{ ...element.styles }}
+                    style={{ ...element.styles, pointerEvents: "none" }}
                   />
                 )}
                 {element.type === "Link" && (

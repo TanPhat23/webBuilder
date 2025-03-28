@@ -49,6 +49,15 @@ const CarouselComponent: React.FC<Props> = ({
               projectId={projectId}
             />
           );
+        case "Image":
+          return (
+            <motion.img
+              key={element.id}
+              src={element.src}
+              alt=""
+              style={{ ...element.styles }}
+            />
+          );
         default:
           return (
             <motion.div

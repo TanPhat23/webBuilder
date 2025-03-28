@@ -13,6 +13,8 @@ import React, { startTransition, useCallback, useState } from "react";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import LinkDropDownMenu from "./dropdownmenu/LinkDropDownMenu";
+import ImageDropDown from "./dropdownmenu/ImageDropDown";
 
 type Props = {
   setOpen: (open: boolean) => void;
@@ -29,7 +31,6 @@ const EditorContextMenu: React.FC<Props> = ({
   const { selectedElement } = useEditorContextProvider();
   const { deleteElementOptimistically, updateElementOptimistically } =
     useOptimisticElement();
-  const elementType = selectedElement?.type;
 
   const { elements, dispatch } = useEditorContext();
 
@@ -105,6 +106,15 @@ const EditorContextMenu: React.FC<Props> = ({
       });
   }, [dispatch]);
 
+  const renderDropDownMenu = useCallback(() => {
+    switch (selectedElement?.type) {
+      case "Link":
+        return <LinkDropDownMenu />;
+      case "Image":
+        return <ImageDropDown />;
+    }
+  }, [selectedElement]);
+
   return (
     <ContextMenu onOpenChange={setOpen}>
       <ContextMenuPortal forceMount>
@@ -113,54 +123,18 @@ const EditorContextMenu: React.FC<Props> = ({
             top: contextMenuPosition.y,
             left: contextMenuPosition.x,
           }}
-          className={`min-w-[150px] hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2 z-50 absolute `}
+          className={`min-w-32 hover:cursor-pointer border border-gray-300 bg-primary p-2 rounded-lg gap-2 z-50 absolute `}
         >
-          {elementType?.includes("Link") && (
-            <ContextMenuItem>
-              <Button
-                onClick={(e) => {
-                  setAddLink(true);
-                  e.stopPropagation();
-                }}
-                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-              >
-                {selectedElement?.href ? "Update Link" : "Add Link"}
-              </Button>
-            </ContextMenuItem>
-          )}
-          {elementType?.includes("Button") && (
-            <ContextMenuItem>
-              <Button
-                onClick={(e) => {
-                  setAddEvent(true);
-                  e.stopPropagation();
-                }}
-                className="hover:bg-blue-400 w-full text-start hover:rounded-lg"
-              >
-                Add Event
-              </Button>
-            </ContextMenuItem>
-          )}
-          {elementType?.includes("List") && (
-            <ContextMenuItem className="">
-              {/* <AddDeleteItems /> */}
-            </ContextMenuItem>
-          )}
-          <ContextMenuItem className="hover:rounded-lg">
-            <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
-              Delete
-            </Button>
-          </ContextMenuItem>
-          <ContextMenuItem>
-            <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
-              Copy
-            </Button>
-          </ContextMenuItem>
-          <ContextMenuItem>
-            <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
-              Paste
-            </Button>
-          </ContextMenuItem>
+          {renderDropDownMenu()}
+          <Button onClick={handleDelete} className="hover:bg-blue-400 w-full">
+            Delete
+          </Button>
+          <Button onClick={handleCopy} className="hover:bg-blue-400 w-full">
+            Copy
+          </Button>
+          <Button onClick={handlePaste} className="hover:bg-blue-400 w-full">
+            Paste
+          </Button>
         </ContextMenuContent>
       </ContextMenuPortal>
     </ContextMenu>
