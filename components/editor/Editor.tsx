@@ -133,16 +133,13 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     [dispatch]
   );
 
-  const handleInput = useCallback(
-    (e: React.FormEvent<HTMLElement>, id: string) => {
-      let newContent = e.currentTarget.innerHTML;
+  const handleInput = (e: React.FormEvent<HTMLElement>, id: string) => {
+    let newContent = e.currentTarget.innerHTML;
 
-      startTransition(() => {
-        updateElementOptimistically(id, { content: newContent });
-      });
-    },
-    [updateElementOptimistically, elements]
-  );
+    startTransition(() => {
+      updateElementOptimistically(id, { content: newContent });
+    });
+  };
 
   const handleDoubleClick = useCallback(
     (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
@@ -195,61 +192,58 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     document.addEventListener("mouseup", handleResizeEnd);
   };
 
-  const handleResize = React.useCallback(
-    (e: MouseEvent) => {
-      const resizingElementFromRef = resizingElement.current;
-      if (!resizingElementFromRef) return;
+  const handleResize = (e: MouseEvent) => {
+    const resizingElementFromRef = resizingElement.current;
+    if (!resizingElementFromRef) return;
 
-      const elementId = resizingElementFromRef.id;
-      if (!elementId) return;
+    const elementId = resizingElementFromRef.id;
+    if (!elementId) return;
 
-      const targetElement = elements.find((el) => el.id === elementId);
-      if (!targetElement) return;
+    const targetElement = elements.find((el) => el.id === elementId);
+    if (!targetElement) return;
 
-      const styles = window.getComputedStyle(resizingElementFromRef);
-      const width = parseInt(styles.width, 10);
-      const height = parseInt(styles.height, 10);
-      const dX = e.movementX;
+    const styles = window.getComputedStyle(resizingElementFromRef);
+    const width = parseInt(styles.width, 10);
+    const height = parseInt(styles.height, 10);
+    const dX = e.movementX;
 
-      const dY = e.movementY;
+    const dY = e.movementY;
 
-      let newWidth, newHeight;
+    let newWidth, newHeight;
 
-      switch (resizeDirection.current) {
-        case "nw":
-          newWidth = width - dX;
-          newHeight = height - dY;
-          break;
-        case "ne":
-          newWidth = width + dX;
-          newHeight = height - dY;
-          break;
-        case "sw":
-          newWidth = width - dX;
-          newHeight = height + dY;
-          break;
-        case "se":
-          newWidth = width + dX;
-          newHeight = height + dY;
-          break;
-      }
+    switch (resizeDirection.current) {
+      case "nw":
+        newWidth = width - dX;
+        newHeight = height - dY;
+        break;
+      case "ne":
+        newWidth = width + dX;
+        newHeight = height - dY;
+        break;
+      case "sw":
+        newWidth = width - dX;
+        newHeight = height + dY;
+        break;
+      case "se":
+        newWidth = width + dX;
+        newHeight = height + dY;
+        break;
+    }
 
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: elementId,
-          updates: {
-            styles: {
-              ...targetElement.styles,
-              width: `${newWidth}px`,
-              height: `${newHeight}px`,
-            },
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: elementId,
+        updates: {
+          styles: {
+            ...targetElement.styles,
+            width: `${newWidth}px`,
+            height: `${newHeight}px`,
           },
         },
-      });
-    },
-    [elements, dispatch]
-  );
+      },
+    });
+  };
 
   const handleResizeEnd = () => {
     const element = elements.find(
@@ -270,17 +264,17 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     document.removeEventListener("mouseup", handleResizeEnd);
   };
 
-  const handleKeyPress = useCallback(
-    (e: React.KeyboardEvent<HTMLElement>, element: EditorElement) => {
-      console.log(e.key);
-      if (e.key === "End" && element.isSelected) {
-        startTransition(() => {
-          deleteElementOptimistically(element.id);
-        });
-      }
-    },
-    [dispatch]
-  );
+  const handleKeyPress = (
+    e: React.KeyboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    console.log(e.key);
+    if (e.key === "End" && element.isSelected) {
+      startTransition(() => {
+        deleteElementOptimistically(element.id);
+      });
+    }
+  };
 
   useEffect(() => {
     return () => {
