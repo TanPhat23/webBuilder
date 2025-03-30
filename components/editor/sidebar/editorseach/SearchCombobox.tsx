@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, Component } from "lucide-react";
+import { Check, ChevronsUpDown, Component, ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { CustomComponent } from "@/lib/styleconstants";
 
 import {
   Command,
@@ -16,6 +18,7 @@ import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
 import { customComponents } from "@/lib/styleconstants";
 import CarouselHolder from "../sidebarcomponentholders/CarouselHolder";
+
 interface Component {
   component: React.ReactNode;
   label?: string;
@@ -51,6 +54,22 @@ const onDragStart = (
 };
 
 export const SearchCombobox: React.FC = () => {
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (groupName: string) => {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }));
+  };
+
+  const groupedComponents = customComponents.reduce((groups, component) => {
+    const groupName = component.component.name?.match(/^[a-zA-Z]+/)?.[0] || "Others";
+    if (!groups[groupName]) groups[groupName] = [];
+    groups[groupName].push(component);
+    return groups;
+  }, {} as Record<string, CustomComponent[]>);
+
   return (
     <Command>
       <CommandInput placeholder="Search components..." />
@@ -61,21 +80,37 @@ export const SearchCombobox: React.FC = () => {
               {framework.component}
             </CommandItem>
           ))}
-          {customComponents.map((components) => (
-            <CommandItem
-              onDrop={(e) => {}}
-              key={components.component.name}
-              value={components.component.name}
-            >
+          {Object.entries(groupedComponents).map(([groupName, components]) => (
+            <div key={groupName} className="mb-4 border border-gray-100 rounded-md overflow-hidden">
               <div
-                className="flex justify-between w-full"
-                draggable
-                onDragStart={(e) => onDragStart(e, components.component.name)}
+                className="cursor-pointer font-medium text-sm px-3 py-2 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
+                onClick={() => toggleGroup(groupName)}
               >
-                <div>{components.component.name}</div>
-                <Component />
+                <span className="text-gray-700">{groupName}</span>
+                <ChevronDown 
+                  className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                    openGroups[groupName] ? 'transform rotate-180' : ''
+                  }`} 
+                />
               </div>
-            </CommandItem>
+              {openGroups[groupName] && (
+                <div className="bg-white">
+                  {components.map((component) => (
+                    <div
+                      key={component.component.name || component.component.id}
+                      className="flex justify-between items-center w-full px-3 py-2 hover:bg-gray-50 transition-colors duration-150 cursor-grab"
+                      draggable
+                      onDragStart={(e) =>
+                        onDragStart(e, component.component.name)
+                      }
+                    >
+                      <div className="text-sm text-gray-600">{component.component.name}</div>
+                      <Component className="h-4 w-4 text-gray-400" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </CommandGroup>
       </CommandList>

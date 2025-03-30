@@ -282,8 +282,7 @@ const FrameComponents = React.memo(
             return (
               <motion.div
                 key={element.id}
-                style={{ ...element.styles }}
-                className={`${
+                className={element.tailwindStyles +`${
                   element.isSelected ? "border-black border-2 border-solid" : ""
                 } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
                 contentEditable={element.isSelected}
@@ -328,12 +327,12 @@ const FrameComponents = React.memo(
     return (
       <motion.div
         id={element.id}
-        style={{ ...element.styles }}
+        // style={{ ...element.styles }}
         onDrop={(e) => handleDrop(e, element)}
         onDragOver={(e) => e.preventDefault()}
         onContextMenu={(e) => handleContextMenu(e, element)}
         onDoubleClick={(e) => handleDoubleClick(e, element)}
-        className={`${
+        className={element.tailwindStyles + `${
           element.isSelected ? "border-black border-2 border-solid " : ""
         } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
         ref={dragConstraint}
