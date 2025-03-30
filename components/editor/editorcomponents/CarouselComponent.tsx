@@ -82,7 +82,7 @@ const CarouselComponent: React.FC<Props> = ({
               e.preventDefault();
               e.stopPropagation();
             }}
-            className="w-full h-full object-contain max-w-full max-h-full slick-slide"
+            className={element.tailwindStyles + `w-full h-full object-contain max-w-full max-h-full slick-slide`}
           />
         );
       default:
@@ -90,6 +90,7 @@ const CarouselComponent: React.FC<Props> = ({
           <motion.div
             key={element.id}
             style={{ ...element.styles }}
+            className={element.tailwindStyles}
             contentEditable={element.isSelected}
             suppressContentEditableWarning={true}
             dangerouslySetInnerHTML={{
