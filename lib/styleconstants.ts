@@ -14,7 +14,7 @@ const navbarComponent: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "100px",
+      height: "50px",
       width: "100%",
       backgroundColor: "white",
       display: "flex",
@@ -23,24 +23,6 @@ const navbarComponent: CustomComponent = {
     },
     tailwindStyles: "h-[50px] w-full bg-white flex flex-row items-center justify-start px-4 md:px-8",
     elements: [
-      {
-        type: "Image",
-        content: "Logo",
-        id: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          color: "black",
-          margin: "0 10px", 
-          height: "100%",
-        },
-        tailwindStyles: "m-0",
-        href: "/",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
       {
         type: "Link",
         content: "Home",
@@ -104,8 +86,7 @@ const navbarComponent2: CustomComponent = {
       justifyContent: "space-between",
       padding: "0 20px",
     },
-    tailwindStyles:
-      "flex flex-row items-center justify-between w-full p-5 bg-gray-900",
+    tailwindStyles: "flex flex-row items-center justify-between w-full p-5 bg-gray-900",
     elements: [
       {
         type: "Text",
@@ -230,7 +211,7 @@ const navbarComponent3: CustomComponent = {
       justifyContent: "center",
       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
     },
-    tailwindStyles: "flex flex-row items-center justify-center w-full bg-gray-100 shadow",
+    tailwindStyles: "h-[65px] w-full bg-[#f8f9fa] flex items-center justify-between shadow-md px-4",
     elements: [
       {
         type: "Link",
@@ -248,7 +229,7 @@ const navbarComponent3: CustomComponent = {
           borderRadius: "4px",
           transition: "all 0.3s ease",
         },
-        tailwindStyles: "mx-5 text-gray-800 font-medium px-4 py-2 rounded hover:bg-blue-100",
+        tailwindStyles: "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -270,7 +251,7 @@ const navbarComponent3: CustomComponent = {
           borderRadius: "4px",
           transition: "all 0.3s ease",
         },
-        tailwindStyles: "mx-5 text-gray-800 font-medium px-4 py-2 rounded hover:bg-blue-100",
+        tailwindStyles: "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -292,7 +273,7 @@ const navbarComponent3: CustomComponent = {
           borderRadius: "4px",
           transition: "all 0.3s ease",
         },
-        tailwindStyles: "mx-5 text-gray-800 font-medium px-4 py-2 rounded hover:bg-blue-100",
+        tailwindStyles: "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -315,7 +296,7 @@ const navbarComponent3: CustomComponent = {
           backgroundColor: "#007bff",
           transition: "all 0.3s ease",
         },
-        tailwindStyles: "mx-5 text-white font-medium px-4 py-2 rounded bg-blue-500 hover:bg-blue-600",
+        tailwindStyles: "text-white font-medium px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-sm whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -349,7 +330,7 @@ const navbarComponent4: CustomComponent = {
       padding: "0 30px",
       borderBottom: "1px solid #e0e0e0",
     },
-    tailwindStyles: "flex flex-row items-center justify-between w-full px-8 border-b border-gray-200",
+    tailwindStyles: "h-[70px] w-full bg-transparent flex flex-row items-center justify-between px-4 md:px-8 border-b border-gray-300",
     elements: [
       {
         type: "Text",
@@ -482,7 +463,7 @@ const navbarComponent5: CustomComponent = {
       padding: "0 15px",
       color: "white",
     },
-    tailwindStyles: "flex flex-row items-center justify-start w-full p-4 bg-purple-800 text-white",
+    tailwindStyles: "flex flex-col md:flex-row items-center justify-between w-full p-3 bg-purple-800 text-white overflow-x-auto md:justify-start",
     elements: [
       {
         type: "Text",
@@ -1172,7 +1153,7 @@ const sidebarLeftComponent: CustomComponent = {
       padding: "20px 10px",
       boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
     },
-    tailwindStyles: "flex flex-col items-start w-64 h-screen p-4 bg-white shadow-md",
+    tailwindStyles: "flex flex-col items-start w-40 h-full p-4 bg-white shadow-md md:w-60 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -1207,7 +1188,7 @@ const sidebarLeftComponent: CustomComponent = {
           width: "100%",
           padding: "8px 10px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded",
+        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1227,7 +1208,7 @@ const sidebarLeftComponent: CustomComponent = {
           width: "100%",
           padding: "8px 10px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded",
+        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1247,7 +1228,7 @@ const sidebarLeftComponent: CustomComponent = {
           width: "100%",
           padding: "8px 10px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded",
+        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1338,7 +1319,7 @@ const sidebarLeftComponent2: CustomComponent = {
           padding: "10px 15px",
           borderRadius: "5px",
         },
-        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded",
+        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1359,7 +1340,7 @@ const sidebarLeftComponent2: CustomComponent = {
           padding: "10px 15px",
           borderRadius: "5px",
         },
-        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded",
+        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1392,7 +1373,7 @@ const sidebarLeftComponent3: CustomComponent = {
       padding: "20px 12px",
       borderRight: "1px solid #e0e0e0",
     },
-    tailwindStyles: "flex flex-col items-start w-60 h-screen p-5 bg-gray-100 border-r border-gray-200",
+    tailwindStyles: "flex flex-col items-start w-60 h-full p-5 bg-gray-100 border-r border-gray-200 md:w-48 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -1409,7 +1390,7 @@ const sidebarLeftComponent3: CustomComponent = {
           textTransform: "uppercase",
           letterSpacing: "1px",
         },
-        tailwindStyles: "text-gray-500 text-sm font-medium mb-4 uppercase tracking-wide",
+        tailwindStyles: "text-gray-500 text-sm font-medium mb-4 uppercase tracking-wide text-center md:text-left",
         href: "",
         src: "",
         parentId: "",
@@ -1431,7 +1412,7 @@ const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600",
+        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1453,7 +1434,7 @@ const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600",
+        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1475,7 +1456,7 @@ const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600",
+        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1508,7 +1489,7 @@ const sidebarLeftComponent4: CustomComponent = {
       padding: "30px 15px",
       borderRight: "1px solid #eaeaea",
     },
-    tailwindStyles: "flex flex-col items-center w-64 h-screen p-7 bg-white border-r border-gray-100",
+    tailwindStyles: "flex flex-col items-center w-64 h-full p-7 bg-white border-r border-gray-100 md:w-48 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -1546,7 +1527,7 @@ const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50",
+        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1568,7 +1549,7 @@ const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50",
+        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1590,7 +1571,7 @@ const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50",
+        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -1626,7 +1607,7 @@ const sidebarRightComponent: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-72 h-screen p-5 bg-white shadow-md fixed right-0 top-0",
+    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-white shadow-md fixed right-0 top-0 md:w-56 sm:w-40 transition-all",
     elements: [
       {
         type: "Text",
@@ -1735,7 +1716,7 @@ const sidebarRightComponent2: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-80 h-screen p-6 bg-gray-900 fixed right-0 top-0",
+    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-gray-900 fixed right-0 top-0 md:w-60 sm:w-40 transition-all",
     elements: [
       {
         type: "Text",
@@ -1848,7 +1829,7 @@ const sidebarRightComponent3: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-72 h-screen p-5 bg-gray-100 border-l border-gray-200 fixed right-0 top-0",
+    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-gray-100 border-l border-gray-200 fixed right-0 top-0 md:w-56 sm:w-40 transition-all",
     elements: [
       {
         type: "Text",
@@ -1887,7 +1868,7 @@ const sidebarRightComponent3: CustomComponent = {
           flexDirection: "column",
           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
         },
-        tailwindStyles: "w-full p-3 bg-white rounded-md mb-3 flex flex-col shadow-sm",
+        tailwindStyles: "w-full p-3 bg-white rounded-md mb-3 flex flex-col shadow-sm text-sm md:text-xs sm:text-[10px]",
         elements: [
           {
             type: "Text",
@@ -1961,7 +1942,7 @@ const sidebarRightComponent4: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-80 h-screen p-6 bg-white shadow-md fixed right-0 top-0",
+    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-white shadow-md fixed right-0 top-0 md:w-64 sm:w-48 transition-all",
     elements: [
       {
         type: "Text",
@@ -1998,7 +1979,7 @@ const sidebarRightComponent4: CustomComponent = {
           flexDirection: "row",
           alignItems: "center",
         },
-        tailwindStyles: "w-full py-2 border-b border-gray-100 flex flex-row items-center",
+        tailwindStyles: "w-full py-2 border-b border-gray-100 flex flex-row items-center text-sm md:text-base",
         elements: [
           {
             type: "Text",

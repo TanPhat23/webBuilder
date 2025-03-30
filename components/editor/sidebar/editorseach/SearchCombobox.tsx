@@ -62,6 +62,8 @@ export const SearchCombobox: React.FC = () => {
     footer: true,
     header: true,
     sidebar: true,
+    teamMembers: true,
+    missionComponents: true,
   });
 
   const toggleSection = (section: string) => {
@@ -187,6 +189,60 @@ export const SearchCombobox: React.FC = () => {
           <CollapsibleContent>
             <CommandGroup>
               {filterComponents("Sidebar").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.teamMembers} onOpenChange={() => toggleSection("teamMembers")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Team Members Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.teamMembers ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("TeamMembers").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.missionComponents} onOpenChange={() => toggleSection("missionComponents")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Mission Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.missionComponents ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("MissionComponent").map((component) => (
                 <CommandItem key={component.component.name} value={component.component.name}>
                   <div
                     className="flex justify-between w-full"
