@@ -1,10 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, Component, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { CustomComponent } from "@/lib/styleconstants";
-
+import { Check, ChevronDown, Component } from "lucide-react";
 import {
   Command,
   CommandGroup,
@@ -18,6 +15,11 @@ import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
 import { customComponents } from "@/lib/styleconstants";
 import CarouselHolder from "../sidebarcomponentholders/CarouselHolder";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 interface Component {
   component: React.ReactNode;
@@ -43,9 +45,10 @@ const placeHolderComponents: Component[] = [
   },
   {
     component: <CarouselHolder />,
-    label : "Carousel",
+    label: "Carousel",
   },
 ];
+
 const onDragStart = (
   e: React.DragEvent<HTMLDivElement>,
   elementType: string | undefined
@@ -54,65 +57,150 @@ const onDragStart = (
 };
 
 export const SearchCombobox: React.FC = () => {
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({
+    navbar: true,
+    footer: true,
+    header: true,
+    sidebar: true,
+  });
 
-  const toggleGroup = (groupName: string) => {
-    setOpenGroups((prev) => ({
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) => ({
       ...prev,
-      [groupName]: !prev[groupName],
+      [section]: !prev[section],
     }));
   };
 
-  const groupedComponents = customComponents.reduce((groups, component) => {
-    const groupName = component.component.name?.match(/^[a-zA-Z]+/)?.[0] || "Others";
-    if (!groups[groupName]) groups[groupName] = [];
-    groups[groupName].push(component);
-    return groups;
-  }, {} as Record<string, CustomComponent[]>);
+  const filterComponents = (prefix: string) =>
+    customComponents.filter((component) =>
+      component.component.name?.startsWith(prefix)
+    );
 
   return (
-    <Command>
+    <Command className="rounded-lg border shadow-md">
       <CommandInput placeholder="Search components..." />
       <CommandList>
         <CommandGroup>
           {placeHolderComponents.map((framework) => (
             <CommandItem key={framework.label} value={framework.label}>
-              {framework.component}
+              <div
+                className="w-full"
+                draggable
+                onDragStart={(e) => onDragStart(e, framework.label)}
+              >
+                {framework.component}
+              </div>
             </CommandItem>
           ))}
-          {Object.entries(groupedComponents).map(([groupName, components]) => (
-            <div key={groupName} className="mb-4 border border-gray-100 rounded-md overflow-hidden">
-              <div
-                className="cursor-pointer font-medium text-sm px-3 py-2 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
-                onClick={() => toggleGroup(groupName)}
-              >
-                <span className="text-gray-700">{groupName}</span>
-                <ChevronDown 
-                  className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
-                    openGroups[groupName] ? 'transform rotate-180' : ''
-                  }`} 
-                />
-              </div>
-              {openGroups[groupName] && (
-                <div className="bg-white">
-                  {components.map((component) => (
-                    <div
-                      key={component.component.name || component.component.id}
-                      className="flex justify-between items-center w-full px-3 py-2 hover:bg-gray-50 transition-colors duration-150 cursor-grab"
-                      draggable
-                      onDragStart={(e) =>
-                        onDragStart(e, component.component.name)
-                      }
-                    >
-                      <div className="text-sm text-gray-600">{component.component.name}</div>
-                      <Component className="h-4 w-4 text-gray-400" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
         </CommandGroup>
+
+        <Collapsible open={openSections.navbar} onOpenChange={() => toggleSection("navbar")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Navbar Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.navbar ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("NavBar").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.footer} onOpenChange={() => toggleSection("footer")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Footer Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.footer ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("Footer").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.header} onOpenChange={() => toggleSection("header")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Header Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.header ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("Header").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Collapsible open={openSections.sidebar} onOpenChange={() => toggleSection("sidebar")}>
+          <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <span className="font-medium">Sidebar Components</span>
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                openSections.sidebar ? "rotate-180" : ""
+              }`}
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CommandGroup>
+              {filterComponents("Sidebar").map((component) => (
+                <CommandItem key={component.component.name} value={component.component.name}>
+                  <div
+                    className="flex justify-between w-full"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, component.component.name)}
+                  >
+                    <div>{component.component.name}</div>
+                    <Component className="h-4 w-4" />
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CollapsibleContent>
+        </Collapsible>
       </CommandList>
     </Command>
   );

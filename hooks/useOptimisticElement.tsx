@@ -98,7 +98,12 @@ export function useOptimisticElement() {
           prepareElements(childElement, newElement.id)
         );
       }
-
+      if (element.type === "Carousel") {
+        const carouselElement = element as FrameElement;
+        carouselElement.elements = carouselElement.elements.map(
+          (childElement) => prepareElements(childElement, newElement.id)
+        );
+      }
       return newElement;
     };
 
@@ -151,8 +156,8 @@ export function useOptimisticElement() {
       if (element.id === id) {
         return element;
       } else if (
-        element.type === "Frame" &&
-        (element as FrameElement).elements
+        element.type === "Frame" ||
+        (element.type === "Carousel" && (element as FrameElement).elements)
       ) {
         const found = findElementById((element as FrameElement).elements, id);
         if (found) return found;
