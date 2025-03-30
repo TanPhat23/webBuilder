@@ -31,7 +31,7 @@ const FrameComponents = React.memo(
     const [draggingElement, setDraggingElement] =
       useState<EditorElement | null>(null);
     const dragConstraint = useRef<HTMLDivElement>(null);
-  
+
     const swapElements = () => {
       if (!hoveredElement || !draggingElement || !element) return;
 
@@ -217,6 +217,67 @@ const FrameComponents = React.memo(
                 } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
               />
             );
+          case " Image":
+            if (!element.src) {
+              return (
+                <motion.div
+                  key={element.id}
+                  style={{ ...element.styles }}
+                  drag={!element.isSelected}
+                  dragMomentum={false}
+                  dragSnapToOrigin
+                  onDragStart={(e) => {
+                    e.preventDefault();
+                    setDraggingElement(element);
+                  }}
+                  onDragEnd={(e) => {
+                    e.preventDefault();
+                    swapElements();
+                  }}
+                  onMouseEnter={(e) => handleMouseEnter(e, element)}
+                  onMouseLeave={(e) => handleMouseLeave(e)}
+                  dragConstraints={dragConstraint}
+                  onDoubleClick={(e) => handleDoubleClick(e, element)}
+                  onContextMenu={(e) => handleContextMenu(e, element)}
+                  className={`${
+                    element.isSelected
+                      ? "border-black border-2 border-solid"
+                      : ""
+                  } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+                >
+                  {element.content}
+                </motion.div>
+              );
+            } else {
+              return (
+                <motion.img
+                  key={element.id}
+                  style={{ ...element.styles }}
+                  src={element.src}
+                  drag={!element.isSelected}
+                  dragMomentum={false}
+                  dragSnapToOrigin
+                  onDragStart={(e) => {
+                    e.preventDefault();
+                    setDraggingElement(element);
+                  }}
+                  onDragEnd={(e) => {
+                    e.preventDefault();
+                    swapElements();
+                  }}
+                  onMouseEnter={(e) => handleMouseEnter(e, element)}
+                  onMouseLeave={(e) => handleMouseLeave(e)}
+                  dragConstraints={dragConstraint}
+                  onDoubleClick={(e) => handleDoubleClick(e, element)}
+                  onContextMenu={(e) => handleContextMenu(e, element)}
+                  className={`${
+                    element.isSelected
+                      ? "border-black border-2 border-solid"
+                      : ""
+                  } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+                />
+              );
+            }
           default:
             return (
               <motion.div

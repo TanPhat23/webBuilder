@@ -49,6 +49,15 @@ const CarouselComponent: React.FC<Props> = ({
               projectId={projectId}
             />
           );
+        case "Image":
+          return (
+            <motion.img
+              key={element.id}
+              src={element.src}
+              alt=""
+              style={{ ...element.styles }}
+            />
+          );
         default:
           return (
             <motion.div
@@ -66,13 +75,32 @@ const CarouselComponent: React.FC<Props> = ({
     [setContextMenuPosition, setShowContextMenu, projectId]
   );
 
-  var settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-  };
+  const carouselSettings = React.useMemo(
+    () => ({
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 1,
+          },
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    }),
+    []
+  );
 
   return (
     <div
@@ -86,10 +114,12 @@ const CarouselComponent: React.FC<Props> = ({
       style={{ minHeight: "100px" }}
       onDoubleClick={() => console.log(element)}
     >
-      <Slider {...settings}>
+      <Slider {...carouselSettings}>
         {element.elements?.map((childElement) => (
-          <div key={childElement.id} className="slick-slide">
-            {renderElement(childElement)}
+          <div key={childElement.id} className="slick-slide h-full w-full ">
+            <div className="h-full w-full flex items-center justify-center ">
+              {renderElement(childElement)}
+            </div>
           </div>
         ))}
       </Slider>
