@@ -19,67 +19,61 @@ const ImageUpload = (props: Props) => {
     setUploadImages(newImages);
   };
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent, index: number) => {
-      const img = new Image();
-      img.src = uploadImages[index];
-      img.onload = () => {
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
-        const fixedWidth = 200;
-        const calculatedHeight = fixedWidth / aspectRatio;
-        const newElement: EditorElement = {
-          type: "Image",
-          id: `Image-${uuidv4()}`,
-          isSelected: false,
-          content: "",
-          x: 0,
-          y: 0,
-          styles: {
-            width: `${fixedWidth}px`,
-            height: `${calculatedHeight}px`,
-          },
-          src: uploadImages[index],
-          projectId: slug as string,
-        };
-
-        try {
-          Create(newElement);
-          dispatch({ type: "ADD_ELEMENT", payload: newElement });
-        } catch (e) {
-          console.log(e);
-          dispatch({ type: "DELETE_ELEMENT", payload: newElement.id });
-        }
+  const handleClick = (e: React.MouseEvent, index: number) => {
+    const img = new Image();
+    img.src = uploadImages[index];
+    img.onload = () => {
+      const aspectRatio = img.naturalWidth / img.naturalHeight;
+      const fixedWidth = 200;
+      const calculatedHeight = fixedWidth / aspectRatio;
+      const newElement: EditorElement = {
+        type: "Image",
+        id: `Image-${uuidv4()}`,
+        isSelected: false,
+        content: "",
+        x: 0,
+        y: 0,
+        styles: {
+          width: `${fixedWidth}px`,
+          height: `${calculatedHeight}px`,
+        },
+        src: uploadImages[index],
+        projectId: slug as string,
       };
-    },
-    [uploadImages, dispatch]
-  );
-  const handleChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        if (!file.type.startsWith("image/")) {
-          alert("Please upload an image file");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setUploadImages([...uploadImages, reader.result as string]);
-        };
-        reader.onerror = () => {
-          alert("Error reading file");
-        };
-        reader.readAsDataURL(file);
+
+      try {
+        Create(newElement);
+        dispatch({ type: "ADD_ELEMENT", payload: newElement });
+      } catch (e) {
+        console.log(e);
+        dispatch({ type: "DELETE_ELEMENT", payload: newElement.id });
       }
-    },
-    [uploadImages, setUploadImages]
-  );
+    };
+  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload an image file");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadImages([...uploadImages, reader.result as string]);
+      };
+      reader.onerror = () => {
+        alert("Error reading file");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   React.useEffect(() => {
     localStorage.setItem("uploadImages", JSON.stringify(uploadImages));
   }, [handleChange]);
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData("text/plain", `Image + ${index}`);
+    e.dataTransfer.setData("image", `${index}`);
   };
   return (
     <div>
@@ -99,6 +93,7 @@ const ImageUpload = (props: Props) => {
               src={image}
               alt="uploaded"
               className="h-auto w-auto object-cover hover:scale-110 hover:cursor-pointer mx-2"
+              onDragStart={(e) => handleDragStart(e, index)}
             />
             <Button
               onClick={() => handleRemoveImage(index)}
