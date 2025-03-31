@@ -17,7 +17,7 @@ import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
-import { customComponents } from "@/lib/styleconstants";
+import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
 

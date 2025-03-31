@@ -13,7 +13,7 @@ import TextHolder from "../sidebarcomponentholders/TextHolder";
 import LinkHolder from "../sidebarcomponentholders/LinkHolder";
 import ButtonHolder from "../sidebarcomponentholders/ButtonHolder";
 import FrameHolder from "../sidebarcomponentholders/FrameHolder";
-import { customComponents } from "@/lib/styleconstants";
+import { customComponents } from "@/lib/customcomponents/styleconstants";
 import CarouselHolder from "../sidebarcomponentholders/CarouselHolder";
 import {
   Collapsible,
