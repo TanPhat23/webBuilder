@@ -14,7 +14,7 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "@/components/ui/collapsible";
-import { customComponents } from "@/lib/styleconstants";
+import { customComponents } from "@/lib/customcomponents/styleconstants";
 
 // Types
 type DraggableComponent = {
