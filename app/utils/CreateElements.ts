@@ -77,7 +77,7 @@ export const createElements = async (
         y: 0,
         styles: {
           ...baseElement.styles,
-          height: "100px",
+          height: "300px",
           width: "100%",
           display: "flex",
           flexDirection: "row",
