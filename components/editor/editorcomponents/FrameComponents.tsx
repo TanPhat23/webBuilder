@@ -198,8 +198,10 @@ const FrameComponents = ({
             dragConstraints={dragConstraint}
             onDoubleClick={(e) => handleDoubleClick(e, element)}
             onContextMenu={(e) => handleContextMenu(e, element)}
-            className={cn("z-0", element.tailwindStyles, {
+            className={cn("", element.tailwindStyles, {
               "border-black border-2 border-solid": element.isSelected,
+              "z-0": element.id === draggingElement?.id,
+              "z-50": element.id !== draggingElement?.id,              
             })}
           >
             {(element as FrameElement).elements?.map((childElement, index) =>
@@ -211,7 +213,7 @@ const FrameComponents = ({
         return (
           <motion.div
             key={element.id}
-            style={{ ...element.styles }}
+            // style={{ ...element.styles }}
             drag={!element.isSelected}
             dragMomentum={false}
             dragElastic={0}
@@ -234,9 +236,14 @@ const FrameComponents = ({
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(element.content),
             }}
-            className={`${
-              element.isSelected ? "border-black border-2 border-solid" : ""
-            } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+            // className={`${
+            //   element.isSelected ? "border-black border-2 border-solid" : ""
+            // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+            className={cn("", element.tailwindStyles, {
+              "border-black border-2 border-solid": element.isSelected,
+              "z-0": element.id === draggingElement?.id,
+              "z-50": element.id !== draggingElement?.id,
+            })}
           />
         );
       case "Image":
@@ -244,7 +251,7 @@ const FrameComponents = ({
           return (
             <motion.div
               key={element.id}
-              style={{ ...element.styles }}
+              // style={{ ...element.styles }}
               drag={element.isSelected}
               dragMomentum={false}
               dragSnapToOrigin
@@ -262,9 +269,14 @@ const FrameComponents = ({
               onDoubleClick={(e) => handleDoubleClick(e, element)}
               onContextMenu={(e) => handleContextMenu(e, element)}
               onDrop={(e) => handleImageDrop(e, element)}
-              className={`${
-                element.isSelected ? "border-black border-2 border-solid" : ""
-              } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+              // className={`${
+              //   element.isSelected ? "border-black border-2 border-solid" : ""
+              // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+              className={cn("", element.tailwindStyles, {
+                "border-black border-2 border-solid": element.isSelected,
+                "z-0": element.id === draggingElement?.id,
+                "z-50": element.id !== draggingElement?.id,
+              })}
             >
               {element.content}
             </motion.div>
@@ -296,9 +308,14 @@ const FrameComponents = ({
                 e.preventDefault();
                 e.stopPropagation();
               }}
-              className={`${
-                element.isSelected ? "border-black border-2 border-solid" : ""
-              } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+              // className={`${
+              //   element.isSelected ? "border-black border-2 border-solid" : ""
+              // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
+              className={cn("", element.tailwindStyles, {
+                "border-black border-2 border-solid": element.isSelected,
+                "z-0": element.id === draggingElement?.id,
+                "z-50": element.id !== draggingElement?.id,
+              })}
             />
           );
         }
@@ -306,8 +323,10 @@ const FrameComponents = ({
         return (
           <motion.div
             key={element.id}
-            className={cn("z-0", element.tailwindStyles, {
+            className={cn("", element.tailwindStyles, {
               "border-black border-2 border-solid": element.isSelected,
+              "z-50": element.id !== draggingElement?.id,
+              "z-0": element.id === draggingElement?.id,
             })}
             contentEditable={element.isSelected}
             onContextMenu={(e) => handleContextMenu(e, element)}
