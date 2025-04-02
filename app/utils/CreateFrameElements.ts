@@ -56,6 +56,7 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
         },
+        tailwindStyles: "h-10 text-black",
         projectId: projectId,
       };
       break;

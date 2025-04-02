@@ -1,6 +1,6 @@
 import { CarouselElement, EditorElement } from "@/lib/type";
 import React, { startTransition, useCallback } from "react";
-import Slider from "react-slick";
+import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
@@ -9,6 +9,8 @@ import "slick-carousel/slick/slick-theme.css";
 import { useEditorContext, useImageUploadContext } from "@/lib/context";
 import createElements from "@/app/utils/CreateFrameElements";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { cn } from "@/lib/utils";
+import { set } from "zod";
 
 type Props = {
   element: CarouselElement; // More specific type
@@ -82,7 +84,10 @@ const CarouselComponent: React.FC<Props> = ({
               e.preventDefault();
               e.stopPropagation();
             }}
-            className={element.tailwindStyles + `w-full h-full object-contain max-w-full max-h-full slick-slide`}
+            className={cn(
+              "slick-slide",
+              element.tailwindStyles
+            )}
           />
         );
       default:
@@ -100,35 +105,67 @@ const CarouselComponent: React.FC<Props> = ({
         );
     }
   };
-  const carouselSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    variableWidth: false,
-    centerMode: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: { slidesToShow: 2, slidesToScroll: 1 },
-      },
-      {
-        breakpoint: 768,
-        settings: { slidesToShow: 1, slidesToScroll: 1 },
-      },
-    ],
-  };
+  const [carouselSettings, setCarouselSettings] = React.useState<Settings>(() => {
+    const defaults = {
+      dots: true,
+      infinite: true,
+      arrows: true,
+      speed: 500,
+      autoplay: false,
+      autoplaySpeed: 3000,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      pauseOnHover: true,
+    };
+
+    return {
+      ...defaults,
+      ...element.settings,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: Math.min(element.settings?.slidesToShow || 3, 2),
+            slidesToScroll: Math.min(element.settings?.slidesToScroll || 1, 1),
+          },
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    };
+  });
+
+  React.useEffect(() => {
+    const newSettings = {
+      ...carouselSettings,
+      ...element.settings,
+    };
+
+    if (!newSettings.responsive) {
+      newSettings.responsive = carouselSettings.responsive;
+    }
+
+    setCarouselSettings(newSettings);
+  }, [element.settings]);
 
   return (
     <div
       id={element.id}
       onDrop={handleDrop}
-      className="slider-container mx-auto max-w-[95vw]"
+      className={cn("slider-container ", "mx-auto max-w-[95vw]")}
       onDragOver={(e) => e.preventDefault()}
       style={{ minHeight: "200px" }}
+      
     >
-      <Slider {...carouselSettings}>
+      <Slider
+        key={`slider-${element.id}-${JSON.stringify(carouselSettings)}`}
+        {...carouselSettings}
+      >
         {element.elements?.map((childElement, index) => (
           <div key={childElement.id} className="h-full px-2">
             <div className="relative h-full w-full flex items-center justify-center aspect-[4/1] rounded-lg overflow-hidden">

@@ -1,4 +1,5 @@
 import React from "react";
+import { Settings } from "react-slick";
 
 export interface Element {
   type: string;
@@ -16,10 +17,13 @@ export interface Element {
   projectId?: string;
 }
 
+
+
 export interface FrameElement extends Element {
   elements: EditorElement[];
 }
 export interface CarouselElement extends Element {
+  settings: Settings;
   elements: CarouselElementChild[];
 }
 export interface ButtonElement extends Element {

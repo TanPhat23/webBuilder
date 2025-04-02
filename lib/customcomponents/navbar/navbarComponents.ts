@@ -450,7 +450,6 @@ export const navbarComponent5: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "55px",
       width: "100%",
       backgroundColor: "#6200ea",
       display: "flex",
@@ -460,7 +459,7 @@ export const navbarComponent5: CustomComponent = {
       padding: "0 15px",
       color: "white",
     },
-    tailwindStyles: "flex flex-col md:flex-row items-center justify-between w-full p-3 bg-purple-800 text-white overflow-x-auto md:justify-start",
+    tailwindStyles: "flex flex-col md:flex-row items-center h-auto w-full p-3 bg-purple-800 text-white md:justify-start",
     elements: [
       {
         type: "Text",

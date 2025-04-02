@@ -15,7 +15,7 @@ export const authLinks = [
 ];
 
 export const DEVICE_SIZES = {
-  PHONE: { width: 375, height: "100%" },
-  TABLET: { width: 768, height: "100%" },
+  PHONE: { width: 375, height: 667 },
+  TABLET: { width: 768, height: 1024 },
   DESKTOP: { width: "100%", height: "100%" },
 };

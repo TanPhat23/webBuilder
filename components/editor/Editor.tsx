@@ -20,6 +20,7 @@ import { DEVICE_SIZES } from "@/lib/constants";
 import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
+import { cn } from "@/lib/utils";
 
 type Props = {
   projectId: string;
@@ -62,6 +63,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
 
   const editableRef = useRef<HTMLDivElement>(null);
   const draggingConstraintRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fontsToLoad = new Set<string>();
     elements.forEach((element) => {
@@ -81,57 +83,52 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
   };
 
-  const handleDragEnd = useCallback(
-    (
-      event: MouseEvent | TouchEvent | PointerEvent,
-      info: PanInfo,
-      element: EditorElement
-    ) => {
-      if (!info) return;
+  const handleDragEnd = (
+    event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo,
+    element: EditorElement
+  ) => {
+    if (!info) return;
 
-      const gridSize = 20;
-      const newX = element.x + info.offset.x;
-      const newY = element.y + info.offset.y;
+    const gridSize = 20;
+    const newX = element.x + info.offset.x;
+    const newY = element.y + info.offset.y;
 
-      const x = Math.round(newX / gridSize) * gridSize;
-      const y = Math.round(newY / gridSize) * gridSize;
+    const x = Math.round(newX / gridSize) * gridSize;
+    const y = Math.round(newY / gridSize) * gridSize;
 
-      startTransition(() => {
-        updateElementOptimistically(element.id, {
-          x: x,
-          y: y,
-        });
+    startTransition(() => {
+      updateElementOptimistically(element.id, {
+        x: x,
+        y: y,
       });
+    });
 
-      setDraggingElement(null);
-    },
-    [updateElementOptimistically]
-  );
-  const onDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      const newElement = e.dataTransfer.getData("elementType");
-      const newCustomElement = e.dataTransfer.getData("customElement");
-      if (newElement) {
-        createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
+    setDraggingElement(null);
+  };
+
+  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const newElement = e.dataTransfer.getData("elementType");
+    const newCustomElement = e.dataTransfer.getData("customElement");
+    if (newElement) {
+      createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
+    }
+    if (newCustomElement) {
+      const customComponent = customComponents.find(
+        (component) => component.component.name === newCustomElement
+      );
+      if (customComponent) {
+        startTransition(() => {
+          addElementOptimistically(
+            customComponent.component,
+            dispatch,
+            projectId
+          );
+        });
       }
-      if (newCustomElement) {
-        const customComponent = customComponents.find(
-          (component) => component.component.name === newCustomElement
-        );
-        if (customComponent) {
-          startTransition(() => {
-            addElementOptimistically(
-              customComponent.component,
-              dispatch,
-              projectId
-            );
-          });
-        }
-      }
-    },
-    [dispatch]
-  );
+    }
+  };
 
   const handleInput = (e: React.FormEvent<HTMLElement>, id: string) => {
     let newContent = e.currentTarget.innerHTML;
@@ -141,44 +138,38 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     });
   };
 
-  const handleDoubleClick = useCallback(
-    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
-      e.currentTarget.focus();
-      e.stopPropagation();
-      setSelectedElement(element);
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: { id: element.id, updates: { isSelected: true } },
-      });
-    },
-    [dispatch]
-  );
+  const handleDoubleClick = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.currentTarget.focus();
+    e.stopPropagation();
+    setSelectedElement(element);
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: { id: element.id, updates: { isSelected: true } },
+    });
+  };
 
-  const handleDeselectAll = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
-      setSelectedElement(undefined);
-    },
-    [dispatch]
-  );
+  const handleDeselectAll = (e: React.MouseEvent<HTMLDivElement>) => {
+    dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
+    setSelectedElement(undefined);
+  };
 
-  const handleZoom = useCallback(
-    (event: WheelEvent) => {
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault();
-        event.stopPropagation();
+  const handleZoom = (event: WheelEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      event.stopPropagation();
 
-        const delta = event.deltaY > 0 ? -0.1 : 0.1;
-        const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        setLockedTransformOrigin(`${x}px ${y}px`);
-        setZoom(newZoom);
-      }
-    },
-    [zoom]
-  );
+      const delta = event.deltaY > 0 ? -0.1 : 0.1;
+      const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      setLockedTransformOrigin(`${x}px ${y}px`);
+      setZoom(newZoom);
+    }
+  };
 
   const handleResizeStart = (
     direction: "nw" | "ne" | "sw" | "se",
@@ -268,7 +259,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     e: React.KeyboardEvent<HTMLElement>,
     element: EditorElement
   ) => {
-    console.log(e.key);
     if (e.key === "End" && element.isSelected) {
       startTransition(() => {
         deleteElementOptimistically(element.id);
@@ -296,7 +286,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   }, [handleZoom]);
 
   return (
-    <div className="flex flex-col h-full w-full canva-component">
+    <div className="flex flex-col h-full w-full ">
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
         <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
       </div>
@@ -340,6 +330,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 onDragStart={() => setDraggingElement({ id: element.id })}
                 onKeyDown={(e) => handleKeyPress(e, element)}
                 drag={!element.isSelected}
+                dragElastic={0}
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
@@ -354,15 +345,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   height: element.styles?.height || "100px",
                   zIndex: element.isSelected ? 10 : 1,
                 }}
-                className={`${
-                  element.isSelected
-                    ? "border-2 border-black hover:cursor-text "
-                    : "hover:cursor-pointer"
-                } ${
-                  draggingElement?.id === element.id
-                    ? "border-dashed border-black border-2"
-                    : ""
-                }`}
+                className={cn("cursor-pointer", "", {
+                  "border-2 border-black hover:cursor-text": element.isSelected,
+                  "border-dashed border-black border-2":
+                    draggingElement?.id === element.id,
+                })}
               >
                 {element.type === "Text" && (
                   <div

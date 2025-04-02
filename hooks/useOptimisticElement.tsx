@@ -16,7 +16,7 @@ export function useOptimisticElement() {
         if (element.id === update.id) {
           return { ...element, ...update.updates };
         } else if (
-          element.type === "Frame" &&
+          (element.type === "Frame" || element.type === "Carousel") &&
           (element as FrameElement).elements
         ) {
           return {
@@ -31,7 +31,7 @@ export function useOptimisticElement() {
         }
       });
     },
-    [elements]
+    []
   );
 
   const [optimisticElements, addOptimisticUpdate] = useOptimistic(
@@ -51,23 +51,21 @@ export function useOptimisticElement() {
   );
 
   const deleteElementOptimistically = async (id: string) => {
-    addOptimisticUpdate({ type: "DELETE_ELEMENT", payload: id });
+    const elementToDelete = findElementById(elements, id);
 
-    dispatch({
-      type: "DELETE_ELEMENT",
-      payload: id,
-    });
+    addOptimisticUpdate({ type: "DELETE_ELEMENT", payload: id });
 
     try {
       await Delete(id);
+
+      dispatch({
+        type: "DELETE_ELEMENT",
+        payload: id,
+      });
     } catch (error) {
       console.error("Failed to delete element:", error);
-      const deletedElement = findElementById(optimisticElements, id);
-      if (deletedElement) {
-        dispatch({
-          type: "ADD_ELEMENT",
-          payload: deletedElement,
-        });
+      if (elementToDelete) {
+        addOptimisticUpdate({ type: "ADD_ELEMENT", payload: elementToDelete });
       }
     }
   };
@@ -92,35 +90,35 @@ export function useOptimisticElement() {
 
       elementsToCreate.push(newElement);
 
-      if (element.type === "Frame") {
-        const frameElement = element as FrameElement;
-        frameElement.elements = frameElement.elements.map((childElement) =>
-          prepareElements(childElement, newElement.id)
-        );
+      if (element.type === "Frame" || element.type === "Carousel") {
+        const containerElement = element as FrameElement;
+        const childElements = containerElement.elements || [];
+
+        return {
+          ...newElement,
+          elements: childElements.map((childElement) =>
+            prepareElements(childElement, newElement.id)
+          ),
+        };
       }
-      if (element.type === "Carousel") {
-        const carouselElement = element as FrameElement;
-        carouselElement.elements = carouselElement.elements.map(
-          (childElement) => prepareElements(childElement, newElement.id)
-        );
-      }
+
       return newElement;
     };
 
     const preparedElement = prepareElements(element, undefined);
-    addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
 
-    dispatch({
-      type: "ADD_ELEMENT",
-      payload: preparedElement,
-    });
+    addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
 
     try {
       await BatchCreate(elementsToCreate);
-    } catch (error) {
-      console.error("Failed to add element:", error);
 
       dispatch({
+        type: "ADD_ELEMENT",
+        payload: preparedElement,
+      });
+    } catch (error) {
+      console.error("Failed to add element:", error);
+      addOptimisticUpdate({
         type: "DELETE_ELEMENT",
         payload: preparedElement.id,
       });
@@ -133,16 +131,18 @@ export function useOptimisticElement() {
   ) => {
     addOptimisticUpdate({ type: "UPDATE_ELEMENT", payload: { id, updates } });
 
-    const updatedElement = findElementById(optimisticElements, id);
-    if (!updatedElement) return;
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: { id, updates },
-    });
     try {
-      const latestElement = { ...updatedElement, ...updates };
-      await Update(latestElement);
+      const currentElement = findElementById(elements, id);
+      if (!currentElement) return;
+
+      const updatedElement = { ...currentElement, ...updates };
+
+      await Update(updatedElement);
+
+      dispatch({
+        type: "UPDATE_ELEMENT",
+        payload: { id, updates },
+      });
     } catch (error) {
       console.error("Failed to update element:", error);
     }
