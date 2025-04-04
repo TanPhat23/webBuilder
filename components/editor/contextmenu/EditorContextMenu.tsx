@@ -1,14 +1,7 @@
 import { EditorElement, Element } from "@/lib/type";
 import { Button } from "@/components/ui/button";
-import {
-  ContextMenu,
-  ContextMenuPortal,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import {
-  ContextMenuContent,
-  ContextMenuItem,
-} from "@radix-ui/react-context-menu";
+import { ContextMenu, ContextMenuPortal } from "@/components/ui/context-menu";
+import { ContextMenuContent } from "@radix-ui/react-context-menu";
 import React, { startTransition, useCallback, useState } from "react";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { v4 as uuidv4 } from "uuid";
@@ -25,8 +18,7 @@ const EditorContextMenu: React.FC<Props> = ({
   setOpen,
   contextMenuPosition,
 }) => {
-  const [link, setLink] = useState("");
-  const [addLink, setAddLink] = useState(false);
+  
   const [addEvent, setAddEvent] = useState(false);
   const { selectedElement } = useEditorContextProvider();
   const { deleteElementOptimistically, updateElementOptimistically } =
@@ -34,19 +26,7 @@ const EditorContextMenu: React.FC<Props> = ({
 
   const { elements, dispatch } = useEditorContext();
 
-  const handleSetLink = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (addLink && selectedElement) {
-        updateElementOptimistically(selectedElement.id, {
-          href: link,
-        });
-        setAddLink(false);
-      }
-      setAddLink(false);
-    },
-    [addLink, selectedElement, link, dispatch]
-  );
+  
 
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {

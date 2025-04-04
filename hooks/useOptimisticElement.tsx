@@ -1,4 +1,4 @@
-import React, { act, useOptimistic } from "react";
+import React, { useOptimistic } from "react";
 import { EditorAction, EditorElement, FrameElement } from "@/lib/type";
 import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 import { useEditorContext } from "@/lib/context";
@@ -86,6 +86,7 @@ export function useOptimisticElement() {
         id: uuidv4(),
         projectId,
         parentId,
+        Type: element.type,
       };
 
       elementsToCreate.push(newElement);
@@ -129,22 +130,36 @@ export function useOptimisticElement() {
     id: string,
     updates: Partial<EditorElement>
   ) => {
-    addOptimisticUpdate({ type: "UPDATE_ELEMENT", payload: { id, updates } });
+    const currentElement = findElementById(elements, id);
+    if (!currentElement) return;
+
+    // Ensure type and Type are both included
+    const completeUpdates = {
+      ...updates,
+      type: updates.type || currentElement.type,
+      Type: updates.type || currentElement.type, // Add Type field with capital T for API validation
+    };
+
+    addOptimisticUpdate({
+      type: "UPDATE_ELEMENT",
+      payload: { id, updates: completeUpdates },
+    });
 
     try {
-      const currentElement = findElementById(elements, id);
-      if (!currentElement) return;
-
-      const updatedElement = { ...currentElement, ...updates };
-
+      const updatedElement = { ...currentElement, ...completeUpdates };
       await Update(updatedElement);
 
       dispatch({
         type: "UPDATE_ELEMENT",
-        payload: { id, updates },
+        payload: { id, updates: completeUpdates },
       });
     } catch (error) {
       console.error("Failed to update element:", error);
+      // Rollback to previous state
+      addOptimisticUpdate({
+        type: "UPDATE_ELEMENT",
+        payload: { id, updates: currentElement },
+      });
     }
   };
 

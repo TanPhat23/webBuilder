@@ -70,47 +70,49 @@ const FrameComponents = ({
     setHoveredElement(null);
   };
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLElement>, element: EditorElement) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        document.execCommand("insertHTML", false, "<br><br>");
-      } else if (e.key === " ") {
-        e.preventDefault();
-        document.execCommand("insertText", false, " ");
-      }
-    },
-    []
-  );
-
-  const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, element: EditorElement) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    if (e.key === "Enter") {
       e.preventDefault();
-      e.stopPropagation();
-      const elementType = e.dataTransfer.getData("elementType");
-      createElements(elementType, dispatch, element as FrameElement, projectId);
-    },
-    [dispatch, projectId]
-  );
+      document.execCommand("insertHTML", false, "<br><br>");
+    } else if (e.key === " ") {
+      e.preventDefault();
+      document.execCommand("insertText", false, " ");
+    }
+  };
+
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (element.type !== "Image" && element.type !== "Frame") return;
+    const elementType = e.dataTransfer.getData("elementType");
+    if (!elementType) return;
+    createElements(elementType, dispatch, element as FrameElement, projectId);
+  };
 
   // Handle double-click to select an element
-  const handleDoubleClick = useCallback(
-    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!element.isSelected) setSelectedElement(element);
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: {
-            isSelected: !element.isSelected,
-          },
+  const handleDoubleClick = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!element.isSelected) setSelectedElement(element);
+    dispatch({
+      type: "UPDATE_ELEMENT",
+      payload: {
+        id: element.id,
+        updates: {
+          isSelected: !element.isSelected,
         },
-      });
-    },
-    [dispatch, setSelectedElement]
-  );
+      },
+    });
+  };
 
   const handleInput = useCallback(
     (e: React.FormEvent<HTMLElement>, element: EditorElement) => {
@@ -167,8 +169,7 @@ const FrameComponents = ({
         updateElementOptimistically(element.id, {
           ...element,
           src: imgSrc,
-          type: element.type,
-        });
+        }).catch(() => {});
       });
     }
   };
@@ -201,7 +202,7 @@ const FrameComponents = ({
             className={cn("", element.tailwindStyles, {
               "border-black border-2 border-solid": element.isSelected,
               "z-0": element.id === draggingElement?.id,
-              "z-50": element.id !== draggingElement?.id,              
+              "z-50": element.id !== draggingElement?.id,
             })}
           >
             {(element as FrameElement).elements?.map((childElement, index) =>
@@ -247,7 +248,39 @@ const FrameComponents = ({
           />
         );
       case "Image":
-        if (!element.src) {
+        if (element.src) {
+          return (
+            <motion.img
+              key={element.id}
+              // style={{ ...element.styles }}
+              src={element.src}
+              drag={element.isSelected}
+              dragMomentum={false}
+              dragSnapToOrigin
+              onDragStart={(e) => {
+                e.preventDefault();
+                setDraggingElement(element);
+              }}
+              onDragEnd={(e) => {
+                e.preventDefault();
+                swapElements();
+              }}
+              onMouseEnter={(e) => handleMouseEnter(e, element)}
+              onMouseLeave={(e) => handleMouseLeave(e)}
+              onDrop={(e) => handleImageDrop(e, element)}
+              dragConstraints={dragConstraint}
+              onDoubleClick={(e) => handleDoubleClick(e, element)}
+              onContextMenu={(e) => handleContextMenu(e, element)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              className={cn("", element.tailwindStyles, {
+                "border-black border-2 border-solid": element.isSelected,
+              })}
+            />
+          );
+        } else {
           return (
             <motion.div
               key={element.id}
@@ -280,43 +313,6 @@ const FrameComponents = ({
             >
               {element.content}
             </motion.div>
-          );
-        } else {
-          return (
-            <motion.img
-              key={element.id}
-              // style={{ ...element.styles }}
-              src={element.src}
-              drag={element.isSelected}
-              dragMomentum={false}
-              dragSnapToOrigin
-              onDragStart={(e) => {
-                e.preventDefault();
-                setDraggingElement(element);
-              }}
-              onDragEnd={(e) => {
-                e.preventDefault();
-                swapElements();
-              }}
-              onMouseEnter={(e) => handleMouseEnter(e, element)}
-              onMouseLeave={(e) => handleMouseLeave(e)}
-              onDrop={(e) => handleImageDrop(e, element)}
-              dragConstraints={dragConstraint}
-              onDoubleClick={(e) => handleDoubleClick(e, element)}
-              onContextMenu={(e) => handleContextMenu(e, element)}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              // className={`${
-              //   element.isSelected ? "border-black border-2 border-solid" : ""
-              // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
-              className={cn("", element.tailwindStyles, {
-                "border-black border-2 border-solid": element.isSelected,
-                "z-0": element.id === draggingElement?.id,
-                "z-50": element.id !== draggingElement?.id,
-              })}
-            />
           );
         }
       default:

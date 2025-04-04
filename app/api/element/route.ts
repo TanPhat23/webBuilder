@@ -1,6 +1,7 @@
 "use server";
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { Type } from "lucide-react";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/elements`;
 
@@ -43,16 +44,24 @@ export const BatchCreate = async (elements: EditorElement[]) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
       },
-      body: JSON.stringify({ elements }),
+      body: JSON.stringify({ elements: elements }),
     });
 
     if (!response.ok) {
-      const errorData = await response.text();
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = errorText;
+      }
+      console.error("BatchCreate API error:", errorData);
       throw new Error(
-        errorData || "Failed to create elements in batch" + response.status
+        typeof errorData === "string" ? errorData : JSON.stringify(errorData)
       );
     }
   } catch (error: any) {
+    console.error("BatchCreate error:", error);
     throw new Error(
       error.message || "Failed to process batch element creation"
     );
@@ -71,7 +80,7 @@ export const Update = async (data: EditorElement) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data }),
     });
     if (!response.ok) {
       const errorData = await response.json();

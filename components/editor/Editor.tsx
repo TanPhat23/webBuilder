@@ -286,7 +286,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   }, [handleZoom]);
 
   return (
-    <div className="flex flex-col h-full w-full ">
+    <div className="flex flex-col h-full w-full canva-component">
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
         <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
       </div>
