@@ -53,6 +53,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
   } | null>(null);
+  const [dragLockAxis, setDragLockAxis] = useState<"x" | "y" | false>(false);
 
   const resizingElement = useRef<HTMLDivElement>(null);
   const resizeDirection = useRef<"nw" | "ne" | "sw" | "se">("nw");
@@ -89,6 +90,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     element: EditorElement
   ) => {
     if (!info) return;
+    if (dragLockAxis === "x") {
+      info.offset.y = 0;
+    } else if (dragLockAxis === "y") {
+      info.offset.x = 0;
+    }
 
     const gridSize = 20;
     const newX = element.x + info.offset.x;
@@ -105,6 +111,15 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     });
 
     setDraggingElement(null);
+    setDragLockAxis(false);
+  };
+
+  const handleDirectionLock = (element: EditorElement) => {
+    if (element.styles?.width === "100%") {
+      setDragLockAxis("y");
+    } else if (element.styles?.height === "100%") {
+      setDragLockAxis("x");
+    }
   };
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -129,6 +144,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       }
     }
   };
+
 
   const handleInput = (e: React.FormEvent<HTMLElement>, id: string) => {
     let newContent = e.currentTarget.innerHTML;
@@ -241,7 +257,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       (el) => el.id === resizingElement.current?.id
     );
     if (!element) return;
-
+    
     startTransition(() => {
       updateElementOptimistically(resizingElement.current?.id || "", {
         styles: {
@@ -334,11 +350,13 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
+                dragDirectionLock
+                onDirectionLock={() => handleDirectionLock(element)}
+                dragConstraints={draggingConstraintRef}
                 animate={{
                   x: element.x,
                   y: element.y,
                 }}
-                dragConstraints={draggingConstraintRef}
                 style={{
                   position: "absolute",
                   width: element.styles?.width || "100px",
