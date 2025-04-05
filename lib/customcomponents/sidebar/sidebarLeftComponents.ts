@@ -55,7 +55,8 @@ export const sidebarLeftComponent: CustomComponent = {
               paddingBottom: "16px",
               borderBottom: "1px solid #f1f1f1",
             },
-            tailwindStyles: "flex items-center mb-4 pb-4 border-b border-gray-100",
+            tailwindStyles:
+              "flex items-center mb-4 pb-4 border-b border-gray-100",
             elements: [
               {
                 type: "Text",
@@ -70,11 +71,12 @@ export const sidebarLeftComponent: CustomComponent = {
                   fontWeight: "600",
                   letterSpacing: "0.5px",
                 },
-                tailwindStyles: "text-gray-900 text-lg font-semibold tracking-wide sm:hidden",
-              }
+                tailwindStyles:
+                  "text-gray-900 text-lg font-semibold tracking-wide sm:hidden",
+              },
             ],
           },
-          
+
           // Navigation section
           {
             type: "Frame",
@@ -107,9 +109,10 @@ export const sidebarLeftComponent: CustomComponent = {
                   letterSpacing: "0.8px",
                   textTransform: "uppercase",
                 },
-                tailwindStyles: "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+                tailwindStyles:
+                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
               },
-              
+
               // Home link - active state
               {
                 type: "Link",
@@ -131,10 +134,11 @@ export const sidebarLeftComponent: CustomComponent = {
                   alignItems: "center",
                   gap: "12px",
                 },
-                tailwindStyles: "w-full text-indigo-600 bg-indigo-50 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-indigo-100",
+                tailwindStyles:
+                  "w-full text-indigo-600 bg-indigo-50 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-indigo-100",
                 href: "/",
               },
-              
+
               // Analytics link
               {
                 type: "Link",
@@ -155,10 +159,11 @@ export const sidebarLeftComponent: CustomComponent = {
                   alignItems: "center",
                   gap: "12px",
                 },
-                tailwindStyles: "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
                 href: "/analytics",
               },
-              
+
               // Reports link
               {
                 type: "Link",
@@ -179,10 +184,11 @@ export const sidebarLeftComponent: CustomComponent = {
                   alignItems: "center",
                   gap: "12px",
                 },
-                tailwindStyles: "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
                 href: "/reports",
               },
-              
+
               // Settings link
               {
                 type: "Link",
@@ -201,14 +207,15 @@ export const sidebarLeftComponent: CustomComponent = {
                   borderRadius: "6px",
                   display: "flex",
                   alignItems: "center",
-                  gap: "12px", 
+                  gap: "12px",
                 },
-                tailwindStyles: "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
                 href: "/settings",
               },
             ],
           },
-          
+
           // Secondary Navigation
           {
             type: "Frame",
@@ -242,9 +249,10 @@ export const sidebarLeftComponent: CustomComponent = {
                   letterSpacing: "0.8px",
                   textTransform: "uppercase",
                 },
-                tailwindStyles: "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+                tailwindStyles:
+                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
               },
-              
+
               // Projects link
               {
                 type: "Link",
@@ -265,10 +273,11 @@ export const sidebarLeftComponent: CustomComponent = {
                   alignItems: "center",
                   gap: "12px",
                 },
-                tailwindStyles: "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
                 href: "/projects",
               },
-              
+
               // Team link
               {
                 type: "Link",
@@ -289,18 +298,19 @@ export const sidebarLeftComponent: CustomComponent = {
                   alignItems: "center",
                   gap: "12px",
                 },
-                tailwindStyles: "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
                 href: "/team",
-              }
+              },
             ],
-          }
+          },
         ],
         href: "",
         src: "",
         parentId: "",
         projectId: "",
       },
-      
+
       // Bottom section for user profile
       {
         type: "Frame",
@@ -318,9 +328,10 @@ export const sidebarLeftComponent: CustomComponent = {
           backgroundColor: "#F9FAFB",
           gap: "12px",
         },
-        tailwindStyles: "flex items-center p-3 mt-auto rounded-lg bg-gray-50 gap-3 hover:bg-gray-100",
+        tailwindStyles:
+          "flex items-center p-3 mt-auto rounded-lg bg-gray-50 gap-3 hover:bg-gray-100",
         elements: [
-          // User text 
+          // User text
           {
             type: "Text",
             content: "John Doe",
@@ -334,9 +345,9 @@ export const sidebarLeftComponent: CustomComponent = {
               fontWeight: "500",
             },
             tailwindStyles: "text-gray-900 text-sm font-medium sm:hidden",
-          }
+          },
         ],
-      }
+      },
     ],
     href: "",
     src: "",
