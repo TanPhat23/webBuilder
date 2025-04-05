@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-  startTransition,
-} from "react";
+import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
@@ -13,7 +7,7 @@ import { CarouselElement, EditorElement } from "@/lib/type";
 import { createElements } from "@/app/utils/CreateElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { motion, PanInfo } from "framer-motion";
+import { hover, motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants";
@@ -21,6 +15,7 @@ import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
 import { cn } from "@/lib/utils";
+import { set } from "zod";
 
 type Props = {
   projectId: string;
@@ -40,7 +35,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   );
   const [lockedTransformOrigin, setLockedTransformOrigin] =
     useState<string>("0px 0px");
-
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({
     x: 0,
@@ -54,7 +49,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     id: string;
   } | null>(null);
   const [dragLockAxis, setDragLockAxis] = useState<"x" | "y" | false>(false);
-
+  const hoveredElement = useRef<HTMLDivElement | null>(null);
   const resizingElement = useRef<HTMLDivElement>(null);
   const resizeDirection = useRef<"nw" | "ne" | "sw" | "se">("nw");
   const nwRef = useRef<HTMLDivElement>(null);
@@ -144,7 +139,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       }
     }
   };
-
 
   const handleInput = (e: React.FormEvent<HTMLElement>, id: string) => {
     let newContent = e.currentTarget.innerHTML;
@@ -257,7 +251,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       (el) => el.id === resizingElement.current?.id
     );
     if (!element) return;
-    
+
     startTransition(() => {
       updateElementOptimistically(resizingElement.current?.id || "", {
         styles: {
@@ -282,6 +276,30 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     }
   };
 
+  const handleCopy = (
+    e: React.ClipboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.clipboardData.setData("copiedElement", JSON.stringify(element));
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLElement>) => {
+    e.preventDefault();
+    const copiedElement = e.clipboardData.getData("copiedElement");
+    if (copiedElement) {
+      const parsedElement = JSON.parse(copiedElement);
+      const newElement = {
+        ...parsedElement,
+        id: `${parsedElement.id}-${Date.now()}`,
+        x: parsedElement.x + 20,
+        y: parsedElement.y + 20,
+      };
+      startTransition(() => {
+        addElementOptimistically(newElement, dispatch, projectId);
+      });
+    }
+  };
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleResize);
@@ -340,8 +358,12 @@ const Editor: React.FC<Props> = ({ projectId }) => {
           >
             {optimisticElements.map((element) => (
               <motion.div
+                onHoverStart={() => setHoveredElementId(element.id)}
+                onHoverEnd={() => setHoveredElementId(null)}
                 key={element.id}
                 onDoubleClick={(e) => handleDoubleClick(e, element)}
+                onCopy={(e) => handleCopy(e, element)}
+                onPaste={(e) => handlePaste(e)}
                 onDragEnd={(e, info) => handleDragEnd(e, info, element)}
                 onDragStart={() => setDraggingElement({ id: element.id })}
                 onKeyDown={(e) => handleKeyPress(e, element)}
@@ -363,8 +385,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   height: element.styles?.height || "100px",
                   zIndex: element.isSelected ? 10 : 1,
                 }}
+                ref={hoveredElement}
                 className={cn("cursor-pointer", "", {
-                  "border-2 border-black hover:cursor-text": element.isSelected,
+                  "border-2 border-black hover:cursor-text":
+                    element.isSelected || hoveredElementId === element.id,
                   "border-dashed border-black border-2":
                     draggingElement?.id === element.id,
                 })}

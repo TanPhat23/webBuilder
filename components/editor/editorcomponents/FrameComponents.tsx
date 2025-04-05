@@ -359,7 +359,7 @@ const FrameComponents = ({
   return (
     <motion.div
       id={element.id}
-      // style={{ ...element.styles }}
+      style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
       onContextMenu={(e) => handleContextMenu(e, element)}
