@@ -3,6 +3,7 @@ import {
   ButtonElement,
   FrameElement,
   EditorAction,
+  CarouselElement,
 } from "@/lib/type";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -25,8 +26,9 @@ export const listItemStyles: CSSProperties = {
 const createElements = async (
   name: string,
   dispatch: React.Dispatch<EditorAction>,
-  parentElement: FrameElement,
-  projectId: string
+  parentElement: FrameElement | CarouselElement,
+  projectId: string,
+  src?: string
 ) => {
   const tempId = `${name}-${uuidv4()}`;
 
@@ -54,6 +56,7 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
         },
+        tailwindStyles: "h-10 text-black",
         projectId: projectId,
       };
       break;
@@ -72,6 +75,20 @@ const createElements = async (
           flexDirection: "column",
         },
         elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "Image": {
+      newElement = {
+        type: "Image",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100%",
+          width: "100%",
+        },
+        src: src,
         projectId: projectId,
       };
       break;

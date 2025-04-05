@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import ImageUpload from "./ImageUpload";
-import { SearchCombobox } from "./editorseach/SearchCombobox";
+import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
 
 export function EditorSideBar2() {
   return (

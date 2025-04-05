@@ -44,6 +44,7 @@ const JustifyContentSelect = ({ selectedElement }: Props) => {
         <SelectItem value="center">Center</SelectItem>
         <SelectItem value="end">End</SelectItem>
         <SelectItem value="stretch">Stretch</SelectItem>
+        <SelectItem value="space-between">Space Between</SelectItem>
       </SelectContent>
     </Select>
   );

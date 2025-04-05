@@ -1,4 +1,5 @@
 import React from "react";
+import { Settings } from "react-slick";
 
 export interface Element {
   type: string;
@@ -7,7 +8,7 @@ export interface Element {
   isSelected: boolean;
   name?: string;
   styles?: React.CSSProperties;
-  tailwindStyle?: string;
+  tailwindStyles?: string;
   x: number;
   y: number;
   src?: string;
@@ -16,12 +17,25 @@ export interface Element {
   projectId?: string;
 }
 
+
+
 export interface FrameElement extends Element {
   elements: EditorElement[];
 }
-export interface ButtonElement extends Element {}
+export interface CarouselElement extends Element {
+  settings: Settings;
+  elements: CarouselElementChild[];
+}
+export interface ButtonElement extends Element {
+}
 
-export type EditorElement = Element | FrameElement | ButtonElement;
+type CarouselElementChild = Element | ButtonElement | FrameElement;
+
+export type EditorElement =
+  | Element
+  | FrameElement
+  | ButtonElement
+  | CarouselElement;
 
 export type EditorAction =
   | { type: "ADD_ELEMENT"; payload: EditorElement }

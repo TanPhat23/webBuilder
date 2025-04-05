@@ -1,6 +1,6 @@
 import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import React, { startTransition, useEffect, useState } from "react";
-import { Input } from "../../ui/input";
+import { Input } from "../../../ui/input";
 import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
 import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
 import TextAlignButton from "./buttons/TextAlignButton";
@@ -9,15 +9,17 @@ import TextColorInput from "./inputs/TextColorInput";
 import BackGroundColorInput from "./inputs/BackGroundColorInput";
 import BorderRadiusInput from "./inputs/BorderRadiusInput";
 import BorderWeightPopover from "./popovers/BorderWeightPopover";
-import FlexDirectionSelect from "./selects/FlexDirectionSelect";
-import AlignItemSelect from "./selects/AlignItemSelect";
-import JustifyContentSelect from "./selects/JustifyContentSelect";
+import FlexDirectionSelect from "./selects/FrameFlexDirectionSelect";
+import AlignItemSelect from "./selects/FrameAlignItemSelect";
+import JustifyContentSelect from "./selects/FrameJustifyContentSelect";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { start } from "repl";
-
+import FrameConfiguration from "./FrameConfiguration";
+import BaseConfiguration from "./BaseConfiguration";
+import CarouselConfiguration from "./CarouselConfiguration";
+import { CarouselElement } from "@/lib/type";
 
 const Configuration = () => {
-  const { elements, dispatch } = useEditorContext();
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
 
   const { selectedElement, setSelectedElement } = useEditorContextProvider();
@@ -88,20 +90,26 @@ const Configuration = () => {
     });
   }, []);
 
-  const handleFontChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.currentTarget.value;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-        },
-      });
-    });
+  const renderConfiguration = () => {
+    if (!selectedElement) return null;
+    switch (selectedElement?.type) {
+      case "Frame":
+        return <FrameConfiguration selectedElement={selectedElement} />;
+      case "Carousel":
+        return (
+          <CarouselConfiguration
+            selectedElement={selectedElement as CarouselElement}
+          />
+        );
+      default:
+        return (
+          <BaseConfiguration
+            selectedElement={selectedElement}
+            fontFamilies={fontFamilies}
+          />
+        );
+    }
   };
-
   return (
     <div className="m-2 w-full h-full  text-xs">
       <div className="flex flex-col gap-2">
@@ -123,47 +131,7 @@ const Configuration = () => {
             <label className="text-xs">Height</label>
           </div>
         </div>
-
-        {selectedElement?.type !== "Frame" ? (
-          <>
-            <div className="flex flex-row gap-1 flex-wrap">
-              <div className="flex flex-col ">
-                <div className="flex flex-row gap-1">
-                  <Input
-                    className="w-full max-w-[100px] text-xs p-1"
-                    value={localFontSize}
-                    onChange={handleFontChange}
-                  />
-                  <FontSizeComboBox selectedElement={selectedElement} />
-                </div>
-                <label className="text-xs">Font size</label>
-              </div>
-              <div className="flex flex-col gap-1 flex-1">
-                <FontFamilyComboBox
-                  selectedElement={selectedElement}
-                  fontFamilies={fontFamilies}
-                />
-                <label className="text-xs">Font Family</label>
-              </div>
-            </div>
-            <div className="flex flex-row gap-1 mr-4">
-              <TextAlignButton selectedElement={selectedElement} />
-              <TextStyleButtons selectedElement={selectedElement} />
-            </div>
-            <div className="flex flex-row mr-4 gap-1">
-              <TextColorInput selectedElement={selectedElement} />
-              <BackGroundColorInput selectedElement={selectedElement} />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex flex-row gap-1 flex-wrap mr-4">
-              <FlexDirectionSelect selectedElement={selectedElement} />
-              <AlignItemSelect selectedElement={selectedElement} />
-              <JustifyContentSelect selectedElement={selectedElement} />
-            </div>
-          </>
-        )}
+        {renderConfiguration()}
         <div className="flex flex-row gap-1 mr-4">
           <BorderRadiusInput selectedElement={selectedElement} />
           <BorderWeightPopover selectedElement={selectedElement} />

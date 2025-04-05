@@ -2,7 +2,11 @@
 import { GetAll } from "@/app/api/element/route";
 import Editor from "@/components/editor/Editor";
 import EditorJoyRide from "@/components/editor/EditorJoyRide";
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
+import {
+  useEditorContext,
+  useEditorContextProvider,
+  useImageUploadContext,
+} from "@/lib/context";
 import { EditorElement } from "@/lib/type";
 import { MessageCircleQuestion } from "lucide-react";
 import React from "react";
@@ -21,13 +25,25 @@ export default function EditorPage({
     GetAll
   );
 
+  const { setUploadImages } = useImageUploadContext();
   const handleEndTour = () => setStartTour(false);
-
   React.useEffect(() => {
     if (elements)
       dispatch({ type: "LOAD_ELEMENTS_FROM_DB", payload: elements });
   }, [elements, dispatch]);
 
+  React.useEffect(() => {
+    const localImages = localStorage.getItem("uploadImages");
+    const watchTour = localStorage.getItem("watchTour");
+    if (!watchTour) {
+      setStartTour(true);
+      localStorage.setItem("watchTour", "true");
+    }
+    if (localImages) {
+      const images = JSON.parse(localImages);
+      setUploadImages(images);
+    }
+  }, []);
   return (
     <>
       <Editor projectId={slug} />
