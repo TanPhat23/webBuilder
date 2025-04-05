@@ -1,4 +1,4 @@
-import React, { act, useOptimistic } from "react";
+import React, { useOptimistic } from "react";
 import { EditorAction, EditorElement, FrameElement } from "@/lib/type";
 import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 import { useEditorContext } from "@/lib/context";
@@ -16,7 +16,7 @@ export function useOptimisticElement() {
         if (element.id === update.id) {
           return { ...element, ...update.updates };
         } else if (
-          element.type === "Frame" &&
+          (element.type === "Frame" || element.type === "Carousel") &&
           (element as FrameElement).elements
         ) {
           return {
@@ -31,7 +31,7 @@ export function useOptimisticElement() {
         }
       });
     },
-    [elements]
+    []
   );
 
   const [optimisticElements, addOptimisticUpdate] = useOptimistic(
@@ -51,23 +51,21 @@ export function useOptimisticElement() {
   );
 
   const deleteElementOptimistically = async (id: string) => {
-    addOptimisticUpdate({ type: "DELETE_ELEMENT", payload: id });
+    const elementToDelete = findElementById(elements, id);
 
-    dispatch({
-      type: "DELETE_ELEMENT",
-      payload: id,
-    });
+    addOptimisticUpdate({ type: "DELETE_ELEMENT", payload: id });
 
     try {
       await Delete(id);
+
+      dispatch({
+        type: "DELETE_ELEMENT",
+        payload: id,
+      });
     } catch (error) {
       console.error("Failed to delete element:", error);
-      const deletedElement = findElementById(optimisticElements, id);
-      if (deletedElement) {
-        dispatch({
-          type: "ADD_ELEMENT",
-          payload: deletedElement,
-        });
+      if (elementToDelete) {
+        addOptimisticUpdate({ type: "ADD_ELEMENT", payload: elementToDelete });
       }
     }
   };
@@ -88,39 +86,40 @@ export function useOptimisticElement() {
         id: uuidv4(),
         projectId,
         parentId,
+        Type: element.type,
       };
 
       elementsToCreate.push(newElement);
 
-      if (element.type === "Frame") {
-        const frameElement = element as FrameElement;
-        frameElement.elements = frameElement.elements.map((childElement) =>
-          prepareElements(childElement, newElement.id)
-        );
+      if (element.type === "Frame" || element.type === "Carousel") {
+        const containerElement = element as FrameElement;
+        const childElements = containerElement.elements || [];
+
+        return {
+          ...newElement,
+          elements: childElements.map((childElement) =>
+            prepareElements(childElement, newElement.id)
+          ),
+        };
       }
-      if (element.type === "Carousel") {
-        const carouselElement = element as FrameElement;
-        carouselElement.elements = carouselElement.elements.map(
-          (childElement) => prepareElements(childElement, newElement.id)
-        );
-      }
+
       return newElement;
     };
 
     const preparedElement = prepareElements(element, undefined);
-    addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
 
-    dispatch({
-      type: "ADD_ELEMENT",
-      payload: preparedElement,
-    });
+    addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
 
     try {
       await BatchCreate(elementsToCreate);
-    } catch (error) {
-      console.error("Failed to add element:", error);
 
       dispatch({
+        type: "ADD_ELEMENT",
+        payload: preparedElement,
+      });
+    } catch (error) {
+      console.error("Failed to add element:", error);
+      addOptimisticUpdate({
         type: "DELETE_ELEMENT",
         payload: preparedElement.id,
       });
@@ -131,20 +130,36 @@ export function useOptimisticElement() {
     id: string,
     updates: Partial<EditorElement>
   ) => {
-    addOptimisticUpdate({ type: "UPDATE_ELEMENT", payload: { id, updates } });
+    const currentElement = findElementById(elements, id);
+    if (!currentElement) return;
 
-    const updatedElement = findElementById(optimisticElements, id);
-    if (!updatedElement) return;
+    // Ensure type and Type are both included
+    const completeUpdates = {
+      ...updates,
+      type: updates.type || currentElement.type,
+      Type: updates.type || currentElement.type, // Add Type field with capital T for API validation
+    };
 
-    dispatch({
+    addOptimisticUpdate({
       type: "UPDATE_ELEMENT",
-      payload: { id, updates },
+      payload: { id, updates: completeUpdates },
     });
+
     try {
-      const latestElement = { ...updatedElement, ...updates };
-      await Update(latestElement);
+      const updatedElement = { ...currentElement, ...completeUpdates };
+      await Update(updatedElement);
+
+      dispatch({
+        type: "UPDATE_ELEMENT",
+        payload: { id, updates: completeUpdates },
+      });
     } catch (error) {
       console.error("Failed to update element:", error);
+      // Rollback to previous state
+      addOptimisticUpdate({
+        type: "UPDATE_ELEMENT",
+        payload: { id, updates: currentElement },
+      });
     }
   };
 

@@ -32,19 +32,19 @@ type ComponentCategory = {
 
 // Component imports (consider lazy loading for better performance)
 const TextHolder = React.lazy(
-  () => import("../sidebarcomponentholders/TextHolder")
+  () => import("../../sidebarcomponentholders/TextHolder")
 );
 const LinkHolder = React.lazy(
-  () => import("../sidebarcomponentholders/LinkHolder")
+  () => import("../../sidebarcomponentholders/LinkHolder")
 );
 const ButtonHolder = React.lazy(
-  () => import("../sidebarcomponentholders/ButtonHolder")
+  () => import("../../sidebarcomponentholders/ButtonHolder")
 );
 const FrameHolder = React.lazy(
-  () => import("../sidebarcomponentholders/FrameHolder")
+  () => import("../../sidebarcomponentholders/FrameHolder")
 );
 const CarouselHolder = React.lazy(
-  () => import("../sidebarcomponentholders/CarouselHolder")
+  () => import("../../sidebarcomponentholders/CarouselHolder")
 );
 
 // Constants

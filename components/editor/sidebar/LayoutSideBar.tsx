@@ -18,9 +18,7 @@ import { ChevronDown } from "lucide-react";
 import React from "react";
 import LayoutSideBarElements from "./LayoutSideBarElements";
 import { useParams, useRouter } from "next/navigation";
-import Configuration from "./Configuration";
-import { useEditorContextProvider } from "@/lib/context";
-import { start } from "repl";
+import Configuration from "./configurations/Configuration";
 
 type Props = {};
 
