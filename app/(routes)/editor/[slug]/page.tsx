@@ -34,6 +34,7 @@ export default function EditorPage({
     }
   }, [elements, loadElementsFromDB]);
 
+
   return (
     <>
       <Editor projectId={slug} />

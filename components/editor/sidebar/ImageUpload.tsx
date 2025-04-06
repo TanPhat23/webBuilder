@@ -5,7 +5,7 @@ import { useImageStore } from "@/lib/store/imageStore";
 import { useEditorStore } from "@/lib/store/editorStore";
 
 const ImageUpload: React.FC = () => {
-  const { uploadImages, addImage, } = useImageStore();
+  const { uploadImages, addImage, removeImage} = useImageStore();
 
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -111,6 +111,15 @@ const ImageUpload: React.FC = () => {
       <div className="grid grid-cols-3 gap-2 mt-4 max-h-[400px] overflow-y-auto">
         {uploadImages.map((image, index) => (
           <div key={index} className="relative">
+            <Button
+              variant="destructive"
+              className="absolute top-2 right-2 z-10 w-1 h-2"
+              onClick={() => {
+                removeImage(image);
+                setImageErrors((prev) => ({ ...prev, [index]: false }));
+              }}
+            >x</Button>
+
             {!imageErrors[index] ? (
               <img
                 src={image}
