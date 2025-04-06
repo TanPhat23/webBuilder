@@ -20,7 +20,6 @@ export default function EditorPage({
     (state) => state.loadElementsFromDB
   );
   const { startTour, setStartTour } = useElementSelectionStore();
-  const { setUploadImages } = useImageStore();
 
   const { data: elements } = useSWR<EditorElement[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
@@ -34,15 +33,6 @@ export default function EditorPage({
       loadElementsFromDB(elements);
     }
   }, [elements, loadElementsFromDB]);
-
-  React.useEffect(() => {
-    const localImages = localStorage.getItem("uploadImages");
-
-    if (localImages) {
-      const images = JSON.parse(localImages);
-      setUploadImages(images);
-    }
-  }, [setUploadImages]);
 
   return (
     <>

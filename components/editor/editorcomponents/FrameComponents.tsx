@@ -233,6 +233,45 @@ const FrameComponents = ({
             })}
           />
         );
+      case "Link":
+        return (
+          <motion.a
+            key={element.id}
+            style={{ ...element.styles }}
+            className={cn("", element.tailwindStyles, {
+              "border-black border-2 border-solid": element.isSelected,
+              "z-50": element.id !== draggingElement?.id,
+              "z-0": element.id === draggingElement?.id,
+            })}
+            contentEditable={element.isSelected}
+            onContextMenu={(e) => handleContextMenu(e, element)}
+            onKeyDown={(e) => handleKeyDown(e, element)}
+            suppressContentEditableWarning
+            onBlur={(e) => handleInput(e, element)}
+            onDoubleClick={(e) => handleDoubleClick(e, element)}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(element.content),
+            }}
+            drag={!element.isSelected}
+            dragMomentum={false}
+            dragSnapToOrigin
+            onDragStart={(e) => {
+              e.preventDefault();
+              setDraggingElement(element);
+            }}
+            onDragEnd={(e) => {
+              e.preventDefault();
+              swapElements();
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onMouseEnter={(e) => handleMouseEnter(e, element)}
+            onMouseLeave={(e) => handleMouseLeave(e)}
+            dragConstraints={dragConstraint}
+          />
+        );
       case "Image":
         if (element.src) {
           return (

@@ -9,15 +9,10 @@ type Props = {
 
 const EditorProvider: React.FC<Props> = ({ children }) => {
   const { elements } = useEditorStore();
-  const { loadImagesFromLocalStorage } = useImageStore();
-  const { selectedElement, setSelectedElement, loadTourState } =
+
+  const { selectedElement, setSelectedElement } =
     useElementSelectionStore();
 
-  // Load images from localStorage on component mount
-  useEffect(() => {
-    loadImagesFromLocalStorage();
-    loadTourState();
-  }, [loadImagesFromLocalStorage, loadTourState]);
 
   // Update selected element when elements change
   useEffect(() => {

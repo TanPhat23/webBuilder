@@ -1,50 +1,61 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { EditorElement } from "../type";
 
 interface ElementSelectionState {
+  selectedElementId: string | undefined;
   selectedElement: EditorElement | undefined;
-  setSelectedElement: (element: EditorElement | undefined) => void;
+  multiSelectedElementIds: string[];
   startTour: boolean;
   setStartTour: (value: boolean) => void;
-  toggleTour: () => void;
-  saveTourState: () => void;
-  loadTourState: () => void;
+  setSelectedElement: (element: EditorElement | undefined) => void;
+  setSelectedElementId: (id: string | undefined) => void;
+  addMultiSelectedElement: (id: string) => void;
+  removeMultiSelectedElement: (id: string) => void;
+  clearMultiSelection: () => void;
 }
 
-export const useElementSelectionStore = create<ElementSelectionState>(
-  (set, get) => ({
-    selectedElement: undefined,
-    startTour: false,
+export const useElementSelectionStore = create<ElementSelectionState>()(
+  persist(
+    (set) => ({
+      selectedElementId: undefined,
+      selectedElement: undefined,
+      multiSelectedElementIds: [],
+      startTour: false,
 
-    setSelectedElement: (element) => {
-      set({ selectedElement: element });
-    },
+      setStartTour: (value) => {
+        set({ startTour: value });
+      },
 
-    setStartTour: (value) => {
-      set({ startTour: value });
-      if (value === false) {
-        get().saveTourState();
-      }
-    },
+      setSelectedElement: (element) => {
+        set({ selectedElement: element });
+      },
 
-    toggleTour: () => {
-      set((state) => ({ startTour: !state.startTour }));
-    },
+      setSelectedElementId: (id) => {
+        set({ selectedElementId: id });
+      },
 
-    saveTourState: () => {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("watchTour", "true");
-      }
-    },
+      addMultiSelectedElement: (id) => {
+        set((state) => ({
+          multiSelectedElementIds: [...state.multiSelectedElementIds, id],
+        }));
+      },
 
-    loadTourState: () => {
-      if (typeof window !== "undefined") {
-        const watchTour = localStorage.getItem("watchTour");
-        if (!watchTour) {
-          set({ startTour: true });
-          localStorage.setItem("watchTour", "true");
-        }
-      }
-    },
-  })
+      removeMultiSelectedElement: (id) => {
+        set((state) => ({
+          multiSelectedElementIds: state.multiSelectedElementIds.filter(
+            (elementId) => elementId !== id
+          ),
+        }));
+      },
+
+      clearMultiSelection: () => {
+        set({ multiSelectedElementIds: [] });
+      },
+    }),
+    {
+      name: "selection-storage",
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
 );

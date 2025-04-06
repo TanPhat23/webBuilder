@@ -132,14 +132,14 @@ export const SearchCombobox: React.FC = () => {
   );
 
   // Memoized filtered components to prevent unnecessary recalculations
-  const filteredComponents = React.useMemo(() => {
+  const filteredComponents = () => {
     return COMPONENT_CATEGORIES.reduce((acc, category) => {
       acc[category.id] = customComponents.filter((component) =>
         component.component.name?.startsWith(category.prefix)
       );
       return acc;
     }, {} as Record<string, typeof customComponents>);
-  }, [customComponents]);
+  }
 
   const toggleSection = (sectionId: string) => {
     setOpenSections((prev) => ({
@@ -190,7 +190,7 @@ export const SearchCombobox: React.FC = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CommandGroup>
-                {filteredComponents[category.id]?.map((component) => (
+                {filteredComponents()[category.id]?.map((component)  => (
                   <CommandItem
                     key={component.component.name}
                     value={component.component.name ?? ""}

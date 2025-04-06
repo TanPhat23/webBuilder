@@ -23,7 +23,7 @@ export default function LinkDropDownMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Links</Button>
+        <Button className="w-full bg-black">Links</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>

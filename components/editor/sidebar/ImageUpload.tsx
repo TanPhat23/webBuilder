@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useImageStore } from "@/lib/store/imageStore";
 import { useEditorStore } from "@/lib/store/editorStore";
 
 const ImageUpload: React.FC = () => {
-  const { uploadImages, setUploadImages, addImage } = useImageStore();
-  const { updateElement } = useEditorStore();
+  const { uploadImages, addImage, } = useImageStore();
 
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -69,6 +70,11 @@ const ImageUpload: React.FC = () => {
     e.dataTransfer.setData("image", index.toString());
   };
 
+  const handleImageError = (index: number) => {
+    setImageErrors((prev) => ({ ...prev, [index]: true }));
+    console.error(`Failed to load image at index ${index}`);
+  };
+
   return (
     <div className="flex flex-col space-y-4 p-4">
       <h2 className="text-lg font-semibold">Image Upload</h2>
@@ -104,14 +110,22 @@ const ImageUpload: React.FC = () => {
 
       <div className="grid grid-cols-3 gap-2 mt-4 max-h-[400px] overflow-y-auto">
         {uploadImages.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={`Uploaded ${index + 1}`}
-            className="h-20 w-full object-cover rounded-md cursor-move border hover:border-blue-500"
-            draggable
-            onDragStart={(e) => handleImageDragStart(e, index)}
-          />
+          <div key={index} className="relative">
+            {!imageErrors[index] ? (
+              <img
+                src={image}
+                alt={`Uploaded ${index + 1}`}
+                className="h-20 w-full object-cover rounded-md cursor-move border hover:border-blue-500"
+                draggable
+                onDragStart={(e) => handleImageDragStart(e, index)}
+                onError={() => handleImageError(index)}
+              />
+            ) : (
+              <div className="h-20 w-full flex items-center justify-center bg-gray-200 rounded-md border text-xs text-gray-500">
+                Failed to load image
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>

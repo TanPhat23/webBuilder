@@ -60,7 +60,6 @@ const CarouselComponent: React.FC<Props> = ({
     let imgSrc = null;
 
     if (imgIdx) {
-      // Handle image from image library
       imgSrc = uploadImages[parseInt(imgIdx)];
     } else if (e.dataTransfer.types.includes("text/plain")) {
       // Handle data URL dropped directly
