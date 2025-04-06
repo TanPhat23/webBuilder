@@ -40,8 +40,7 @@ const createElements = async (
     y: 0,
     styles: {
       ...commonStyles,
-      height: "100%",
-      width: "200px",
+  
     },
     parentId: parentElement.id,
   };
