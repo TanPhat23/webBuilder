@@ -1,18 +1,10 @@
 "use client";
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-  startTransition,
-} from "react";
+import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { CarouselElement, EditorElement } from "@/lib/type";
 import { createElements } from "@/app/utils/CreateElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
@@ -21,6 +13,9 @@ import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
 import { cn } from "@/lib/utils";
+import { useEditorStore } from "@/lib/store/editorStore";
+import OptimisticFeedback from "./OptimisticFeedback";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
 type Props = {
   projectId: string;
@@ -28,13 +23,17 @@ type Props = {
 
 const loadedFonts = new Set<string>();
 const Editor: React.FC<Props> = ({ projectId }) => {
-  const { elements, dispatch } = useEditorContext();
   const {
-    optimisticElements,
+    addElementOptimistically,
+    elements,
+    updateElement,
     updateElementOptimistically,
     deleteElementOptimistically,
-    addElementOptimistically,
-  } = useOptimisticElement();
+    updateAllElements,
+  } = useEditorStore();
+
+  const { selectedElement, setSelectedElement } = useElementSelectionStore();
+
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
     "DESKTOP"
   );
@@ -47,20 +46,17 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     y: 0,
   });
 
-  const { setSelectedElement } = useEditorContextProvider();
-
   const [zoom, setZoom] = useState(1);
   const [draggingElement, setDraggingElement] = useState<{
     id: string;
   } | null>(null);
-
+  const [dragLockAxis, setDragLockAxis] = useState<"x" | "y" | false>(false);
   const resizingElement = useRef<HTMLDivElement>(null);
   const resizeDirection = useRef<"nw" | "ne" | "sw" | "se">("nw");
   const nwRef = useRef<HTMLDivElement>(null);
   const neRef = useRef<HTMLDivElement>(null);
   const swRef = useRef<HTMLDivElement>(null);
   const seRef = useRef<HTMLDivElement>(null);
-
   const editableRef = useRef<HTMLDivElement>(null);
   const draggingConstraintRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +69,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         loadedFonts.add(fontFamily);
       }
     });
-
     fontsToLoad.forEach((font) => {});
   }, [elements]);
 
@@ -89,22 +84,32 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     element: EditorElement
   ) => {
     if (!info) return;
-
+    if (dragLockAxis === "x") {
+      info.offset.y = 0;
+    } else if (dragLockAxis === "y") {
+      info.offset.x = 0;
+    }
     const gridSize = 20;
     const newX = element.x + info.offset.x;
     const newY = element.y + info.offset.y;
-
     const x = Math.round(newX / gridSize) * gridSize;
     const y = Math.round(newY / gridSize) * gridSize;
-
     startTransition(() => {
       updateElementOptimistically(element.id, {
         x: x,
         y: y,
       });
     });
-
     setDraggingElement(null);
+    setDragLockAxis(false);
+  };
+
+  const handleDirectionLock = (element: EditorElement) => {
+    if (element.styles?.width === "100%") {
+      setDragLockAxis("y");
+    } else if (element.styles?.height === "100%") {
+      setDragLockAxis("x");
+    }
   };
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -112,7 +117,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     const newElement = e.dataTransfer.getData("elementType");
     const newCustomElement = e.dataTransfer.getData("customElement");
     if (newElement) {
-      createElements(newElement, dispatch, e.clientX, e.clientY, projectId);
+      createElements(
+        newElement,
+        null,
+        e.clientX,
+        e.clientY,
+        projectId,
+        addElementOptimistically
+      );
     }
     if (newCustomElement) {
       const customComponent = customComponents.find(
@@ -120,19 +132,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       );
       if (customComponent) {
         startTransition(() => {
-          addElementOptimistically(
-            customComponent.component,
-            dispatch,
-            projectId
-          );
+          addElementOptimistically(customComponent.component, projectId);
         });
       }
     }
   };
 
   const handleInput = (e: React.FormEvent<HTMLElement>, id: string) => {
-    let newContent = e.currentTarget.innerHTML;
-
+    const newContent = e.currentTarget.innerHTML;
     startTransition(() => {
       updateElementOptimistically(id, { content: newContent });
     });
@@ -145,14 +152,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     e.currentTarget.focus();
     e.stopPropagation();
     setSelectedElement(element);
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: { id: element.id, updates: { isSelected: true } },
-    });
+    updateElement(element.id, { isSelected: !element.isSelected });
   };
 
   const handleDeselectAll = (e: React.MouseEvent<HTMLDivElement>) => {
-    dispatch({ type: "UPDATE_ALL_ELEMENTS", payload: { isSelected: false } });
+    e.stopPropagation();
+    e.preventDefault();
+
+    updateAllElements({ isSelected: false });
     setSelectedElement(undefined);
   };
 
@@ -160,7 +167,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     if (event.ctrlKey || event.metaKey) {
       event.preventDefault();
       event.stopPropagation();
-
       const delta = event.deltaY > 0 ? -0.1 : 0.1;
       const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
       const rect = (event.target as HTMLElement).getBoundingClientRect();
@@ -186,22 +192,16 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const handleResize = (e: MouseEvent) => {
     const resizingElementFromRef = resizingElement.current;
     if (!resizingElementFromRef) return;
-
     const elementId = resizingElementFromRef.id;
     if (!elementId) return;
-
     const targetElement = elements.find((el) => el.id === elementId);
     if (!targetElement) return;
-
     const styles = window.getComputedStyle(resizingElementFromRef);
     const width = parseInt(styles.width, 10);
     const height = parseInt(styles.height, 10);
     const dX = e.movementX;
-
     const dY = e.movementY;
-
     let newWidth, newHeight;
-
     switch (resizeDirection.current) {
       case "nw":
         newWidth = width - dX;
@@ -220,18 +220,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         newHeight = height + dY;
         break;
     }
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: elementId,
-        updates: {
-          styles: {
-            ...targetElement.styles,
-            width: `${newWidth}px`,
-            height: `${newHeight}px`,
-          },
-        },
+    updateElement(elementId, {
+      styles: {
+        ...targetElement.styles,
+        width: `${newWidth}px`,
+        height: `${newHeight}px`,
       },
     });
   };
@@ -266,6 +259,31 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     }
   };
 
+  const handleCopy = (
+    e: React.ClipboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.clipboardData.setData("copiedElement", JSON.stringify(element));
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLElement>) => {
+    e.preventDefault();
+    const copiedElement = e.clipboardData.getData("copiedElement");
+    if (copiedElement) {
+      const parsedElement = JSON.parse(copiedElement);
+      const newElement = {
+        ...parsedElement,
+        id: `${parsedElement.id}-${Date.now()}`,
+        x: parsedElement.x + 20,
+        y: parsedElement.y + 20,
+      };
+      startTransition(() => {
+        addElementOptimistically(newElement, projectId);
+      });
+    }
+  };
+
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleResize);
@@ -277,9 +295,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     const handleWheel = (event: WheelEvent) => {
       handleZoom(event);
     };
-
     window.addEventListener("wheel", handleWheel, { passive: false });
-
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
@@ -322,10 +338,12 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             tabIndex={0}
             className="w-full h-full bg-slate-300 relative overflow-auto"
           >
-            {optimisticElements.map((element) => (
+            {elements.map((element) => (
               <motion.div
                 key={element.id}
                 onDoubleClick={(e) => handleDoubleClick(e, element)}
+                onCopy={(e) => handleCopy(e, element)}
+                onPaste={(e) => handlePaste(e)}
                 onDragEnd={(e, info) => handleDragEnd(e, info, element)}
                 onDragStart={() => setDraggingElement({ id: element.id })}
                 onKeyDown={(e) => handleKeyPress(e, element)}
@@ -334,11 +352,13 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
+                dragDirectionLock
+                onDirectionLock={() => handleDirectionLock(element)}
+                dragConstraints={draggingConstraintRef}
                 animate={{
                   x: element.x,
                   y: element.y,
                 }}
-                dragConstraints={draggingConstraintRef}
                 style={{
                   position: "absolute",
                   width: element.styles?.width || "100px",
@@ -422,19 +442,16 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                       ref={nwRef}
                       onResizeStart={() => handleResizeStart("nw", element.id)}
                     />
-
                     <ResizeHandle
                       direction="ne"
                       ref={neRef}
                       onResizeStart={() => handleResizeStart("ne", element.id)}
                     />
-
                     <ResizeHandle
                       direction="sw"
                       ref={swRef}
                       onResizeStart={() => handleResizeStart("sw", element.id)}
                     />
-
                     <ResizeHandle
                       direction="se"
                       ref={seRef}
@@ -453,6 +470,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
           </motion.div>
         </div>
       </div>
+      <OptimisticFeedback />
     </div>
   );
 };

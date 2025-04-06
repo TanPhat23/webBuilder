@@ -15,12 +15,12 @@ export const navbarComponent: CustomComponent = {
       width: "100%",
       backgroundColor: "white",
       display: "flex",
-      gap: "10px",
       flexDirection: "row",
       alignItems: "center",
+      justifyContent: "flex-start",
+      gap: "25px",
     },
-    tailwindStyles:
-      "h-[50px] w-full bg-white flex flex-row items-center justify-start px-4 md:px-8 gap-2",
+    tailwindStyles: "h-[50px] w-full bg-white flex flex-row items-center justify-start px-4 md:px-8 gap-5 md:gap-6",
     elements: [
       {
         type: "Image",
@@ -50,11 +50,12 @@ export const navbarComponent: CustomComponent = {
         y: 0,
         styles: {
           color: "black",
-          transition:
-            "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
+          margin: "0 5px",
+          display: "flex",
+          alignItems: "center",
+          transition: "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
         },
-        tailwindStyles:
-          "text-sm md:text-base text-gray-800 hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform",
+        tailwindStyles: "m-0 text-sm md:text-base text-gray-800 flex items-center hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform",
         href: "/",
         src: "",
         parentId: "",
@@ -69,12 +70,12 @@ export const navbarComponent: CustomComponent = {
         y: 0,
         styles: {
           color: "black",
-          margin: "0 10px",
-          transition:
-            "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
+          margin: "0 5px",
+          display: "flex",
+          alignItems: "center",
+          transition: "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
         },
-        tailwindStyles:
-          "text-sm md:text-base text-gray-800 hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform",
+        tailwindStyles: "m-0 text-sm md:text-base text-gray-800 flex items-center hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform",
         href: "/",
         src: "",
         parentId: "",
@@ -106,27 +107,23 @@ export const navbarComponent2: CustomComponent = {
       alignItems: "center",
       justifyContent: "space-between",
       padding: "0 20px",
+      color: "white", 
     },
-    tailwindStyles:
-      "flex flex-row items-center justify-between w-full p-5 bg-gray-900",
+    tailwindStyles: "flex flex-col md:flex-row items-center justify-between w-full p-3 md:p-5 bg-gray-900 text-white gap-8 md:gap-10",
     elements: [
       {
-        type: "Text",
+        type: "Image",
         content: "LOGO",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
-        styles: {
-          color: "white",
-          fontWeight: "bold",
-          fontSize: "24px",
-        },
-        tailwindStyles: "text-white font-bold text-2xl",
         href: "",
         src: "",
-        parentId: "",
+        styles: { width: "80px", height: "80px", display: "flex", justifyContent: "center", alignItems: "center" },
+        tailwindStyles: "w-20 h-20 flex justify-center items-center",
         projectId: "",
+        parentId: "",
       },
       {
         type: "Frame",
@@ -140,8 +137,10 @@ export const navbarComponent2: CustomComponent = {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
+          gap: "10px",
+          color: "white", 
         },
-        tailwindStyles: "flex flex-row items-center",
+        tailwindStyles: "flex flex-col md:flex-row items-center gap-6 md:gap-8 text-white",
         elements: [
           {
             type: "Link",
@@ -158,7 +157,7 @@ export const navbarComponent2: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "m-4 text-white rounded-lg  hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "m-2 md:m-4 text-white rounded-lg hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -179,7 +178,7 @@ export const navbarComponent2: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "m-4 text-white rounded-lg  hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "m-2 md:m-4 text-white rounded-lg hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -200,7 +199,7 @@ export const navbarComponent2: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "m-4 text-white rounded-lg  hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "m-2 md:m-4 text-white rounded-lg hover:text-gray-900 hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -211,7 +210,7 @@ export const navbarComponent2: CustomComponent = {
         src: "",
         parentId: "",
         projectId: "",
-      },
+        },
     ],
     href: "",
     src: "",
@@ -238,9 +237,9 @@ export const navbarComponent3: CustomComponent = {
       alignItems: "center",
       justifyContent: "center",
       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+      gap: "15px",
     },
-    tailwindStyles:
-      "h-[65px] w-full bg-[#f8f9fa] flex items-center justify-between shadow-md px-4",
+    tailwindStyles: "h-[65px] w-full bg-[#f8f9fa] flex flex-col md:flex-row items-center justify-between shadow-md px-3 md:px-4 gap-3 md:gap-4",
     elements: [
       {
         type: "Link",
@@ -259,7 +258,7 @@ export const navbarComponent3: CustomComponent = {
           transition: "all 0.3s ease",
         },
         tailwindStyles:
-          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
+          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm md:text-base whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -282,7 +281,7 @@ export const navbarComponent3: CustomComponent = {
           transition: "all 0.3s ease",
         },
         tailwindStyles:
-          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
+          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm md:text-base whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -305,7 +304,7 @@ export const navbarComponent3: CustomComponent = {
           transition: "all 0.3s ease",
         },
         tailwindStyles:
-          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm whitespace-nowrap",
+          "text-gray-800 font-medium px-2 py-1 rounded hover:bg-blue-100 text-sm md:text-base whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -329,7 +328,7 @@ export const navbarComponent3: CustomComponent = {
           transition: "all 0.3s ease",
         },
         tailwindStyles:
-          "text-white font-medium px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-sm whitespace-nowrap",
+          "text-white font-medium px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-sm md:text-base whitespace-nowrap",
         href: "/",
         src: "",
         parentId: "",
@@ -364,7 +363,7 @@ export const navbarComponent4: CustomComponent = {
       borderBottom: "1px solid #e0e0e0",
     },
     tailwindStyles:
-      "h-[70px] w-full bg-transparent flex flex-row items-center justify-between px-4 md:px-8 border-b border-gray-300",
+      "h-[70px] w-full bg-transparent flex flex-col md:flex-row items-center justify-between px-3 md:px-8 border-b border-gray-300 gap-6 md:gap-8",
     elements: [
       {
         type: "Text",
@@ -398,8 +397,9 @@ export const navbarComponent4: CustomComponent = {
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
+          gap: "15px",
         },
-        tailwindStyles: "flex flex-col md:flex-row items-center gap-2 md:gap-5",
+        tailwindStyles: "flex flex-col md:flex-row items-center gap-6 md:gap-8",
         elements: [
           {
             type: "Link",
@@ -418,7 +418,7 @@ export const navbarComponent4: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "mx-2 md:mx-5 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "mx-2 md:mx-4 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -441,7 +441,7 @@ export const navbarComponent4: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "mx-2 md:mx-5 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "mx-2 md:mx-4 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -464,7 +464,7 @@ export const navbarComponent4: CustomComponent = {
                 "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
             tailwindStyles:
-              "mx-2 md:mx-5 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
+              "mx-2 md:mx-4 text-gray-800 text-sm md:text-base relative no-underline rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:shadow-lg hover:scale-105 transition-transform",
             href: "/",
             src: "",
             parentId: "",
@@ -502,9 +502,9 @@ export const navbarComponent5: CustomComponent = {
       justifyContent: "flex-start",
       padding: "0 15px",
       color: "white",
+      gap: "30px",
     },
-    tailwindStyles:
-      "flex flex-col md:flex-row items-center h-auto w-full p-3 bg-purple-800 text-white md:justify-start",
+    tailwindStyles: "flex flex-col md:flex-row items-center h-auto w-full p-3 bg-purple-800 text-white md:justify-start gap-6 md:gap-8",
     elements: [
       {
         type: "Text",

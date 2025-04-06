@@ -1,4 +1,3 @@
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import React, { startTransition, useEffect, useState } from "react";
 import { Input } from "../../../ui/input";
 import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
@@ -12,17 +11,18 @@ import BorderWeightPopover from "./popovers/BorderWeightPopover";
 import FlexDirectionSelect from "./selects/FrameFlexDirectionSelect";
 import AlignItemSelect from "./selects/FrameAlignItemSelect";
 import JustifyContentSelect from "./selects/FrameJustifyContentSelect";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { start } from "repl";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
 import { CarouselElement } from "@/lib/type";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
+  const { selectedElement } = useElementSelectionStore();
+  const { updateElementOptimistically } = useEditorStore();
 
-  const { selectedElement, setSelectedElement } = useEditorContextProvider();
   const [localWidth, setLocalWidth] = useState(
     selectedElement?.styles?.width || ""
   );
@@ -32,8 +32,6 @@ const Configuration = () => {
   const [localFontSize, setLocalFontSize] = useState(
     selectedElement?.styles?.fontSize || ""
   );
-  const { optimisticElements, updateElementOptimistically } =
-    useOptimisticElement();
 
   useEffect(() => {
     setLocalWidth(selectedElement?.styles?.width || "");
@@ -44,8 +42,8 @@ const Configuration = () => {
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newWidth = e.currentTarget.value;
     setLocalWidth(newWidth);
-
     if (!selectedElement) return;
+
     startTransition(() => {
       updateElementOptimistically(selectedElement.id, {
         styles: {
@@ -59,8 +57,8 @@ const Configuration = () => {
   const handleHeightChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newHeight = e.currentTarget.value;
     setLocalHeight(newHeight);
-
     if (!selectedElement) return;
+
     startTransition(() => {
       updateElementOptimistically(selectedElement.id, {
         styles: {
@@ -96,11 +94,7 @@ const Configuration = () => {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
       case "Carousel":
-        return (
-          <CarouselConfiguration
-            selectedElement={selectedElement as CarouselElement}
-          />
-        );
+        return <CarouselConfiguration />;
       default:
         return (
           <BaseConfiguration
@@ -110,19 +104,20 @@ const Configuration = () => {
         );
     }
   };
+
   return (
-    <div className="m-2 w-full h-full  text-xs">
+    <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-1 mr-4">
-          <div className="flex flex-col gap-1 ">
+          <div className="flex flex-col gap-1">
             <Input
-              className="w-full  text-xs p-1"
+              className="w-full text-xs p-1"
               value={localWidth}
               onChange={handleWidthChange}
             />
             <label className="text-xs">Width</label>
           </div>
-          <div className="flex flex-col gap-1 ">
+          <div className="flex flex-col gap-1">
             <Input
               className="w-full text-xs p-1"
               value={localHeight}

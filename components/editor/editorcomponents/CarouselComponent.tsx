@@ -6,18 +6,14 @@ import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import {
-  useEditorContext,
-  useEditorContextProvider,
-  useImageUploadContext,
-} from "@/lib/context";
 import createElements from "@/app/utils/CreateFrameElements";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { cn } from "@/lib/utils";
-import { set } from "zod";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { useImageStore } from "@/lib/store/imageStore";
 
 type Props = {
-  element: CarouselElement; // More specific type
+  element: CarouselElement;
   setContextMenuPosition: React.Dispatch<
     React.SetStateAction<{ x: number; y: number }>
   >;
@@ -31,10 +27,9 @@ const CarouselComponent: React.FC<Props> = ({
   setShowContextMenu,
   projectId,
 }) => {
-  const { uploadImages } = useImageUploadContext();
-  const { updateElementOptimistically } = useOptimisticElement();
-  const { dispatch } = useEditorContext();
-  const { setSelectedElement } = useEditorContextProvider();
+  const { uploadImages } = useImageStore();
+  const { updateElement, updateElementOptimistically } = useEditorStore();
+  const { setSelectedElement } = useElementSelectionStore();
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -43,20 +38,42 @@ const CarouselComponent: React.FC<Props> = ({
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];
     if (imgSrc) elementType = "Image";
-    createElements(elementType, dispatch, element, projectId, imgSrc);
+    createElements(
+      elementType,
+      null,
+      element,
+      projectId,
+      updateElement,
+      imgSrc
+    );
   };
 
   const handleImageDrop = (
     e: React.DragEvent<HTMLElement>,
     element: EditorElement
   ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check for regular image drop from the sidebar
     const imgIdx = e.dataTransfer.getData("image");
-    const imgSrc = uploadImages[parseInt(imgIdx)];
+    let imgSrc = null;
+
+    if (imgIdx) {
+      // Handle image from image library
+      imgSrc = uploadImages[parseInt(imgIdx)];
+    } else if (e.dataTransfer.types.includes("text/plain")) {
+      // Handle data URL dropped directly
+      const data = e.dataTransfer.getData("text/plain");
+      if (data.startsWith("data:image")) {
+        imgSrc = data;
+      }
+    }
 
     if (imgSrc) {
+    
       startTransition(() => {
         updateElementOptimistically(element.id, {
-          ...element,
           src: imgSrc,
         });
       });
@@ -70,17 +87,11 @@ const CarouselComponent: React.FC<Props> = ({
     e.preventDefault();
     e.stopPropagation();
     if (!element.isSelected) setSelectedElement(element);
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: element.id,
-        updates: {
-          isSelected: !element.isSelected,
-        },
-      },
+    updateElement(element.id, {
+      isSelected: !element.isSelected,
     });
   };
-  
+
   const renderElement = (element: EditorElement, index: number) => {
     switch (element.type) {
       case "Frame":
@@ -102,7 +113,7 @@ const CarouselComponent: React.FC<Props> = ({
             style={{
               ...element.styles,
             }}
-            onDrop={(e) => handleImageDrop(e, element)}
+            // onDrop={(e) => handleImageDrop(e, element)}
             onDragOver={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -130,6 +141,7 @@ const CarouselComponent: React.FC<Props> = ({
         );
     }
   };
+
   const [carouselSettings, setCarouselSettings] = React.useState<Settings>(
     () => {
       const defaults = {
@@ -143,7 +155,6 @@ const CarouselComponent: React.FC<Props> = ({
         slidesToScroll: 1,
         pauseOnHover: true,
       };
-
       return {
         ...defaults,
         ...element.settings,
@@ -175,11 +186,9 @@ const CarouselComponent: React.FC<Props> = ({
       ...carouselSettings,
       ...element.settings,
     };
-
     if (!newSettings.responsive) {
       newSettings.responsive = carouselSettings.responsive;
     }
-
     setCarouselSettings(newSettings);
   }, [element.settings]);
 

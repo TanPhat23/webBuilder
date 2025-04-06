@@ -1,44 +1,48 @@
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { useEditorContextProvider } from "@/lib/context";
-import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import React, { startTransition, useEffect } from "react";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
-type Props = {};
-const LinkDropDownMenu: React.FC<Props> = (props) => {
-  const { updateElementOptimistically } = useOptimisticElement();
-  const { selectedElement } = useEditorContextProvider();
-  const [link, setLink] = React.useState(selectedElement?.href || "");
+export default function LinkDropDownMenu() {
+  const { updateElement } = useEditorStore();
+  const { selectedElement } = useElementSelectionStore();
 
-  useEffect(() => {
-    if (selectedElement?.href) {
-      startTransition(() => {
-        updateElementOptimistically(selectedElement.id, {
-          href: link,
-        });
-      });
-    }
-  }, [link]);
+  const handleLinkChange = (href: string) => {
+    if (!selectedElement) return;
+    updateElement(selectedElement.id, {
+      href,
+    });
+  };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="text-white items-center flex w-full justify-center hover:bg-blue-400 hover:rounded-lg h-8 text-sm">
-        {selectedElement?.href ? "Edit Link" : "Add Link"}
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">Links</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="right" sideOffset={10} className="text-white">
-        <Input
-          className="bg-black"
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => setLink(e.target.value)}
-          value={link}
-        />
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="flex flex-col gap-2 items-start cursor-pointer w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-sm font-medium">Link URL</p>
+            <input
+              type="text"
+              placeholder="Enter URL"
+              className="w-full p-2 text-sm border rounded"
+              value={(selectedElement as any)?.href || ""}
+              onChange={(e) => handleLinkChange(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default LinkDropDownMenu;
+}

@@ -23,7 +23,7 @@ export const sidebarRightComponent: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-white shadow-md fixed right-0 top-0 md:w-56 sm:w-40 transition-all",
+    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-white shadow-md fixed right-0 top-0 md:w-56 sm:w-40 transition-all hidden sm:block",
     elements: [
       {
         type: "Text",
@@ -132,7 +132,7 @@ export const sidebarRightComponent2: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-gray-900 fixed right-0 top-0 md:w-60 sm:w-40 transition-all",
+    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-gray-900 fixed right-0 top-0 md:w-60 sm:w-40 transition-all hidden sm:block",
     elements: [
       {
         type: "Text",
@@ -245,7 +245,7 @@ export const sidebarRightComponent3: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-gray-100 border-l border-gray-200 fixed right-0 top-0 md:w-56 sm:w-40 transition-all",
+    tailwindStyles: "flex flex-col items-start w-72 h-full p-5 bg-gray-100 border-l border-gray-200 fixed right-0 top-0 md:w-56 sm:w-40 transition-all hidden sm:block",
     elements: [
       {
         type: "Text",
@@ -358,7 +358,7 @@ export const sidebarRightComponent4: CustomComponent = {
       right: "0",
       top: "0",
     },
-    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-white shadow-md fixed right-0 top-0 md:w-64 sm:w-48 transition-all",
+    tailwindStyles: "flex flex-col items-start w-80 h-full p-6 bg-white shadow-md fixed right-0 top-0 md:w-64 sm:w-48 transition-all hidden sm:block",
     elements: [
       {
         type: "Text",

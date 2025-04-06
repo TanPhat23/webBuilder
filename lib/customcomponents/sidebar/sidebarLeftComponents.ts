@@ -12,94 +12,341 @@ export const sidebarLeftComponent: CustomComponent = {
     y: 0,
     styles: {
       height: "100%",
-      width: "250px",
+      width: "260px",
       backgroundColor: "white",
       display: "flex",
       flexDirection: "column",
-      alignItems: "flex-start",
-      padding: "20px 10px",
-      boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+      justifyContent: "space-between",
+      padding: "24px 16px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+      transition: "all 0.3s ease",
     },
-    tailwindStyles: "flex flex-col items-start w-40 h-full p-4 bg-white shadow-md md:w-60 sm:w-20 transition-all",
+    tailwindStyles:
+      "flex flex-col justify-between w-64 h-full p-6 bg-white shadow-sm border-r border-gray-100 md:w-60 sm:w-20 transition-all duration-300",
     elements: [
+      // Top section with logo and navigation
       {
-        type: "Text",
-        content: "Dashboard",
+        type: "Frame",
+        content: "",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
-          color: "#333",
-          fontSize: "20px",
-          fontWeight: "bold",
-          marginBottom: "20px",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          gap: "24px",
         },
-        tailwindStyles: "text-gray-800 text-xl font-bold mb-5 text-center md:text-left",
+        tailwindStyles: "flex flex-col w-full gap-6",
+        elements: [
+          // Logo section
+          {
+            type: "Frame",
+            content: "",
+            id: uuidv4(),
+            isSelected: false,
+            x: 0,
+            y: 0,
+            styles: {
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "16px",
+              paddingBottom: "16px",
+              borderBottom: "1px solid #f1f1f1",
+            },
+            tailwindStyles:
+              "flex items-center mb-4 pb-4 border-b border-gray-100",
+            elements: [
+              {
+                type: "Text",
+                content: "DASHBOARD",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#111827",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                  letterSpacing: "0.5px",
+                },
+                tailwindStyles:
+                  "text-gray-900 text-lg font-semibold tracking-wide sm:hidden",
+              },
+            ],
+          },
+
+          // Navigation section
+          {
+            type: "Frame",
+            content: "",
+            id: uuidv4(),
+            isSelected: false,
+            x: 0,
+            y: 0,
+            styles: {
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              gap: "4px",
+            },
+            tailwindStyles: "flex flex-col w-full gap-1",
+            elements: [
+              // Navigation header
+              {
+                type: "Text",
+                content: "MENU",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#6B7280",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  marginBottom: "8px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
+                },
+                tailwindStyles:
+                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+              },
+
+              // Home link - active state
+              {
+                type: "Link",
+                content: "Home",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4F46E5",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  backgroundColor: "#EEF2FF",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-indigo-600 bg-indigo-50 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-indigo-100",
+                href: "/",
+              },
+
+              // Analytics link
+              {
+                type: "Link",
+                content: "Analytics",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4B5563",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                href: "/analytics",
+              },
+
+              // Reports link
+              {
+                type: "Link",
+                content: "Reports",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4B5563",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                href: "/reports",
+              },
+
+              // Settings link
+              {
+                type: "Link",
+                content: "Settings",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4B5563",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                href: "/settings",
+              },
+            ],
+          },
+
+          // Secondary Navigation
+          {
+            type: "Frame",
+            content: "",
+            id: uuidv4(),
+            isSelected: false,
+            x: 0,
+            y: 0,
+            styles: {
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              gap: "4px",
+              marginTop: "24px",
+            },
+            tailwindStyles: "flex flex-col w-full gap-1 mt-6",
+            elements: [
+              // Secondary header
+              {
+                type: "Text",
+                content: "WORKSPACE",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#6B7280",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  marginBottom: "8px",
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
+                },
+                tailwindStyles:
+                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+              },
+
+              // Projects link
+              {
+                type: "Link",
+                content: "Projects",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4B5563",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                href: "/projects",
+              },
+
+              // Team link
+              {
+                type: "Link",
+                content: "Team",
+                id: uuidv4(),
+                isSelected: false,
+                x: 0,
+                y: 0,
+                styles: {
+                  color: "#4B5563",
+                  margin: "2px 0",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                },
+                tailwindStyles:
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                href: "/team",
+              },
+            ],
+          },
+        ],
         href: "",
         src: "",
         parentId: "",
         projectId: "",
       },
+
+      // Bottom section for user profile
       {
-        type: "Link",
-        content: "Home",
+        type: "Frame",
+        content: "",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
-          color: "#555",
-          margin: "10px 0",
-          fontSize: "16px",
-          width: "100%",
-          padding: "8px 10px",
+          display: "flex",
+          alignItems: "center",
+          padding: "12px",
+          marginTop: "auto",
+          borderRadius: "8px",
+          backgroundColor: "#F9FAFB",
+          gap: "12px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
-        href: "/",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Link",
-        content: "Analytics",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          color: "#555",
-          margin: "10px 0",
-          fontSize: "16px",
-          width: "100%",
-          padding: "8px 10px",
-        },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
-        href: "/",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Link",
-        content: "Reports",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          color: "#555",
-          margin: "10px 0",
-          fontSize: "16px",
-          width: "100%",
-          padding: "8px 10px",
-        },
-        tailwindStyles: "w-full text-gray-600 my-2 py-2 px-3 hover:bg-gray-100 rounded text-center md:text-left sm:text-sm sm:px-2",
-        href: "/",
-        src: "",
-        parentId: "",
-        projectId: "",
+        tailwindStyles:
+          "flex items-center p-3 mt-auto rounded-lg bg-gray-50 gap-3 hover:bg-gray-100",
+        elements: [
+          // User text
+          {
+            type: "Text",
+            content: "John Doe",
+            id: uuidv4(),
+            isSelected: false,
+            x: 0,
+            y: 0,
+            styles: {
+              color: "#111827",
+              fontSize: "14px",
+              fontWeight: "500",
+            },
+            tailwindStyles: "text-gray-900 text-sm font-medium sm:hidden",
+          },
+        ],
       },
     ],
     href: "",
@@ -127,7 +374,8 @@ export const sidebarLeftComponent2: CustomComponent = {
       alignItems: "flex-start",
       padding: "25px 15px",
     },
-    tailwindStyles: "flex flex-col items-start w-72 h-full p-6 bg-gray-900 md:w-60 sm:w-20 transition-all",
+    tailwindStyles:
+      "flex flex-col items-start w-72 h-full p-6 bg-gray-900 md:w-60 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -143,7 +391,8 @@ export const sidebarLeftComponent2: CustomComponent = {
           marginBottom: "30px",
           letterSpacing: "1px",
         },
-        tailwindStyles: "text-white text-lg font-bold mb-8 tracking-wide text-center md:text-left",
+        tailwindStyles:
+          "text-white text-lg font-bold mb-8 tracking-wide text-center md:text-left",
         href: "",
         src: "",
         parentId: "",
@@ -165,7 +414,8 @@ export const sidebarLeftComponent2: CustomComponent = {
           borderRadius: "5px",
           backgroundColor: "#393e46",
         },
-        tailwindStyles: "w-full text-white my-3 py-2 px-4 bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-white my-3 py-2 px-4 bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -186,7 +436,8 @@ export const sidebarLeftComponent2: CustomComponent = {
           padding: "10px 15px",
           borderRadius: "5px",
         },
-        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -207,7 +458,8 @@ export const sidebarLeftComponent2: CustomComponent = {
           padding: "10px 15px",
           borderRadius: "5px",
         },
-        tailwindStyles: "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-300 my-3 py-2 px-4 hover:bg-gray-800 rounded text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -240,7 +492,8 @@ export const sidebarLeftComponent3: CustomComponent = {
       padding: "20px 12px",
       borderRight: "1px solid #e0e0e0",
     },
-    tailwindStyles: "flex flex-col items-start w-60 h-full p-5 bg-gray-100 border-r border-gray-200 md:w-48 sm:w-20 transition-all",
+    tailwindStyles:
+      "flex flex-col items-start w-60 h-full p-5 bg-gray-100 border-r border-gray-200 md:w-48 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -257,7 +510,8 @@ export const sidebarLeftComponent3: CustomComponent = {
           textTransform: "uppercase",
           letterSpacing: "1px",
         },
-        tailwindStyles: "text-gray-500 text-sm font-medium mb-4 uppercase tracking-wide text-center md:text-left",
+        tailwindStyles:
+          "text-gray-500 text-sm font-medium mb-4 uppercase tracking-wide text-center md:text-left",
         href: "",
         src: "",
         parentId: "",
@@ -279,7 +533,8 @@ export const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -301,7 +556,8 @@ export const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -323,7 +579,8 @@ export const sidebarLeftComponent3: CustomComponent = {
           borderRadius: "6px",
           transition: "all 0.2s ease",
         },
-        tailwindStyles: "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-700 my-2 py-2 px-3 rounded hover:bg-blue-50 hover:text-blue-600 text-center md:text-left sm:text-sm sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -356,7 +613,8 @@ export const sidebarLeftComponent4: CustomComponent = {
       padding: "30px 15px",
       borderRight: "1px solid #eaeaea",
     },
-    tailwindStyles: "flex flex-col items-center w-64 h-full p-7 bg-white border-r border-gray-100 md:w-48 sm:w-20 transition-all",
+    tailwindStyles:
+      "flex flex-col items-center w-64 h-full p-7 bg-white border-r border-gray-100 md:w-48 sm:w-20 transition-all",
     elements: [
       {
         type: "Text",
@@ -372,7 +630,8 @@ export const sidebarLeftComponent4: CustomComponent = {
           marginBottom: "40px",
           letterSpacing: "2px",
         },
-        tailwindStyles: "text-gray-800 text-xl font-bold mb-10 tracking-wider text-center md:text-left",
+        tailwindStyles:
+          "text-gray-800 text-xl font-bold mb-10 tracking-wider text-center md:text-left",
         href: "",
         src: "",
         parentId: "",
@@ -394,7 +653,8 @@ export const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -416,7 +676,8 @@ export const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",
@@ -438,7 +699,8 @@ export const sidebarLeftComponent4: CustomComponent = {
           textAlign: "center",
           borderRadius: "8px",
         },
-        tailwindStyles: "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
+        tailwindStyles:
+          "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
         href: "/",
         src: "",
         parentId: "",

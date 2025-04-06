@@ -1,172 +1,193 @@
-import { CarouselElement } from "@/lib/type";
-import React from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useRouter } from "next/navigation";
-import { useEditorContext } from "@/lib/context";
-import CarouselSwitch from "./switch/CarouselSwitch";
-import CarouselNumberInput from "./inputs/CarouselNumberInput";
-import CarouselTextInput from "./inputs/CarouselTextInput";
+import { CarouselElement, EditorElement } from "@/lib/type";
+import React, { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
-type Props = {
-  selectedElement: CarouselElement;
-};
+const CarouselConfiguration: React.FC = () => {
+  const { updateElement } = useEditorStore();
+  const { selectedElement } = useElementSelectionStore();
+  const element = selectedElement as CarouselElement;
 
-const CarouselConfiguration: React.FC<Props> = ({ selectedElement }) => {
-  const router = useRouter();
-  const settings = selectedElement.settings || {};
-  const { dispatch } = useEditorContext();
+  if (!element || element.type !== "Carousel") {
+    return null;
+  }
 
-  const handleChange = (property: string, value: any) => {
-    const updatedSettings = {
-      ...settings,
-      [property]: value,
-    };
+  const [dots, setDots] = useState(element.settings?.dots ?? true);
+  const [infinite, setInfinite] = useState(element.settings?.infinite ?? true);
+  const [autoplay, setAutoplay] = useState(element.settings?.autoplay ?? false);
+  const [speed, setSpeed] = useState(element.settings?.speed ?? 500);
+  const [autoplaySpeed, setAutoplaySpeed] = useState(
+    element.settings?.autoplaySpeed ?? 3000
+  );
+  const [slidesToShow, setSlidesToShow] = useState(
+    element.settings?.slidesToShow ?? 1
+  );
+  const [slidesToScroll, setSlidesToScroll] = useState(
+    element.settings?.slidesToScroll ?? 1
+  );
 
-
-    if (typeof value === "boolean" && property === "autoplay") {
-      updatedSettings.autoplay = Boolean(value);
-    }
-
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: { settings: updatedSettings },
+  const updateSettings = () => {
+    updateElement(element.id, {
+      settings: {
+        dots,
+        infinite,
+        autoplay,
+        speed,
+        autoplaySpeed,
+        slidesToShow,
+        slidesToScroll,
       },
     });
-
-    router.refresh();
   };
 
   return (
-    <div className="flex flex-col">
-      <Accordion type="single" collapsible>
-        <AccordionItem value="basic">
-          <AccordionTrigger>Basic Settings</AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-3">
-            <CarouselNumberInput
-              id="slidesToShow"
-              label="Slides To Show"
-              value={settings.slidesToShow || 1}
-              onChange={(value) => handleChange("slidesToShow", value)}
-            />
+    <div className="flex flex-col space-y-4 p-4">
+      <div className="flex justify-between items-center">
+        <Label htmlFor="dots">Show Dots</Label>
+        <Switch
+          id="dots"
+          checked={dots}
+          onCheckedChange={(checked) => {
+            setDots(checked);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                dots: checked,
+              },
+            });
+          }}
+        />
+      </div>
 
-            <CarouselNumberInput
-              id="slidesToScroll"
-              label="Slides To Scroll"
-              value={settings.slidesToScroll || 1}
-              onChange={(value) => handleChange("slidesToScroll", value)}
-            />
+      <div className="flex justify-between items-center">
+        <Label htmlFor="infinite">Infinite Loop</Label>
+        <Switch
+          id="infinite"
+          checked={infinite}
+          onCheckedChange={(checked) => {
+            setInfinite(checked);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                infinite: checked,
+              },
+            });
+          }}
+        />
+      </div>
 
-            <CarouselSwitch
-              id="arrows"
-              label="Show Arrows"
-              checked={settings.arrows !== false}
-              onCheckedChange={(checked) => handleChange("arrows", checked)}
-            />
+      <div className="flex justify-between items-center">
+        <Label htmlFor="autoplay">Autoplay</Label>
+        <Switch
+          id="autoplay"
+          checked={autoplay}
+          onCheckedChange={(checked) => {
+            setAutoplay(checked);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                autoplay: checked,
+              },
+            });
+          }}
+        />
+      </div>
 
-            <CarouselSwitch
-              id="dots"
-              label="Show Dots"
-              checked={settings.dots !== false}
-              onCheckedChange={(checked) => handleChange("dots", checked)}
-            />
+      <div className="space-y-1">
+        <div className="flex justify-between items-center">
+          <Label htmlFor="speed">Slide Speed (ms)</Label>
+          <span className="text-xs">{speed}</span>
+        </div>
+        <Slider
+          id="speed"
+          min={100}
+          max={1000}
+          step={100}
+          value={[speed]}
+          onValueChange={(value) => {
+            setSpeed(value[0]);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                speed: value[0],
+              },
+            });
+          }}
+        />
+      </div>
 
-            <CarouselSwitch
-              id="infinite"
-              label="Infinite Looping"
-              checked={settings.infinite !== false}
-              onCheckedChange={(checked) => handleChange("infinite", checked)}
-            />
-          </AccordionContent>
-        </AccordionItem>
+      {autoplay && (
+        <div className="space-y-1">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="autoplaySpeed">Autoplay Delay (ms)</Label>
+            <span className="text-xs">{autoplaySpeed}</span>
+          </div>
+          <Slider
+            id="autoplaySpeed"
+            min={1000}
+            max={10000}
+            step={500}
+            value={[autoplaySpeed]}
+            onValueChange={(value) => {
+              setAutoplaySpeed(value[0]);
+              updateElement(element.id, {
+                settings: {
+                  ...element.settings,
+                  autoplaySpeed: value[0],
+                },
+              });
+            }}
+          />
+        </div>
+      )}
 
-        <AccordionItem value="animation">
-          <AccordionTrigger>Animation Settings</AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-3">
-            <CarouselSwitch
-              id="autoplay"
-              label="Autoplay"
-              checked={settings.autoplay == true}
-              onCheckedChange={(checked) => handleChange("autoplay", checked)}
-            />
+      <div className="space-y-1">
+        <Label htmlFor="slidesToShow">Slides to Show</Label>
+        <Input
+          id="slidesToShow"
+          type="number"
+          min={1}
+          max={5}
+          value={slidesToShow}
+          onChange={(e) => {
+            const value = parseInt(e.target.value);
+            if (isNaN(value)) return;
+            setSlidesToShow(value);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                slidesToShow: value,
+              },
+            });
+          }}
+        />
+      </div>
 
-            {settings.autoplay && (
-              <CarouselNumberInput
-                id="autoplaySpeed"
-                label="Autoplay Speed (ms)"
-                value={settings.autoplaySpeed || 3000}
-                min={500}
-                step={100}
-                onChange={(value) => handleChange("autoplaySpeed", value)}
-              />
-            )}
-
-            <CarouselNumberInput
-              id="speed"
-              label="Animation Speed (ms)"
-              value={settings.speed || 500}
-              min={100}
-              step={50}
-              onChange={(value) => handleChange("speed", value)}
-            />
-
-            <CarouselSwitch
-              id="fade"
-              label="Fade Effect"
-              checked={settings.fade === true}
-              onCheckedChange={(checked) => handleChange("fade", checked)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="advanced">
-          <AccordionTrigger>Advanced Settings</AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-3">
-            <CarouselSwitch
-              id="centerMode"
-              label="Center Mode"
-              checked={settings.centerMode === true}
-              onCheckedChange={(checked) => handleChange("centerMode", checked)}
-            />
-
-            {settings.centerMode && (
-              <CarouselTextInput
-                id="centerPadding"
-                label="Center Padding"
-                value={settings.centerPadding || "50px"}
-                onChange={(value) => handleChange("centerPadding", value)}
-              />
-            )}
-
-            <CarouselSwitch
-              id="draggable"
-              label="Draggable"
-              checked={settings.draggable !== false}
-              onCheckedChange={(checked) => handleChange("draggable", checked)}
-            />
-
-            <CarouselSwitch
-              id="swipe"
-              label="Touch Swipe"
-              checked={settings.swipe !== false}
-              onCheckedChange={(checked) => handleChange("swipe", checked)}
-            />
-
-            <CarouselSwitch
-              id="vertical"
-              label="Vertical Mode"
-              checked={settings.vertical === true}
-              onCheckedChange={(checked) => handleChange("vertical", checked)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <div className="space-y-1">
+        <Label htmlFor="slidesToScroll">Slides to Scroll</Label>
+        <Input
+          id="slidesToScroll"
+          type="number"
+          min={1}
+          max={5}
+          value={slidesToScroll}
+          onChange={(e) => {
+            const value = parseInt(e.target.value);
+            if (isNaN(value)) return;
+            setSlidesToScroll(value);
+            updateElement(element.id, {
+              settings: {
+                ...element.settings,
+                slidesToScroll: value,
+              },
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };
