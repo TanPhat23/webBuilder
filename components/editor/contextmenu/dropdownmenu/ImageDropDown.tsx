@@ -1,41 +1,48 @@
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import { useEditorContextProvider } from "@/lib/context";
-import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import React, { startTransition } from "react";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
-type Props = {};
-const ImageDropDown: React.FC<Props> = (props) => {
-  const { selectedElement } = useEditorContextProvider();
-  const { updateElementOptimistically } = useOptimisticElement();
-  const [imageUrl, setImageUrl] = React.useState(selectedElement?.src || "");
-  React.useEffect(() => {
-    if (selectedElement?.src) {
-      startTransition(() => {
-        updateElementOptimistically(selectedElement.id, {
-          src: imageUrl,
-        });
-      });
-    }
-  }, [imageUrl]);
+export default function ImageDropDown() {
+  const { updateElement } = useEditorStore();
+  const { selectedElement } = useElementSelectionStore();
+
+  const handleImageUrlChange = (src: string) => {
+    if (!selectedElement) return;
+    updateElement(selectedElement.id, {
+      src,
+    });
+  };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="text-white items-center flex w-full justify-center hover:bg-blue-400 hover:rounded-lg h-8 text-sm">
-        {selectedElement?.src ? "Change Image" : "Add Image"}
+      <DropdownMenuTrigger asChild>
+        <Button className="w-full">Image</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="right" sideOffset={10} className="text-white">
-        <Input
-          className="bg-black"
-          onClick={(e) => e.stopPropagation()}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="flex flex-col gap-2 items-start cursor-pointer w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-sm font-medium">Image URL</p>
+            <input
+              type="text"
+              placeholder="Enter Image URL"
+              className="w-full p-2 text-sm border rounded"
+              value={(selectedElement as any)?.src || ""}
+              onChange={(e) => handleImageUrlChange(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default ImageDropDown;
+}

@@ -1,108 +1,117 @@
-import { useEditorContext, useImageUploadContext } from "@/lib/context";
-import React, { useCallback } from "react";
-import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
-import { EditorElement } from "@/lib/type";
-import { v4 as uuidv4 } from "uuid";
-import { useParams } from "next/navigation";
-import { Create } from "@/app/api/element/route";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useImageStore } from "@/lib/store/imageStore";
+import { useEditorStore } from "@/lib/store/editorStore";
 
-type Props = {};
+const ImageUpload: React.FC = () => {
+  const { uploadImages, setUploadImages, addImage } = useImageStore();
+  const { updateElement } = useEditorStore();
 
-const ImageUpload = (props: Props) => {
-  const { uploadImages, setUploadImages } = useImageUploadContext();
-  const { dispatch } = useEditorContext();
-  const params = useParams();
-  const { slug } = params;
-  const handleRemoveImage = (index: number) => {
-    const newImages = uploadImages.filter((_, i) => i !== index);
-    setUploadImages(newImages);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
   };
 
-  const handleClick = (e: React.MouseEvent, index: number) => {
-    const img = new Image();
-    img.src = uploadImages[index];
-    img.onload = () => {
-      const aspectRatio = img.naturalWidth / img.naturalHeight;
-      const fixedWidth = 200;
-      const calculatedHeight = fixedWidth / aspectRatio;
-      const newElement: EditorElement = {
-        type: "Image",
-        id: `Image-${uuidv4()}`,
-        isSelected: false,
-        content: "",
-        x: 0,
-        y: 0,
-        styles: {
-          width: `${fixedWidth}px`,
-          height: `${calculatedHeight}px`,
-        },
-        src: uploadImages[index],
-        projectId: slug as string,
-      };
-
-      try {
-        Create(newElement);
-        dispatch({ type: "ADD_ELEMENT", payload: newElement });
-      } catch (e) {
-        console.log(e);
-        dispatch({ type: "DELETE_ELEMENT", payload: newElement.id });
-      }
-    };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Please upload an image file");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadImages([...uploadImages, reader.result as string]);
-      };
-      reader.onerror = () => {
-        alert("Error reading file");
-      };
-      reader.readAsDataURL(file);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageUpload(e.dataTransfer.files);
     }
   };
 
-  React.useEffect(() => {
-    localStorage.setItem("uploadImages", JSON.stringify(uploadImages));
-  }, [handleChange]);
+  const handleImageUpload = async (files: FileList) => {
+    setUploading(true);
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    e.dataTransfer.setData("image", `${index}`);
+    try {
+      const fileArray = Array.from(files);
+
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+          if (reader.result) {
+            const imageDataURL = reader.result.toString();
+            addImage(imageDataURL);
+          }
+        };
+
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    } finally {
+      setUploading(false);
+    }
   };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleImageUpload(e.target.files);
+    }
+  };
+
+  const handleImageDragStart = (
+    e: React.DragEvent<HTMLImageElement>,
+    index: number
+  ) => {
+    e.dataTransfer.setData("image", index.toString());
+  };
+
   return (
-    <div>
-      <Input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          handleChange(e);
-        }}
-      />
-      <div className="mr-4 mt-4 grid grid-cols-3 gap-4">
+    <div className="flex flex-col space-y-4 p-4">
+      <h2 className="text-lg font-semibold">Image Upload</h2>
+
+      <div
+        className={cn(
+          "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors",
+          {
+            "border-blue-500 bg-blue-50": dragOver,
+            "border-gray-300 hover:border-blue-300": !dragOver,
+          }
+        )}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => document.getElementById("file-input")?.click()}
+      >
+        <input
+          id="file-input"
+          type="file"
+          multiple
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileInputChange}
+        />
+
+        <p className="text-sm text-gray-500">
+          {uploading
+            ? "Uploading..."
+            : "Drag & drop images here or click to browse"}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 mt-4 max-h-[400px] overflow-y-auto">
         {uploadImages.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              draggable
-              onClick={(e) => handleClick(e, index)}
-              src={image}
-              alt="uploaded"
-              className="h-auto w-auto object-cover hover:scale-110 hover:cursor-pointer mx-2"
-              onDragStart={(e) => handleDragStart(e, index)}
-            />
-            <Button
-              onClick={() => handleRemoveImage(index)}
-              className="absolute right-0 top-0  bg-red-500 text-white h-[10px] w-[2px]"
-              aria-label="Remove image"
-            >
-              ×
-            </Button>
-          </div>
+          <img
+            key={index}
+            src={image}
+            alt={`Uploaded ${index + 1}`}
+            className="h-20 w-full object-cover rounded-md cursor-move border hover:border-blue-500"
+            draggable
+            onDragStart={(e) => handleImageDragStart(e, index)}
+          />
         ))}
       </div>
     </div>

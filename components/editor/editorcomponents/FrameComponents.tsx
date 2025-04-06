@@ -2,14 +2,11 @@ import React, { startTransition, useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import createElements from "@/app/utils/CreateFrameElements";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
-import {
-  useEditorContext,
-  useEditorContextProvider,
-  useImageUploadContext,
-} from "@/lib/context";
 import { EditorElement, FrameElement } from "@/lib/type";
 import { cn } from "@/lib/utils";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { useImageStore } from "@/lib/store/imageStore";
 
 type Props = {
   element: EditorElement;
@@ -26,10 +23,10 @@ const FrameComponents = ({
   setShowContextMenu,
   setContextMenuPosition,
 }: Props) => {
-  const { dispatch } = useEditorContext();
-  const { setSelectedElement } = useEditorContextProvider();
-  const { uploadImages } = useImageUploadContext();
-  const { updateElementOptimistically } = useOptimisticElement();
+  const { setSelectedElement } = useElementSelectionStore();
+  const { uploadImages } = useImageStore();
+  const { updateElement, updateElementOptimistically } = useEditorStore();
+
   const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
     null
   );
@@ -40,7 +37,6 @@ const FrameComponents = ({
 
   const swapElements = () => {
     if (!hoveredElement || !draggingElement || !element) return;
-
     const frameElements = [...(element as FrameElement).elements];
     const draggedIndex = frameElements.findIndex(
       (el) => el.id === draggingElement.id
@@ -48,7 +44,6 @@ const FrameComponents = ({
     const hoveredIndex = frameElements.findIndex(
       (el) => el.id === hoveredElement.id
     );
-
     if (draggedIndex === -1 || hoveredIndex === -1) return;
 
     [frameElements[draggedIndex], frameElements[hoveredIndex]] = [
@@ -56,14 +51,8 @@ const FrameComponents = ({
       frameElements[draggedIndex],
     ];
 
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: element.id,
-        updates: {
-          elements: frameElements,
-        },
-      },
+    updateElement(element.id, {
+      elements: frameElements,
     });
 
     setDraggingElement(null);
@@ -92,7 +81,13 @@ const FrameComponents = ({
     if (element.type !== "Image" && element.type !== "Frame") return;
     const elementType = e.dataTransfer.getData("elementType");
     if (!elementType) return;
-    createElements(elementType, dispatch, element as FrameElement, projectId);
+    createElements(
+      elementType,
+      null,
+      element as FrameElement,
+      projectId,
+      updateElement
+    );
   };
 
   // Handle double-click to select an element
@@ -103,76 +98,70 @@ const FrameComponents = ({
     e.preventDefault();
     e.stopPropagation();
     if (!element.isSelected) setSelectedElement(element);
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: element.id,
-        updates: {
-          isSelected: !element.isSelected,
-        },
-      },
+    updateElement(element.id, {
+      isSelected: !element.isSelected,
     });
   };
 
-  const handleInput = useCallback(
-    (e: React.FormEvent<HTMLElement>, element: EditorElement) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const newContent = e.currentTarget.innerHTML;
-      startTransition(() => {
-        updateElementOptimistically(element.id, { content: newContent });
-      });
-    },
-    [updateElementOptimistically]
-  );
+  const handleInput = (
+    e: React.FormEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newContent = e.currentTarget.innerHTML;
+    startTransition(() => {
+      updateElementOptimistically(element.id, { content: newContent });
+    });
+  };
 
-  const handleContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setSelectedElement(element);
-      setShowContextMenu(true);
-      setContextMenuPosition({ x: e.clientX, y: e.clientY });
-    },
-    [setSelectedElement, setShowContextMenu]
-  );
+  const handleContextMenu = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedElement(element);
+    setShowContextMenu(true);
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+  };
 
-  const handleMouseEnter = useCallback(
-    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!draggingElement || element.isSelected) return;
-      setHoveredElement(element);
-    },
-    [draggingElement]
-  );
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggingElement || element.isSelected) return;
+    setHoveredElement(element);
+  };
 
-  const handleMouseLeave = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!draggingElement || element.isSelected) return;
-      setHoveredElement(null);
-    },
-    [draggingElement, element]
-  );
+  const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!draggingElement || element.isSelected) return;
+    setHoveredElement(null);
+  };
 
   const handleImageDrop = (
     e: React.DragEvent<HTMLElement>,
     element: EditorElement
   ) => {
+    e.preventDefault();
+
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];
+    console.log(imgSrc);
 
     if (imgSrc) {
       startTransition(() => {
         updateElementOptimistically(element.id, {
-          ...element,
           src: imgSrc,
-        }).catch(() => {});
+        });
       });
     }
   };
+
   // Render all the children
   const renderElement = (element: EditorElement, index: number) => {
     switch (element.type) {
@@ -237,9 +226,6 @@ const FrameComponents = ({
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(element.content),
             }}
-            // className={`${
-            //   element.isSelected ? "border-black border-2 border-solid" : ""
-            // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
             className={cn("", element.tailwindStyles, {
               "border-black border-2 border-solid": element.isSelected,
               "z-0": element.id === draggingElement?.id,
@@ -252,7 +238,7 @@ const FrameComponents = ({
           return (
             <motion.img
               key={element.id}
-              // style={{ ...element.styles }}
+              style={{ ...element.styles }}
               src={element.src}
               drag={element.isSelected}
               dragMomentum={false}
@@ -284,7 +270,7 @@ const FrameComponents = ({
           return (
             <motion.div
               key={element.id}
-              // style={{ ...element.styles }}
+              style={{ ...element.styles }}
               drag={element.isSelected}
               dragMomentum={false}
               dragSnapToOrigin
@@ -302,9 +288,6 @@ const FrameComponents = ({
               onDoubleClick={(e) => handleDoubleClick(e, element)}
               onContextMenu={(e) => handleContextMenu(e, element)}
               onDrop={(e) => handleImageDrop(e, element)}
-              // className={`${
-              //   element.isSelected ? "border-black border-2 border-solid" : ""
-              // } ${element.id === draggingElement?.id ? "z-0" : "z-50"}`}
               className={cn("", element.tailwindStyles, {
                 "border-black border-2 border-solid": element.isSelected,
                 "z-0": element.id === draggingElement?.id,
@@ -319,6 +302,7 @@ const FrameComponents = ({
         return (
           <motion.div
             key={element.id}
+            style={{ ...element.styles }}
             className={cn("", element.tailwindStyles, {
               "border-black border-2 border-solid": element.isSelected,
               "z-50": element.id !== draggingElement?.id,
@@ -355,6 +339,7 @@ const FrameComponents = ({
         );
     }
   };
+
   // Render the root frame element
   return (
     <motion.div

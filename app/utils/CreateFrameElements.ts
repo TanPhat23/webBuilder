@@ -2,7 +2,6 @@ import {
   EditorElement,
   ButtonElement,
   FrameElement,
-  EditorAction,
   CarouselElement,
 } from "@/lib/type";
 import { CSSProperties } from "react";
@@ -25,13 +24,14 @@ export const listItemStyles: CSSProperties = {
 
 const createElements = async (
   name: string,
-  dispatch: React.Dispatch<EditorAction>,
+  // Keep null as fallback for backward compatibility
+  dispatch: null,
   parentElement: FrameElement | CarouselElement,
   projectId: string,
+  updateElement?: (id: string, updates: Partial<EditorElement>) => void,
   src?: string
 ) => {
   const tempId = `${name}-${uuidv4()}`;
-
   const baseElement = {
     id: tempId,
     content: name,
@@ -61,7 +61,6 @@ const createElements = async (
       };
       break;
     }
-
     case "Frame": {
       newElement = {
         type: "Frame",
@@ -93,7 +92,6 @@ const createElements = async (
       };
       break;
     }
-
     default: {
       newElement = {
         type: name,
@@ -106,30 +104,24 @@ const createElements = async (
 
   const parentElementCopy = { ...parentElement };
   parentElementCopy.elements.push(newElement);
-  dispatch({
-    type: "UPDATE_ELEMENT",
-    payload: {
-      id: parentElement.id,
-      updates: {
-        elements: parentElementCopy.elements,
-      },
-    },
-  });
-  try {
-    await Create(newElement);
-  } catch (error) {
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: parentElement.id,
-        updates: {
-          elements: parentElement.elements.filter(
-            (element) => element.id !== newElement.id
-          ),
-        },
-      },
+
+  // Use the Zustand store if available
+  if (updateElement) {
+    updateElement(parentElement.id, {
+      elements: parentElementCopy.elements,
     });
-    console.log(error);
+
+    try {
+      await Create(newElement);
+    } catch (error) {
+      // Rollback on error
+      updateElement(parentElement.id, {
+        elements: parentElement.elements.filter(
+          (element) => element.id !== newElement.id
+        ),
+      });
+      console.error(error);
+    }
   }
 };
 

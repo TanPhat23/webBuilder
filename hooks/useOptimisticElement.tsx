@@ -1,190 +1,33 @@
-import React, { useOptimistic } from "react";
-import { EditorAction, EditorElement, FrameElement } from "@/lib/type";
-import { BatchCreate, Delete, Update } from "@/app/api/element/route";
-import { useEditorContext } from "@/lib/context";
-import { v4 as uuidv4 } from "uuid";
+import { EditorElement } from "@/lib/type";
+import { useEditorStore } from "@/lib/store/editorStore";
 
+/**
+ * Legacy hook that now uses only the Zustand store
+ * This provides backward compatibility for components that still use the old API
+ */
 export function useOptimisticElement() {
-  const { elements, dispatch } = useEditorContext();
-
-  const updateFrameElement = React.useCallback(
-    (
-      elements: EditorElement[],
-      update: { id: string; updates: Partial<EditorElement> }
-    ): EditorElement[] => {
-      return elements.map((element) => {
-        if (element.id === update.id) {
-          return { ...element, ...update.updates };
-        } else if (
-          (element.type === "Frame" || element.type === "Carousel") &&
-          (element as FrameElement).elements
-        ) {
-          return {
-            ...element,
-            elements: updateFrameElement(
-              (element as FrameElement).elements,
-              update
-            ),
-          };
-        } else {
-          return element;
-        }
-      });
-    },
-    []
-  );
-
-  const [optimisticElements, addOptimisticUpdate] = useOptimistic(
+  const {
     elements,
-    (state, action: EditorAction) => {
-      switch (action.type) {
-        case "ADD_ELEMENT":
-          return [...state, action.payload];
-        case "DELETE_ELEMENT":
-          return state.filter((element) => element.id !== action.payload);
-        case "UPDATE_ELEMENT":
-          return updateFrameElement(state, action.payload);
-        default:
-          return state;
-      }
-    }
-  );
-
-  const deleteElementOptimistically = async (id: string) => {
-    const elementToDelete = findElementById(elements, id);
-
-    addOptimisticUpdate({ type: "DELETE_ELEMENT", payload: id });
-
-    try {
-      await Delete(id);
-
-      dispatch({
-        type: "DELETE_ELEMENT",
-        payload: id,
-      });
-    } catch (error) {
-      console.error("Failed to delete element:", error);
-      if (elementToDelete) {
-        addOptimisticUpdate({ type: "ADD_ELEMENT", payload: elementToDelete });
-      }
-    }
-  };
-
-  const addElementOptimistically = async (
-    element: EditorElement,
-    dispatch: React.Dispatch<EditorAction>,
-    projectId: string
-  ) => {
-    const elementsToCreate: EditorElement[] = [];
-
-    const prepareElements = (
-      element: EditorElement,
-      parentId?: string
-    ): EditorElement => {
-      const newElement = {
-        ...element,
-        id: uuidv4(),
-        projectId,
-        parentId,
-        Type: element.type,
-      };
-
-      elementsToCreate.push(newElement);
-
-      if (element.type === "Frame" || element.type === "Carousel") {
-        const containerElement = element as FrameElement;
-        const childElements = containerElement.elements || [];
-
-        return {
-          ...newElement,
-          elements: childElements.map((childElement) =>
-            prepareElements(childElement, newElement.id)
-          ),
-        };
-      }
-
-      return newElement;
-    };
-
-    const preparedElement = prepareElements(element, undefined);
-
-    addOptimisticUpdate({ type: "ADD_ELEMENT", payload: preparedElement });
-
-    try {
-      await BatchCreate(elementsToCreate);
-
-      dispatch({
-        type: "ADD_ELEMENT",
-        payload: preparedElement,
-      });
-    } catch (error) {
-      console.error("Failed to add element:", error);
-      addOptimisticUpdate({
-        type: "DELETE_ELEMENT",
-        payload: preparedElement.id,
-      });
-    }
-  };
-
-  const updateElementOptimistically = async (
-    id: string,
-    updates: Partial<EditorElement>
-  ) => {
-    const currentElement = findElementById(elements, id);
-    if (!currentElement) return;
-
-    // Ensure type and Type are both included
-    const completeUpdates = {
-      ...updates,
-      type: updates.type || currentElement.type,
-      Type: updates.type || currentElement.type, // Add Type field with capital T for API validation
-    };
-
-    addOptimisticUpdate({
-      type: "UPDATE_ELEMENT",
-      payload: { id, updates: completeUpdates },
-    });
-
-    try {
-      const updatedElement = { ...currentElement, ...completeUpdates };
-      await Update(updatedElement);
-
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: { id, updates: completeUpdates },
-      });
-    } catch (error) {
-      console.error("Failed to update element:", error);
-      // Rollback to previous state
-      addOptimisticUpdate({
-        type: "UPDATE_ELEMENT",
-        payload: { id, updates: currentElement },
-      });
-    }
-  };
-
-  const findElementById = (
-    elements: EditorElement[],
-    id: string
-  ): EditorElement | null => {
-    for (const element of elements) {
-      if (element.id === id) {
-        return element;
-      } else if (
-        element.type === "Frame" ||
-        (element.type === "Carousel" && (element as FrameElement).elements)
-      ) {
-        const found = findElementById((element as FrameElement).elements, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  };
-
-  return {
-    optimisticElements,
     updateElementOptimistically,
     addElementOptimistically,
     deleteElementOptimistically,
+  } = useEditorStore();
+
+  // This is a compatibility adapter for the old API that required dispatch
+  const addElementOptimisticallyAdapter = async (
+    element: EditorElement,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    dispatch: any,
+    projectId: string
+  ) => {
+    await addElementOptimistically(element, projectId);
+  };
+
+  return {
+    // Return elements as optimisticElements for backward compatibility
+    optimisticElements: elements,
+    updateElementOptimistically,
+    deleteElementOptimistically,
+    addElementOptimistically: addElementOptimisticallyAdapter,
   };
 }

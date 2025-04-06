@@ -2,11 +2,9 @@
 import { GetAll } from "@/app/api/element/route";
 import Editor from "@/components/editor/Editor";
 import EditorJoyRide from "@/components/editor/EditorJoyRide";
-import {
-  useEditorContext,
-  useEditorContextProvider,
-  useImageUploadContext,
-} from "@/lib/context";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { useImageStore } from "@/lib/store/imageStore";
 import { EditorElement } from "@/lib/type";
 import { MessageCircleQuestion } from "lucide-react";
 import React from "react";
@@ -18,32 +16,34 @@ export default function EditorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = React.use(params);
-  const { dispatch } = useEditorContext();
-  const { startTour, setStartTour } = useEditorContextProvider();
+  const loadElementsFromDB = useEditorStore(
+    (state) => state.loadElementsFromDB
+  );
+  const { startTour, setStartTour } = useElementSelectionStore();
+  const { setUploadImages } = useImageStore();
+
   const { data: elements } = useSWR<EditorElement[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
     GetAll
   );
 
-  const { setUploadImages } = useImageUploadContext();
   const handleEndTour = () => setStartTour(false);
+
   React.useEffect(() => {
-    if (elements)
-      dispatch({ type: "LOAD_ELEMENTS_FROM_DB", payload: elements });
-  }, [elements, dispatch]);
+    if (elements) {
+      loadElementsFromDB(elements);
+    }
+  }, [elements, loadElementsFromDB]);
 
   React.useEffect(() => {
     const localImages = localStorage.getItem("uploadImages");
-    const watchTour = localStorage.getItem("watchTour");
-    if (!watchTour) {
-      setStartTour(true);
-      localStorage.setItem("watchTour", "true");
-    }
+
     if (localImages) {
       const images = JSON.parse(localImages);
       setUploadImages(images);
     }
-  }, []);
+  }, [setUploadImages]);
+
   return (
     <>
       <Editor projectId={slug} />
