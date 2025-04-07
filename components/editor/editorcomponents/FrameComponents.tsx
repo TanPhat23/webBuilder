@@ -17,6 +17,24 @@ type Props = {
   projectId: string;
 };
 
+interface commonProps {
+  onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
+  onContextMenu: (e: React.MouseEvent<HTMLElement>) => void;
+  onMouseEnter: (e: React.MouseEvent<HTMLElement>) => void;
+  onMouseLeave: (e: React.MouseEvent<HTMLElement>) => void;
+  onBlur: (e: React.FormEvent<HTMLElement>) => void;
+  contentEditable: boolean;
+  suppressContentEditableWarning: boolean;
+  className: string;
+  dragConstraints: React.RefObject<HTMLDivElement | null>;
+  drag: boolean;
+  dragMomentum: boolean;
+  dragSnapToOrigin: boolean;
+  dragElastic: number;
+  onDragOver: (e: React.DragEvent<HTMLElement>) => void;
+  style: React.CSSProperties;
+}
+
 const FrameComponents = ({
   projectId,
   element,
@@ -164,35 +182,50 @@ const FrameComponents = ({
 
   // Render all the children
   const renderElement = (element: EditorElement, index: number) => {
+    // Basic props that are compatible with Framer Motion
+    const commonProps : commonProps= {
+      onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
+        handleDoubleClick(e, element),
+      onContextMenu: (e: React.MouseEvent<HTMLElement>) =>
+        handleContextMenu(e, element),
+      onMouseEnter: (e: React.MouseEvent<HTMLElement>) =>
+        handleMouseEnter(e, element),
+      onMouseLeave: (e: React.MouseEvent<HTMLElement>) => handleMouseLeave(e),
+      onBlur: (e: React.FormEvent<HTMLElement>) => handleInput(e, element),
+      contentEditable: element.isSelected,
+      suppressContentEditableWarning: true,
+      className: cn("", element.tailwindStyles, {
+        "border-black border-2 border-solid": element.isSelected,
+        "z-0": element.id === draggingElement?.id,
+        "z-50": element.id !== draggingElement?.id,
+      }),
+      dragConstraints: dragConstraint,
+      drag: !element.isSelected,
+      dragMomentum: false,
+      dragSnapToOrigin: true,
+      dragElastic: 0,
+      onDragOver: (e: React.DragEvent<HTMLElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      style: { ...element.styles },
+    };
+
+    const contentProps = {
+      dangerouslySetInnerHTML: {
+        __html: DOMPurify.sanitize(element.content),
+      },
+    };
+
     switch (element.type) {
       case "Frame":
         return (
           <motion.div
             key={element.id}
-            // style={{ ...element.styles }}
-            drag={!element.isSelected}
-            dragMomentum={false}
-            dragSnapToOrigin
-            onDragStart={(e) => {
-              e.preventDefault();
-              setDraggingElement(element);
-            }}
-            onDrop={(e) => handleDrop(e, element)}
-            onDragOver={(e) => e.preventDefault()}
-            onDragEnd={(e) => {
-              e.preventDefault();
-              swapElements();
-            }}
-            onMouseEnter={(e) => handleMouseEnter(e, element)}
-            onMouseLeave={(e) => handleMouseLeave(e)}
-            dragConstraints={dragConstraint}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            onContextMenu={(e) => handleContextMenu(e, element)}
-            className={cn("", element.tailwindStyles, {
-              "border-black border-2 border-solid": element.isSelected,
-              "z-0": element.id === draggingElement?.id,
-              "z-50": element.id !== draggingElement?.id,
-            })}
+            {...commonProps}
+            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
+              handleDrop(e, element)
+            }
           >
             {(element as FrameElement).elements?.map((childElement, index) =>
               renderElement(childElement, index)
@@ -203,73 +236,23 @@ const FrameComponents = ({
         return (
           <motion.div
             key={element.id}
-            // style={{ ...element.styles }}
-            drag={!element.isSelected}
-            dragMomentum={false}
-            dragElastic={0}
-            dragSnapToOrigin
-            onDragStart={(e) => {
-              e.preventDefault();
-              setDraggingElement(element);
-            }}
-            onDragEnd={(e) => {
-              e.preventDefault();
-              swapElements();
-            }}
-            onMouseEnter={(e) => handleMouseEnter(e, element)}
-            onMouseLeave={(e) => handleMouseLeave(e)}
-            dragConstraints={dragConstraint}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            onContextMenu={(e) => handleContextMenu(e, element)}
-            contentEditable={element.isSelected}
-            suppressContentEditableWarning={true}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(element.content),
-            }}
-            className={cn("", element.tailwindStyles, {
-              "border-black border-2 border-solid": element.isSelected,
-              "z-0": element.id === draggingElement?.id,
-              "z-50": element.id !== draggingElement?.id,
-            })}
+            {...commonProps}
+            {...contentProps}
+            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
+              handleDrop(e, element)
+            }
           />
         );
       case "Link":
         return (
           <motion.a
             key={element.id}
-            style={{ ...element.styles }}
-            className={cn("", element.tailwindStyles, {
-              "border-black border-2 border-solid": element.isSelected,
-              "z-50": element.id !== draggingElement?.id,
-              "z-0": element.id === draggingElement?.id,
-            })}
-            contentEditable={element.isSelected}
-            onContextMenu={(e) => handleContextMenu(e, element)}
+            {...commonProps}
+            {...contentProps}
             onKeyDown={(e) => handleKeyDown(e, element)}
-            suppressContentEditableWarning
-            onBlur={(e) => handleInput(e, element)}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(element.content),
-            }}
-            drag={!element.isSelected}
-            dragMomentum={false}
-            dragSnapToOrigin
-            onDragStart={(e) => {
-              e.preventDefault();
-              setDraggingElement(element);
-            }}
-            onDragEnd={(e) => {
-              e.preventDefault();
-              swapElements();
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onMouseEnter={(e) => handleMouseEnter(e, element)}
-            onMouseLeave={(e) => handleMouseLeave(e)}
-            dragConstraints={dragConstraint}
+            onDrop={(e: React.DragEvent<HTMLAnchorElement>) =>
+              handleDrop(e as any, element)
+            }
           />
         );
       case "Image":
@@ -277,103 +260,37 @@ const FrameComponents = ({
           return (
             <motion.img
               key={element.id}
-              style={{ ...element.styles }}
+              {...commonProps}
               src={element.src}
+              onDrop={(e: React.DragEvent<HTMLImageElement>) =>
+                handleImageDrop(e, element)
+              }
               drag={element.isSelected}
-              dragMomentum={false}
-              dragSnapToOrigin
-              onDragStart={(e) => {
-                e.preventDefault();
-                setDraggingElement(element);
-              }}
-              onDragEnd={(e) => {
-                e.preventDefault();
-                swapElements();
-              }}
-              onMouseEnter={(e) => handleMouseEnter(e, element)}
-              onMouseLeave={(e) => handleMouseLeave(e)}
-              onDrop={(e) => handleImageDrop(e, element)}
-              dragConstraints={dragConstraint}
-              onDoubleClick={(e) => handleDoubleClick(e, element)}
-              onContextMenu={(e) => handleContextMenu(e, element)}
-              onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              className={cn("", element.tailwindStyles, {
-                "border-black border-2 border-solid": element.isSelected,
-              })}
             />
           );
         } else {
           return (
             <motion.div
               key={element.id}
-              style={{ ...element.styles }}
+              {...commonProps}
+              onDrop={(e: React.DragEvent<HTMLDivElement>) =>
+                handleImageDrop(e, element)
+              }
               drag={element.isSelected}
-              dragMomentum={false}
-              dragSnapToOrigin
-              onDragStart={(e) => {
-                e.preventDefault();
-                setDraggingElement(element);
-              }}
-              onDragEnd={(e) => {
-                e.preventDefault();
-                swapElements();
-              }}
-              onMouseEnter={(e) => handleMouseEnter(e, element)}
-              onMouseLeave={(e) => handleMouseLeave(e)}
-              dragConstraints={dragConstraint}
-              onDoubleClick={(e) => handleDoubleClick(e, element)}
-              onContextMenu={(e) => handleContextMenu(e, element)}
-              onDrop={(e) => handleImageDrop(e, element)}
-              className={cn("", element.tailwindStyles, {
-                "border-black border-2 border-solid": element.isSelected,
-                "z-0": element.id === draggingElement?.id,
-                "z-50": element.id !== draggingElement?.id,
-              })}
-            >
-              {element.content}
-            </motion.div>
+              {...contentProps}
+            />
           );
         }
       default:
         return (
           <motion.div
             key={element.id}
-            style={{ ...element.styles }}
-            className={cn("", element.tailwindStyles, {
-              "border-black border-2 border-solid": element.isSelected,
-              "z-50": element.id !== draggingElement?.id,
-              "z-0": element.id === draggingElement?.id,
-            })}
-            contentEditable={element.isSelected}
-            onContextMenu={(e) => handleContextMenu(e, element)}
+            {...commonProps}
+            {...contentProps}
             onKeyDown={(e) => handleKeyDown(e, element)}
-            suppressContentEditableWarning
-            onBlur={(e) => handleInput(e, element)}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(element.content),
-            }}
-            drag={!element.isSelected}
-            dragMomentum={false}
-            dragSnapToOrigin
-            onDragStart={(e) => {
-              e.preventDefault();
-              setDraggingElement(element);
-            }}
-            onDragEnd={(e) => {
-              e.preventDefault();
-              swapElements();
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onMouseEnter={(e) => handleMouseEnter(e, element)}
-            onMouseLeave={(e) => handleMouseLeave(e)}
-            dragConstraints={dragConstraint}
+            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
+              handleDrop(e, element)
+            }
           ></motion.div>
         );
     }

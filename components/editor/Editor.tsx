@@ -385,7 +385,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
-                dragDirectionLock
+                dragDirectionLock={
+                  element.styles?.width === "100%" ||
+                  element.styles?.height === "100%"
+                }
                 onDirectionLock={() => handleDirectionLock(element)}
                 dragConstraints={draggingConstraintRef}
                 animate={{
@@ -396,7 +399,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
-                  zIndex: element.isSelected ? 10 : 1,
+                  zIndex: element.isSelected ? 10 : 1,                  
                 }}
                 className={cn("cursor-pointer", "", {
                   "border-2 border-black hover:cursor-text": element.isSelected,

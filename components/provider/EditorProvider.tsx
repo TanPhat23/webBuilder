@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useEditorStore } from "@/lib/store/editorStore";
-import { useImageStore } from "@/lib/store/imageStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
 type Props = {

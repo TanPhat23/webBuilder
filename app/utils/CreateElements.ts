@@ -11,7 +11,6 @@ const commonStyles: CSSProperties = {
 
 export function createElements(
   name: string,
-  // Keep null as fallback for backward compatibility
   dispatch: null,
   x: number,
   y: number,
@@ -23,8 +22,8 @@ export function createElements(
     id: tempId,
     content: name,
     isSelected: false,
-    x: Math.round(x / 20) * 20,
-    y: Math.round(y / 20) * 20,
+    x: x,
+    y: y,
     styles: {
       ...commonStyles,
       height: "100px",
@@ -115,6 +114,7 @@ export function createElements(
       newElement = {
         type: "Carousel",
         ...baseElement,
+        x: 0,
         styles: {
           ...baseElement.styles,
           width: "100%",
