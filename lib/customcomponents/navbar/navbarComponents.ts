@@ -99,7 +99,7 @@ export const navbarComponent2: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "60px",
+      height: "80px",
       width: "100%",
       backgroundColor: "#222831",
       display: "flex",
@@ -109,7 +109,7 @@ export const navbarComponent2: CustomComponent = {
       padding: "0 20px",
       color: "white", 
     },
-    tailwindStyles: "flex flex-col md:flex-row items-center justify-between w-full p-3 md:p-5 bg-gray-900 text-white gap-8 md:gap-10",
+    tailwindStyles: "flex flex-col md:flex-row items-center justify-between w-full p-3 md:p-5 bg-gray-900 text-white gap-8 md:gap-10 h-[80px]",
     elements: [
       {
         type: "Image",
