@@ -30,9 +30,11 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     updateElementOptimistically,
     deleteElementOptimistically,
     updateAllElements,
+    undo,
+    redo,
   } = useEditorStore();
 
-  const { selectedElement, setSelectedElement } = useElementSelectionStore();
+  const { setSelectedElement } = useElementSelectionStore();
 
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
     "DESKTOP"
@@ -71,6 +73,26 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     });
     fontsToLoad.forEach((font) => {});
   }, [elements]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        undo();
+      } else if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "y" || (e.shiftKey && e.key === "z"))
+      ) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [undo, redo]);
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -257,6 +279,17 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         deleteElementOptimistically(element.id);
       });
     }
+    if (e.key === "Escape" && element.isSelected) {
+      updateElement(element.id, { isSelected: false });
+    }
+
+    if (e.ctrlKey && e.key === "z") {
+      e.preventDefault();
+      undo();
+    } else if (e.ctrlKey && e.key === "y") {
+      e.preventDefault();
+      redo();
+    }
   };
 
   const handleCopy = (
@@ -352,7 +385,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                 dragMomentum={false}
                 initial={{ x: element.x, y: element.y }}
                 whileDrag={{ cursor: "grabbing" }}
-                dragDirectionLock
+                dragDirectionLock={
+                  element.styles?.width === "100%" ||
+                  element.styles?.height === "100%"
+                }
                 onDirectionLock={() => handleDirectionLock(element)}
                 dragConstraints={draggingConstraintRef}
                 animate={{
@@ -363,7 +399,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
-                  zIndex: element.isSelected ? 10 : 1,
+                  zIndex: element.isSelected ? 10 : 1,                  
                 }}
                 className={cn("cursor-pointer", "", {
                   "border-2 border-black hover:cursor-text": element.isSelected,

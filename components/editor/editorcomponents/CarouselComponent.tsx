@@ -1,5 +1,7 @@
+"use client";
+
 import { CarouselElement, EditorElement } from "@/lib/type";
-import React, { startTransition, useCallback } from "react";
+import { useOptimistic, useMemo, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
@@ -11,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
+import { Button } from "@/components/ui/button";
+import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 
 type Props = {
   element: CarouselElement;
@@ -28,18 +32,61 @@ const CarouselComponent: React.FC<Props> = ({
   projectId,
 }) => {
   const { uploadImages } = useImageStore();
-  const { updateElement, updateElementOptimistically } = useEditorStore();
+  const { updateElement } = useEditorStore();
   const { setSelectedElement } = useElementSelectionStore();
+
+  // Optimistic UI for element reordering
+  const [optimisticElements, setOptimisticElements] = useOptimistic(
+    element.elements,
+    (state, newElements: EditorElement[]) => newElements
+  );
+
+  // Memoized carousel settings with React 19 cache
+  const carouselSettings = useMemo<Settings>(() => {
+    const defaults = {
+      dots: true,
+      infinite: true,
+      arrows: true,
+      speed: 500,
+      autoplay: false,
+      autoplaySpeed: 3000,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      pauseOnHover: true,
+    };
+
+    return {
+      ...defaults,
+      ...element.settings,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: Math.min(element.settings?.slidesToShow || 3, 2),
+            slidesToScroll: Math.min(element.settings?.slidesToScroll || 1, 1),
+          },
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+          },
+        },
+      ],
+    };
+  }, [element.settings]);
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    let elementType = e.dataTransfer.getData("elementType");
+
+    const elementType = e.dataTransfer.getData("elementType");
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];
-    if (imgSrc) elementType = "Image";
+
     createElements(
-      elementType,
+      imgSrc ? "Image" : elementType,
       null,
       element,
       projectId,
@@ -48,35 +95,21 @@ const CarouselComponent: React.FC<Props> = ({
     );
   };
 
-  const handleImageDrop = (
-    e: React.DragEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleSwap = async (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= optimisticElements.length) return;
 
-    // Check for regular image drop from the sidebar
-    const imgIdx = e.dataTransfer.getData("image");
-    let imgSrc = null;
+    const newElements = [...optimisticElements];
+    [newElements[fromIndex], newElements[toIndex]] = [
+      newElements[toIndex],
+      newElements[fromIndex],
+    ];
 
-    if (imgIdx) {
-      imgSrc = uploadImages[parseInt(imgIdx)];
-    } else if (e.dataTransfer.types.includes("text/plain")) {
-      // Handle data URL dropped directly
-      const data = e.dataTransfer.getData("text/plain");
-      if (data.startsWith("data:image")) {
-        imgSrc = data;
-      }
-    }
-
-    if (imgSrc) {
     
-      startTransition(() => {
-        updateElementOptimistically(element.id, {
-          src: imgSrc,
-        });
-      });
-    }
+    setOptimisticElements(newElements);
+
+    startTransition(() => {
+      updateElement(element.id, { elements: newElements });
+    });
   };
 
   const handleDoubleClick = (
@@ -85,18 +118,31 @@ const CarouselComponent: React.FC<Props> = ({
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!element.isSelected) setSelectedElement(element);
-    updateElement(element.id, {
-      isSelected: !element.isSelected,
-    });
+
+    const newSelectionState = !element.isSelected;
+    if (newSelectionState) {
+      setSelectedElement(element);
+    }
+    updateElement(element.id, { isSelected: newSelectionState });
   };
 
   const renderElement = (element: EditorElement, index: number) => {
+    const commonProps = {
+      onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
+        handleDoubleClick(e, element),
+      className: cn(
+        element.tailwindStyles,
+        element.isSelected && "border-black border-2 border-solid"
+      ),
+      style: element.styles,
+    };
+
     switch (element.type) {
       case "Frame":
         return (
           <FrameComponents
             key={element.id}
+            {...commonProps}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
@@ -107,106 +153,66 @@ const CarouselComponent: React.FC<Props> = ({
         return (
           <motion.img
             key={element.id}
+            {...commonProps}
             src={element.src}
             alt={`Carousel Image ${index}`}
-            style={{
-              ...element.styles,
-            }}
-            // onDrop={(e) => handleImageDrop(e, element)}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            className={cn("slick-slide", element.tailwindStyles, {
-              "border-black border-2 border-solid": element.isSelected,
-            })}
+            className={cn(commonProps.className, "slick-slide")}
+            loading="lazy"
           />
         );
       default:
         return (
           <motion.div
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            key={element.id}
-            style={{ ...element.styles }}
-            className={element.tailwindStyles}
+            {...commonProps}
             contentEditable={element.isSelected}
             suppressContentEditableWarning={true}
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(element.content || ""),
             }}
-            onDrag={(e) => e.stopPropagation()}
           />
         );
     }
   };
 
-  const [carouselSettings, setCarouselSettings] = React.useState<Settings>(
-    () => {
-      const defaults = {
-        dots: true,
-        infinite: true,
-        arrows: true,
-        speed: 500,
-        autoplay: false,
-        autoplaySpeed: 3000,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        pauseOnHover: true,
-      };
-      return {
-        ...defaults,
-        ...element.settings,
-        responsive: [
-          {
-            breakpoint: 1024,
-            settings: {
-              slidesToShow: Math.min(element.settings?.slidesToShow || 3, 2),
-              slidesToScroll: Math.min(
-                element.settings?.slidesToScroll || 1,
-                1
-              ),
-            },
-          },
-          {
-            breakpoint: 768,
-            settings: {
-              slidesToShow: 1,
-              slidesToScroll: 1,
-            },
-          },
-        ],
-      };
-    }
-  );
-
-  React.useEffect(() => {
-    const newSettings = {
-      ...carouselSettings,
-      ...element.settings,
-    };
-    if (!newSettings.responsive) {
-      newSettings.responsive = carouselSettings.responsive;
-    }
-    setCarouselSettings(newSettings);
-  }, [element.settings]);
-
   return (
     <div
       id={element.id}
       onDrop={handleDrop}
-      className={cn("slider-container ", "mx-auto max-w-[95vw]")}
+      className="slider-container w-full"
       onDragOver={(e) => e.preventDefault()}
-      style={{ minHeight: "200px" }}
+      style={{ minHeight: "200px", position: "relative", width: "100%" }}
     >
       <Slider
         key={`slider-${element.id}-${JSON.stringify(carouselSettings)}`}
         {...carouselSettings}
       >
-        {element.elements?.map((childElement, index) => (
-          <div key={childElement.id} className="h-full px-2">
+        {optimisticElements.map((childElement, index) => (
+          <div key={childElement.id} className="h-full px-2 group">
             <div className="relative h-full w-full flex items-center justify-center aspect-[4/1] rounded-lg overflow-hidden">
               {renderElement(childElement, index)}
+            </div>
+
+            <div className="flex gap-2 justify-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleSwap(index, index - 1)}
+                disabled={index === 0}
+                className="gap-1"
+              >
+                <ArrowLeftCircle className="h-4 w-4" />
+                <span>Move Left</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleSwap(index, index + 1)}
+                disabled={index === optimisticElements.length - 1}
+                className="gap-1"
+              >
+                <span>Move Right</span>
+                <ArrowRightCircle className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         ))}

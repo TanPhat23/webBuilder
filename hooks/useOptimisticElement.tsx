@@ -4,6 +4,8 @@ import { useEditorStore } from "@/lib/store/editorStore";
 /**
  * Legacy hook that now uses only the Zustand store
  * This provides backward compatibility for components that still use the old API
+ * Use the @file editorStore.tsx to manage your state
+ * @deprecated
  */
 export function useOptimisticElement() {
   const {

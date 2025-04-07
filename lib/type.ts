@@ -37,6 +37,10 @@ export type EditorElement =
   | ButtonElement
   | CarouselElement;
 
+/** this is DEPRECIATED use The  
+ * @file editorStore.tsx to mange your state 
+ * @deprecated
+ * */
 export type EditorAction =
   | { type: "ADD_ELEMENT"; payload: EditorElement }
   | {
