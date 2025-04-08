@@ -135,7 +135,7 @@ export const SearchCombobox: React.FC = () => {
   const filteredComponents = () => {
     return COMPONENT_CATEGORIES.reduce((acc, category) => {
       acc[category.id] = customComponents.filter((component) =>
-        component.component.name?.startsWith(category.prefix)
+        component?.component?.name?.startsWith(category.prefix)
       );
       return acc;
     }, {} as Record<string, typeof customComponents>);

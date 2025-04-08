@@ -1,7 +1,6 @@
 import { CustomComponent } from "../styleconstants";
 import { v4 as uuidv4 } from "uuid";
 
-// Helper function to create a team member card - vertical layout
 const createTeamMemberVertical = (
   name: string = "Team Member",
   role: string = "Position",
@@ -27,9 +26,11 @@ const createTeamMemberVertical = (
       boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
       width: "100%",
       maxWidth: "300px",
-      margin: "0 auto", // Center the card within its grid cell
+      margin: "0 auto",
+      transition: "transform 0.4s ease, box-shadow 0.4s ease",
     },
-    tailwindStyles: "flex flex-col items-center p-5 bg-white rounded-xl shadow-md w-full max-w-xs mx-auto",
+    tailwindStyles: "flex flex-col items-center p-5 bg-white rounded-xl shadow-md w-full max-w-xs mx-auto hover:shadow-lg hover:scale-105 transition-all duration-300",
+    settings: {}, 
     elements: [
       {
         type: "Image",
@@ -52,8 +53,9 @@ const createTeamMemberVertical = (
           backgroundColor: imageSrc ? "transparent" : "#f9f9f9",
           fontSize: "14px",
           fontWeight: "bold",
+          transition: "transform 0.3s ease, border 0.3s ease",
         },
-        tailwindStyles: "w-32 h-32 rounded-full object-cover mb-4 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100",
+        tailwindStyles: "w-32 h-32 rounded-full object-cover mb-4 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100 hover:scale-105 transition-transform duration-300",
         href: "",
         src: imageSrc,
         parentId: "",
@@ -139,8 +141,9 @@ const createTeamMemberVertical = (
           styles: {
             color: link.color,
             fontSize: "14px",
+            transition: "color 0.4s ease, transform 0.4s ease",
           },
-          tailwindStyles: `text-${link.color} text-sm hover:underline`,
+          tailwindStyles: `text-${link.color} text-sm hover:underline hover:scale-110 transition-all`,
           href: link.url,
           src: "",
           parentId: "",
@@ -159,7 +162,6 @@ const createTeamMemberVertical = (
   };
 };
 
-// Helper function to create a team member card - horizontal layout
 const createTeamMemberHorizontal = (
   name: string = "Team Member",
   role: string = "Position",
@@ -186,8 +188,9 @@ const createTeamMemberHorizontal = (
       width: "100%",
       gap: "20px",
       margin: "0 auto",
+      transition: "transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease",
     },
-    tailwindStyles: "flex flex-col sm:flex-row items-center p-5 bg-white rounded-xl shadow-md w-full gap-5 mx-auto",
+    tailwindStyles: "flex flex-col sm:flex-row items-center p-5 bg-white rounded-xl shadow-md w-full gap-5 mx-auto hover:shadow-lg hover:scale-[1.02] transition-all duration-300",
     elements: [
       {
         type: "Image",
@@ -210,8 +213,9 @@ const createTeamMemberHorizontal = (
           backgroundColor: imageSrc ? "transparent" : "#f9f9f9",
           fontSize: "14px",
           fontWeight: "bold",
+          transition: "transform 0.3s ease",
         },
-        tailwindStyles: "w-32 h-32 rounded-full object-cover flex-shrink-0 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100",
+        tailwindStyles: "w-32 h-32 rounded-full object-cover flex-shrink-0 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100 hover:scale-105 transition-transform duration-300",
         href: "",
         src: imageSrc,
         parentId: "",
@@ -311,8 +315,9 @@ const createTeamMemberHorizontal = (
               styles: {
                 color: link.color,
                 fontSize: "14px",
+                transition: "color 0.4s ease, transform 0.4s ease",
               },
-              tailwindStyles: `text-${link.color} text-sm hover:underline`,
+              tailwindStyles: `text-${link.color} text-sm hover:underline hover:scale-110 transition-all`,
               href: link.url,
               src: "",
               parentId: "",
@@ -337,207 +342,368 @@ const createTeamMemberHorizontal = (
   };
 };
 
-// Dynamic Team Members Grid - Vertical
-export const teamMembersDynamicVertical: CustomComponent = {
-  component: {
-    type: "Frame",
-    name: "TeamMembersDynamicVertical",
-    id: uuidv4(),
-    content: "",
-    isSelected: false,
-    x: 0,
-    y: 0,
-    styles: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "40px 20px",
-    },
-    tailwindStyles: "w-full flex flex-col items-center p-10",
-    elements: [
-      {
-        type: "Text",
-        content: "Our Team",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontWeight: "bold",
-          fontSize: "32px",
-          color: "#1e293b",
-          marginBottom: "20px",
-          textAlign: "center",
-        },
-        tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Text",
-        content: "Meet our talented team of professionals",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontSize: "18px",
-          color: "#64748b",
-          marginBottom: "40px",
-          textAlign: "center",
-          maxWidth: "700px",
-        },
-        tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Frame",
-        name: "TeamGrid",
-        id: uuidv4(),
-        content: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "30px",
-          maxWidth: "1200px",
-        },
-        tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 max-w-6xl",
-        elements: [
-          createTeamMemberVertical(
-            "Jane Doe",
-            "Product Designer",
-            "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-            "",
-            [
-              { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-              { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-            ]
-          )
-        ],
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-    ],
-    href: "",
-    src: "",
-    parentId: "",
-    projectId: "",
-  },
+// New function to generate multiple team members
+const generateMultipleVerticalMembers = (
+  teamMembers: Array<{
+    name: string;
+    role: string;
+    description: string;
+    imageSrc: string;
+    socialLinks: Array<{ title: string; url: string; color: string }>;
+  }> = []
+) => {
+  if (teamMembers.length === 0) {
+    return [
+      createTeamMemberVertical(
+        "Jane Doe",
+        "Product Designer",
+        "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
+        "",
+        [
+          { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+          { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
+        ]
+      )
+    ];
+  }
+  return teamMembers.map(member => 
+    createTeamMemberVertical(
+      member.name,
+      member.role,
+      member.description,
+      member.imageSrc,
+      member.socialLinks
+    )
+  );
 };
 
-export const teamMembersDynamicHorizontal: CustomComponent = {
-  component: {
-    type: "Frame",
-    name: "TeamMembersDynamicHorizontal",
-    id: uuidv4(),
-    content: "",
-    isSelected: false,
-    x: 0,
-    y: 0,
-    styles: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "40px 20px",
-      backgroundColor: "#f8fafc",
-    },
-    tailwindStyles: "w-full flex flex-col items-center p-10 bg-slate-50",
-    elements: [
-      {
-        type: "Text",
-        content: "Meet Our Team",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontWeight: "bold",
-          fontSize: "32px",
-          color: "#1e293b",
-          marginBottom: "20px",
-          textAlign: "center",
-        },
-        tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Text",
-        content: "Get to know the experts behind our success",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontSize: "18px",
-          color: "#64748b",
-          marginBottom: "40px",
-          textAlign: "center",
-          maxWidth: "700px",
-        },
-        tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Frame",
-        name: "TeamList",
-        id: uuidv4(),
-        content: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-          maxWidth: "1000px",
-        },
-        tailwindStyles: "w-full flex flex-col gap-5 max-w-4xl",
-        elements: [
-          createTeamMemberHorizontal(
-            "Jane Doe",
-            "Product Designer",
-            "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-            "",
-            [
-              { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-              { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-            ]
-          ),
-        ],
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-    ],
-    href: "",
-    src: "",
-    parentId: "",
-    projectId: "",
-  },
+// New function to generate multiple horizontal team members
+const generateMultipleHorizontalMembers = (
+  teamMembers: Array<{
+    name: string;
+    role: string;
+    description: string;
+    imageSrc: string;
+    socialLinks: Array<{ title: string; url: string; color: string }>;
+  }> = []
+) => {
+  if (teamMembers.length === 0) {
+    return [
+      createTeamMemberHorizontal(
+        "Jane Doe",
+        "Product Designer",
+        "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
+        "",
+        [
+          { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+          { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
+        ]
+      )
+    ];
+  }
+  return teamMembers.map(member => 
+    createTeamMemberHorizontal(
+      member.name,
+      member.role,
+      member.description,
+      member.imageSrc,
+      member.socialLinks
+    )
+  );
 };
 
-// Carousel Team Members - Vertical
+// Function to create dynamic vertical team component with unlimited members
+export const createTeamMembersDynamicVertical = (
+  title: string = "Our Team",
+  subtitle: string = "Meet our talented team of professionals",
+  teamMembers: Array<{
+    name: string;
+    role: string;
+    description: string;
+    imageSrc: string;
+    socialLinks: Array<{ title: string; url: string; color: string }>;
+  }> = []
+): CustomComponent => {
+  return {
+    component: {
+      type: "Frame",
+      name: "TeamMembersDynamicVertical",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 20px",
+      },
+      tailwindStyles: "w-full flex flex-col items-center p-10",
+      elements: [
+        {
+          type: "Text",
+          content: title,
+          id: uuidv4(),
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            fontWeight: "bold",
+            fontSize: "32px",
+            color: "#1e293b",
+            marginBottom: "20px",
+            textAlign: "center",
+          },
+          tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+        {
+          type: "Text",
+          content: subtitle,
+          id: uuidv4(),
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            fontSize: "18px",
+            color: "#64748b",
+            marginBottom: "40px",
+            textAlign: "center",
+            maxWidth: "700px",
+          },
+          tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+        {
+          type: "Frame",
+          name: "TeamGrid",
+          id: uuidv4(),
+          content: "",
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            width: "100%",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+            gap: "30px",
+            maxWidth: "1200px",
+          },
+          tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 max-w-6xl",
+          elements: generateMultipleVerticalMembers(teamMembers),
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+      ],
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    },
+  };
+};
+
+// Function to create dynamic horizontal team component with unlimited members
+export const createTeamMembersDynamicHorizontal = (
+  title: string = "Meet Our Team",
+  subtitle: string = "Get to know the experts behind our success",
+  teamMembers: Array<{
+    name: string;
+    role: string;
+    description: string;
+    imageSrc: string;
+    socialLinks: Array<{ title: string; url: string; color: string }>;
+  }> = []
+): CustomComponent => {
+  return {
+    component: {
+      type: "Frame",
+      name: "TeamMembersDynamicHorizontal",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 20px",
+        backgroundColor: "#f8fafc",
+      },
+      tailwindStyles: "w-full flex flex-col items-center p-10 bg-slate-50",
+      elements: [
+        {
+          type: "Text",
+          content: title,
+          id: uuidv4(),
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            fontWeight: "bold",
+            fontSize: "32px",
+            color: "#1e293b",
+            marginBottom: "20px",
+            textAlign: "center",
+          },
+          tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+        {
+          type: "Text",
+          content: subtitle,
+          id: uuidv4(),
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            fontSize: "18px",
+            color: "#64748b",
+            marginBottom: "40px",
+            textAlign: "center",
+            maxWidth: "700px",
+          },
+          tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+        {
+          type: "Frame",
+          name: "TeamList",
+          id: uuidv4(),
+          content: "",
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            maxWidth: "1000px",
+          },
+          tailwindStyles: "w-full flex flex-col gap-5 max-w-4xl",
+          elements: generateMultipleHorizontalMembers(teamMembers),
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+      ],
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    },
+  };
+};
+
+// Update existing component exports to use the new functions
+export const teamMembersDynamicVertical: CustomComponent = createTeamMembersDynamicVertical();
+export const teamMembersDynamicHorizontal: CustomComponent = createTeamMembersDynamicHorizontal();
+
+// Sample usage with multiple team members
+export const teamMembersVerticalWithMultiple: CustomComponent = createTeamMembersDynamicVertical(
+  "Our Amazing Team",
+  "Meet the professionals who make it all happen",
+  [
+    {
+      name: "John Smith",
+      role: "CEO & Founder",
+      description: "John has a vision for innovation and leads our company with passion.",
+      imageSrc: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+        { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
+      ]
+    },
+    {
+      name: "Sarah Johnson",
+      role: "Marketing Director",
+      description: "Sarah brings over 15 years of experience in digital marketing strategies.",
+      imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+        { title: "Instagram", url: "https://instagram.com", color: "pink-500" }
+      ]
+    },
+    {
+      name: "Michael Chen",
+      role: "Lead Developer",
+      description: "Michael is passionate about creating elegant solutions to complex problems.",
+      imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "GitHub", url: "https://github.com", color: "gray-800" },
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
+      ]
+    },
+    {
+      name: "Emily Davis",
+      role: "UX Designer",
+      description: "Emily focuses on creating intuitive and accessible user experiences.",
+      imageSrc: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "Dribbble", url: "https://dribbble.com", color: "pink-600" },
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
+      ]
+    }
+  ]
+);
+
+export const teamMembersHorizontalWithMultiple: CustomComponent = createTeamMembersDynamicHorizontal(
+  "Leadership Team",
+  "The experts guiding our company's vision and growth",
+  [
+    {
+      name: "John Smith",
+      role: "CEO & Founder",
+      description: "John has a vision for innovation and leads our company with passion.",
+      imageSrc: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+        { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
+      ]
+    },
+    {
+      name: "Sarah Johnson",
+      role: "Marketing Director",
+      description: "Sarah brings over 15 years of experience in digital marketing strategies.",
+      imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
+        { title: "Instagram", url: "https://instagram.com", color: "pink-500" }
+      ]
+    },
+    {
+      name: "Michael Chen",
+      role: "CTO",
+      description: "Michael oversees all technical operations and development teams.",
+      imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3",
+      socialLinks: [
+        { title: "GitHub", url: "https://github.com", color: "gray-800" },
+        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
+      ]
+    }
+  ]
+);
+
 export const teamMembersCarouselVertical: CustomComponent = {
   component: {
     type: "Frame",
@@ -685,8 +851,9 @@ export const teamMembersCarouselVertical: CustomComponent = {
               borderRadius: "6px",
               cursor: "pointer",
               userSelect: "none",
+              transition: "background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
-            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none",
+            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-300",
             elements: [
               {
                 type: "Text",
@@ -726,8 +893,9 @@ export const teamMembersCarouselVertical: CustomComponent = {
               borderRadius: "6px",
               cursor: "pointer",
               userSelect: "none",
+              transition: "background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             },
-            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none",
+            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-300",
             elements: [
               {
                 type: "Text",
@@ -766,7 +934,6 @@ export const teamMembersCarouselVertical: CustomComponent = {
   },
 };
 
-// Carousel Team Members - Horizontal
 export const teamMembersCarouselHorizontal: CustomComponent = {
   component: {
     type: "Frame",
@@ -931,8 +1098,9 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
               height: "12px",
               borderRadius: "50%",
               backgroundColor: "#3b82f6",
+              transition: "transform 0.3s ease, background-color 0.3s ease",
             },
-            tailwindStyles: "w-3 h-3 rounded-full bg-blue-500",
+            tailwindStyles: "w-3 h-3 rounded-full bg-blue-500 hover:scale-125 transition-transform",
             elements: [],
             href: "",
             src: "",
@@ -952,8 +1120,9 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
               height: "12px",
               borderRadius: "50%",
               backgroundColor: "#cbd5e1",
+              transition: "transform 0.3s ease, background-color 0.3s ease",
             },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300",
+            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
             elements: [],
             href: "",
             src: "",
@@ -973,8 +1142,9 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
               height: "12px",
               borderRadius: "50%",
               backgroundColor: "#cbd5e1",
+              transition: "transform 0.3s ease, background-color 0.3s ease",
             },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300",
+            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
             elements: [],
             href: "",
             src: "",
@@ -994,8 +1164,9 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
               height: "12px",
               borderRadius: "50%",
               backgroundColor: "#cbd5e1",
+              transition: "transform 0.3s ease, background-color 0.3s ease",
             },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300",
+            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
             elements: [],
             href: "",
             src: "",
@@ -1016,7 +1187,6 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
   },
 };
 
-// Modern grid layout (max 4 per row)
 export const teamMembersGrid: CustomComponent = {
   component: {
     type: "Frame",
@@ -1107,8 +1277,9 @@ export const teamMembersGrid: CustomComponent = {
               flexDirection: "column",
               alignItems: "center",
               position: "relative",
+              transition: "transform 0.4s ease",
             },
-            tailwindStyles: "flex flex-col items-center relative group",
+            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
             elements: [
               {
                 type: "Frame",
@@ -1121,7 +1292,7 @@ export const teamMembersGrid: CustomComponent = {
                 styles: {
                   position: "relative",
                   width: "100%",
-                  paddingBottom: "100%", // Creates a perfect square
+                  paddingBottom: "100%",
                   marginBottom: "20px",
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -1223,8 +1394,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400 hover:scale-110 transition-all",
                     href: "https://github.com",
                     src: "",
                     parentId: "",
@@ -1241,8 +1413,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400 hover:scale-110 transition-all",
                     href: "https://linkedin.com",
                     src: "",
                     parentId: "",
@@ -1273,8 +1446,9 @@ export const teamMembersGrid: CustomComponent = {
               flexDirection: "column",
               alignItems: "center",
               position: "relative",
+              transition: "transform 0.4s ease",
             },
-            tailwindStyles: "flex flex-col items-center relative group",
+            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
             elements: [
               {
                 type: "Frame",
@@ -1287,7 +1461,7 @@ export const teamMembersGrid: CustomComponent = {
                 styles: {
                   position: "relative",
                   width: "100%",
-                  paddingBottom: "100%", // Creates a perfect square
+                  paddingBottom: "100%",
                   marginBottom: "20px",
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -1389,8 +1563,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400 hover:scale-110 transition-all",
                     href: "https://dribbble.com",
                     src: "",
                     parentId: "",
@@ -1407,8 +1582,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400 hover:scale-110 transition-all",
                     href: "https://instagram.com",
                     src: "",
                     parentId: "",
@@ -1439,8 +1615,9 @@ export const teamMembersGrid: CustomComponent = {
               flexDirection: "column",
               alignItems: "center",
               position: "relative",
+              transition: "transform 0.4s ease",
             },
-            tailwindStyles: "flex flex-col items-center relative group",
+            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
             elements: [
               {
                 type: "Frame",
@@ -1453,7 +1630,7 @@ export const teamMembersGrid: CustomComponent = {
                 styles: {
                   position: "relative",
                   width: "100%",
-                  paddingBottom: "100%", // Creates a perfect square
+                  paddingBottom: "100%",
                   marginBottom: "20px",
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -1555,8 +1732,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400 hover:scale-110 transition-all",
                     href: "https://linkedin.com",
                     src: "",
                     parentId: "",
@@ -1573,8 +1751,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400 hover:scale-110 transition-all",
                     href: "https://twitter.com",
                     src: "",
                     parentId: "",
@@ -1605,8 +1784,9 @@ export const teamMembersGrid: CustomComponent = {
               flexDirection: "column",
               alignItems: "center",
               position: "relative",
+              transition: "transform 0.4s ease",
             },
-            tailwindStyles: "flex flex-col items-center relative group",
+            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
             elements: [
               {
                 type: "Frame",
@@ -1619,7 +1799,7 @@ export const teamMembersGrid: CustomComponent = {
                 styles: {
                   position: "relative",
                   width: "100%",
-                  paddingBottom: "100%", // Creates a perfect square
+                  paddingBottom: "100%",
                   marginBottom: "20px",
                   borderRadius: "16px",
                   overflow: "hidden",
@@ -1721,8 +1901,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400 hover:scale-110 transition-all",
                     href: "https://medium.com",
                     src: "",
                     parentId: "",
@@ -1739,8 +1920,9 @@ export const teamMembersGrid: CustomComponent = {
                       color: "#d1d5db",
                       fontSize: "14px",
                       fontWeight: "500",
+                      transition: "color 0.4s ease, transform 0.4s ease",
                     },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400",
+                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400 hover:scale-110 transition-all",
                     href: "https://linkedin.com",
                     src: "",
                     parentId: "",
@@ -1772,7 +1954,8 @@ export const teamMembersGrid: CustomComponent = {
   },
 };
 
-// Keep compatibility with the old exports
 export const teamMembersComponent1: CustomComponent = teamMembersDynamicVertical;
 export const teamMembersComponent2: CustomComponent = teamMembersDynamicHorizontal;
 export const teamMembersComponent3: CustomComponent = teamMembersGrid;
+export const teamMembersComponent4: CustomComponent = teamMembersVerticalWithMultiple;
+export const teamMembersComponent5: CustomComponent = teamMembersHorizontalWithMultiple;
