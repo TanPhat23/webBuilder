@@ -1,19 +1,21 @@
 import { CustomComponent } from "../styleconstants";
 import { v4 as uuidv4 } from "uuid";
 
-const createTeamMemberVertical = (
-  name: string = "Team Member",
-  role: string = "Position",
-  description: string = "Short description about the team member and their expertise.",
+const createAboutCardVertical = (
+  title: string = "About Title",
+  description: string = "Description about this section.",
   imageSrc: string = "",
-  socialLinks: Array<{ title: string; url: string; color: string }> = []
+  link: string = "",
+  linkText: string = "Learn More"
 ) => {
   return {
     type: "Frame",
-    name: "TeamMember",
+    name: "AboutCardVertical",
     id: uuidv4(),
     content: "",
     isSelected: false,
+    isDraggable: true,
+    dragConstraints: "parent",
     x: 0,
     y: 0,
     styles: {
@@ -27,43 +29,32 @@ const createTeamMemberVertical = (
       width: "100%",
       maxWidth: "300px",
       margin: "0 auto",
-      transition: "transform 0.4s ease, box-shadow 0.4s ease",
     },
-    tailwindStyles: "flex flex-col items-center p-5 bg-white rounded-xl shadow-md w-full max-w-xs mx-auto hover:shadow-lg hover:scale-105 transition-all duration-300",
-    settings: {}, 
+    tailwindStyles: "flex flex-col items-center p-5 bg-white rounded-xl shadow-md w-full max-w-xs mx-auto hover:shadow-lg transition-shadow",
     elements: [
-      {
+      imageSrc ? {
         type: "Image",
-        content: "Team Member Image",
+        content: "About Image",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
-          width: "120px",
-          height: "120px",
-          borderRadius: "50%",
+          width: "100%",
+          height: "180px",
+          borderRadius: "8px",
           objectFit: "cover",
-          marginBottom: "15px",
-          border: imageSrc ? "none" : "2px dashed #ccc",
-          display: imageSrc ? "block" : "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#aaa",
-          backgroundColor: imageSrc ? "transparent" : "#f9f9f9",
-          fontSize: "14px",
-          fontWeight: "bold",
-          transition: "transform 0.3s ease, border 0.3s ease",
+          marginBottom: "20px",
         },
-        tailwindStyles: "w-32 h-32 rounded-full object-cover mb-4 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100 hover:scale-105 transition-transform duration-300",
+        tailwindStyles: "w-full h-48 rounded-lg object-cover mb-5",
         href: "",
         src: imageSrc,
         parentId: "",
         projectId: "",
-      },
+      } : null,
       {
         type: "Text",
-        content: name,
+        content: title,
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -72,27 +63,10 @@ const createTeamMemberVertical = (
           fontWeight: "bold",
           fontSize: "20px",
           color: "#333",
-          marginBottom: "5px",
+          marginBottom: "10px",
+          textAlign: "center",
         },
-        tailwindStyles: "font-bold text-xl text-gray-800 mb-1",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Text",
-        content: role,
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontSize: "16px",
-          color: "#6d28d9",
-          marginBottom: "15px",
-        },
-        tailwindStyles: "text-md text-purple-700 mb-4",
+        tailwindStyles: "font-bold text-xl text-gray-800 mb-2 text-center",
         href: "",
         src: "",
         parentId: "",
@@ -117,44 +91,28 @@ const createTeamMemberVertical = (
         parentId: "",
         projectId: "",
       },
-      {
-        type: "Frame",
-        name: "SocialLinks",
+      link ? {
+        type: "Link",
+        content: linkText,
         id: uuidv4(),
-        content: "",
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
-          display: "flex",
-          flexDirection: "row",
-          gap: "15px",
+          color: "#3b82f6",
+          fontSize: "14px",
+          fontWeight: "500",
+          padding: "8px 16px",
+          borderRadius: "6px",
+          backgroundColor: "#eff6ff",
         },
-        tailwindStyles: "flex flex-row gap-4",
-        elements: socialLinks.map(link => ({
-          type: "Link",
-          content: link.title,
-          id: uuidv4(),
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            color: link.color,
-            fontSize: "14px",
-            transition: "color 0.4s ease, transform 0.4s ease",
-          },
-          tailwindStyles: `text-${link.color} text-sm hover:underline hover:scale-110 transition-all`,
-          href: link.url,
-          src: "",
-          parentId: "",
-          projectId: "",
-        })),
-        href: "",
+        tailwindStyles: "text-blue-500 text-sm font-medium px-4 py-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors",
+        href: link,
         src: "",
         parentId: "",
         projectId: "",
-      },
-    ],
+      } : null
+    ].filter(Boolean), 
     href: "",
     src: "",
     parentId: "",
@@ -162,19 +120,21 @@ const createTeamMemberVertical = (
   };
 };
 
-const createTeamMemberHorizontal = (
-  name: string = "Team Member",
-  role: string = "Position",
-  description: string = "Short description about the team member and their expertise.",
+const createAboutCardHorizontal = (
+  title: string = "About Title",
+  description: string = "Description about this section.",
   imageSrc: string = "",
-  socialLinks: Array<{ title: string; url: string; color: string }> = []
+  link: string = "",
+  linkText: string = "Learn More"
 ) => {
   return {
     type: "Frame",
-    name: "TeamMemberHorizontal",
+    name: "AboutCardHorizontal",
     id: uuidv4(),
     content: "",
     isSelected: false,
+    isDraggable: true,
+    dragConstraints: "parent",
     x: 0,
     y: 0,
     styles: {
@@ -188,13 +148,12 @@ const createTeamMemberHorizontal = (
       width: "100%",
       gap: "20px",
       margin: "0 auto",
-      transition: "transform 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease",
     },
-    tailwindStyles: "flex flex-col sm:flex-row items-center p-5 bg-white rounded-xl shadow-md w-full gap-5 mx-auto hover:shadow-lg hover:scale-[1.02] transition-all duration-300",
+    tailwindStyles: "flex flex-col sm:flex-row items-center p-5 bg-white rounded-xl shadow-md w-full gap-5 mx-auto hover:shadow-lg transition-shadow",
     elements: [
-      {
+      imageSrc ? {
         type: "Image",
-        content: "Team Member Image",
+        content: "About Image",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -202,25 +161,16 @@ const createTeamMemberHorizontal = (
         styles: {
           width: "120px",
           height: "120px",
-          borderRadius: "50%",
+          borderRadius: "8px",
           objectFit: "cover",
           flexShrink: "0",
-          border: imageSrc ? "none" : "2px dashed #ccc",
-          display: imageSrc ? "block" : "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#aaa",
-          backgroundColor: imageSrc ? "transparent" : "#f9f9f9",
-          fontSize: "14px",
-          fontWeight: "bold",
-          transition: "transform 0.3s ease",
         },
-        tailwindStyles: "w-32 h-32 rounded-full object-cover flex-shrink-0 border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 bg-gray-100 hover:scale-105 transition-transform duration-300",
+        tailwindStyles: "w-32 h-32 rounded-lg object-cover flex-shrink-0",
         href: "",
         src: imageSrc,
         parentId: "",
         projectId: "",
-      },
+      } : null,
       {
         type: "Frame",
         name: "ContentContainer",
@@ -238,7 +188,7 @@ const createTeamMemberHorizontal = (
         elements: [
           {
             type: "Text",
-            content: name,
+            content: title,
             id: uuidv4(),
             isSelected: false,
             x: 0,
@@ -247,27 +197,9 @@ const createTeamMemberHorizontal = (
               fontWeight: "bold",
               fontSize: "20px",
               color: "#333",
-              marginBottom: "5px",
+              marginBottom: "8px",
             },
-            tailwindStyles: "font-bold text-xl text-gray-800 mb-1",
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Text",
-            content: role,
-            id: uuidv4(),
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              fontSize: "16px",
-              color: "#6d28d9",
-              marginBottom: "10px",
-            },
-            tailwindStyles: "text-md text-purple-700 mb-2.5",
+            tailwindStyles: "font-bold text-xl text-gray-800 mb-2",
             href: "",
             src: "",
             parentId: "",
@@ -283,7 +215,7 @@ const createTeamMemberHorizontal = (
             styles: {
               fontSize: "14px",
               color: "#666",
-              marginBottom: "15px",
+              marginBottom: "16px",
             },
             tailwindStyles: "text-sm text-gray-600 mb-4",
             href: "",
@@ -291,50 +223,35 @@ const createTeamMemberHorizontal = (
             parentId: "",
             projectId: "",
           },
-          {
-            type: "Frame",
-            name: "SocialLinks",
+          link ? {
+            type: "Link",
+            content: linkText,
             id: uuidv4(),
-            content: "",
             isSelected: false,
             x: 0,
             y: 0,
             styles: {
-              display: "flex",
-              flexDirection: "row",
-              gap: "15px",
+              color: "#3b82f6",
+              fontSize: "14px",
+              fontWeight: "500",
+              padding: "8px 16px",
+              borderRadius: "6px",
+              backgroundColor: "#eff6ff",
+              alignSelf: "flex-start",
             },
-            tailwindStyles: "flex flex-row gap-4",
-            elements: socialLinks.map(link => ({
-              type: "Link",
-              content: link.title,
-              id: uuidv4(),
-              isSelected: false,
-              x: 0,
-              y: 0,
-              styles: {
-                color: link.color,
-                fontSize: "14px",
-                transition: "color 0.4s ease, transform 0.4s ease",
-              },
-              tailwindStyles: `text-${link.color} text-sm hover:underline hover:scale-110 transition-all`,
-              href: link.url,
-              src: "",
-              parentId: "",
-              projectId: "",
-            })),
-            href: "",
+            tailwindStyles: "text-blue-500 text-sm font-medium px-4 py-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors self-start",
+            href: link,
             src: "",
             parentId: "",
             projectId: "",
-          },
-        ],
+          } : null
+        ].filter(Boolean),
         href: "",
         src: "",
         parentId: "",
         projectId: "",
-      },
-    ],
+      }
+    ].filter(Boolean),
     href: "",
     src: "",
     parentId: "",
@@ -342,372 +259,39 @@ const createTeamMemberHorizontal = (
   };
 };
 
-// New function to generate multiple team members
-const generateMultipleVerticalMembers = (
-  teamMembers: Array<{
-    name: string;
-    role: string;
+const createAboutComponent = (
+  type: "dynamic" | "carousel" = "dynamic",
+  layout: "vertical" | "horizontal" = "vertical",
+  cards: Array<{
+    title: string;
     description: string;
-    imageSrc: string;
-    socialLinks: Array<{ title: string; url: string; color: string }>;
-  }> = []
-) => {
-  if (teamMembers.length === 0) {
-    return [
-      createTeamMemberVertical(
-        "Jane Doe",
-        "Product Designer",
-        "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-        "",
-        [
-          { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-          { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-        ]
-      )
-    ];
-  }
-  return teamMembers.map(member => 
-    createTeamMemberVertical(
-      member.name,
-      member.role,
-      member.description,
-      member.imageSrc,
-      member.socialLinks
-    )
-  );
-};
-
-// New function to generate multiple horizontal team members
-const generateMultipleHorizontalMembers = (
-  teamMembers: Array<{
-    name: string;
-    role: string;
-    description: string;
-    imageSrc: string;
-    socialLinks: Array<{ title: string; url: string; color: string }>;
-  }> = []
-) => {
-  if (teamMembers.length === 0) {
-    return [
-      createTeamMemberHorizontal(
-        "Jane Doe",
-        "Product Designer",
-        "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-        "",
-        [
-          { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-          { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-        ]
-      )
-    ];
-  }
-  return teamMembers.map(member => 
-    createTeamMemberHorizontal(
-      member.name,
-      member.role,
-      member.description,
-      member.imageSrc,
-      member.socialLinks
-    )
-  );
-};
-
-// Function to create dynamic vertical team component with unlimited members
-export const createTeamMembersDynamicVertical = (
-  title: string = "Our Team",
-  subtitle: string = "Meet our talented team of professionals",
-  teamMembers: Array<{
-    name: string;
-    role: string;
-    description: string;
-    imageSrc: string;
-    socialLinks: Array<{ title: string; url: string; color: string }>;
-  }> = []
+    imageSrc?: string;
+    link?: string;
+    linkText?: string;
+  }> = [],
+  maxCards: number = 4
 ): CustomComponent => {
-  return {
-    component: {
-      type: "Frame",
-      name: "TeamMembersDynamicVertical",
-      id: uuidv4(),
-      content: "",
-      isSelected: false,
-      x: 0,
-      y: 0,
-      styles: {
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "40px 20px",
-      },
-      tailwindStyles: "w-full flex flex-col items-center p-10",
-      elements: [
-        {
-          type: "Text",
-          content: title,
-          id: uuidv4(),
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            fontWeight: "bold",
-            fontSize: "32px",
-            color: "#1e293b",
-            marginBottom: "20px",
-            textAlign: "center",
-          },
-          tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-        {
-          type: "Text",
-          content: subtitle,
-          id: uuidv4(),
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            fontSize: "18px",
-            color: "#64748b",
-            marginBottom: "40px",
-            textAlign: "center",
-            maxWidth: "700px",
-          },
-          tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-        {
-          type: "Frame",
-          name: "TeamGrid",
-          id: uuidv4(),
-          content: "",
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            width: "100%",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-            gap: "30px",
-            maxWidth: "1200px",
-          },
-          tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 max-w-6xl",
-          elements: generateMultipleVerticalMembers(teamMembers),
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-      ],
-      href: "",
-      src: "",
-      parentId: "",
-      projectId: "",
-    },
-  };
-};
-
-// Function to create dynamic horizontal team component with unlimited members
-export const createTeamMembersDynamicHorizontal = (
-  title: string = "Meet Our Team",
-  subtitle: string = "Get to know the experts behind our success",
-  teamMembers: Array<{
-    name: string;
-    role: string;
-    description: string;
-    imageSrc: string;
-    socialLinks: Array<{ title: string; url: string; color: string }>;
-  }> = []
-): CustomComponent => {
-  return {
-    component: {
-      type: "Frame",
-      name: "TeamMembersDynamicHorizontal",
-      id: uuidv4(),
-      content: "",
-      isSelected: false,
-      x: 0,
-      y: 0,
-      styles: {
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        padding: "40px 20px",
-        backgroundColor: "#f8fafc",
-      },
-      tailwindStyles: "w-full flex flex-col items-center p-10 bg-slate-50",
-      elements: [
-        {
-          type: "Text",
-          content: title,
-          id: uuidv4(),
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            fontWeight: "bold",
-            fontSize: "32px",
-            color: "#1e293b",
-            marginBottom: "20px",
-            textAlign: "center",
-          },
-          tailwindStyles: "font-bold text-3xl text-slate-800 mb-5 text-center",
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-        {
-          type: "Text",
-          content: subtitle,
-          id: uuidv4(),
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            fontSize: "18px",
-            color: "#64748b",
-            marginBottom: "40px",
-            textAlign: "center",
-            maxWidth: "700px",
-          },
-          tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-        {
-          type: "Frame",
-          name: "TeamList",
-          id: uuidv4(),
-          content: "",
-          isSelected: false,
-          x: 0,
-          y: 0,
-          styles: {
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            maxWidth: "1000px",
-          },
-          tailwindStyles: "w-full flex flex-col gap-5 max-w-4xl",
-          elements: generateMultipleHorizontalMembers(teamMembers),
-          href: "",
-          src: "",
-          parentId: "",
-          projectId: "",
-        },
-      ],
-      href: "",
-      src: "",
-      parentId: "",
-      projectId: "",
-    },
-  };
-};
-
-// Update existing component exports to use the new functions
-export const teamMembersDynamicVertical: CustomComponent = createTeamMembersDynamicVertical();
-export const teamMembersDynamicHorizontal: CustomComponent = createTeamMembersDynamicHorizontal();
-
-// Sample usage with multiple team members
-export const teamMembersVerticalWithMultiple: CustomComponent = createTeamMembersDynamicVertical(
-  "Our Amazing Team",
-  "Meet the professionals who make it all happen",
-  [
-    {
-      name: "John Smith",
-      role: "CEO & Founder",
-      description: "John has a vision for innovation and leads our company with passion.",
-      imageSrc: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-        { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-      ]
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Marketing Director",
-      description: "Sarah brings over 15 years of experience in digital marketing strategies.",
-      imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-        { title: "Instagram", url: "https://instagram.com", color: "pink-500" }
-      ]
-    },
-    {
-      name: "Michael Chen",
-      role: "Lead Developer",
-      description: "Michael is passionate about creating elegant solutions to complex problems.",
-      imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "GitHub", url: "https://github.com", color: "gray-800" },
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
-      ]
-    },
-    {
-      name: "Emily Davis",
-      role: "UX Designer",
-      description: "Emily focuses on creating intuitive and accessible user experiences.",
-      imageSrc: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "Dribbble", url: "https://dribbble.com", color: "pink-600" },
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
-      ]
-    }
-  ]
-);
-
-export const teamMembersHorizontalWithMultiple: CustomComponent = createTeamMembersDynamicHorizontal(
-  "Leadership Team",
-  "The experts guiding our company's vision and growth",
-  [
-    {
-      name: "John Smith",
-      role: "CEO & Founder",
-      description: "John has a vision for innovation and leads our company with passion.",
-      imageSrc: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-        { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-      ]
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Marketing Director",
-      description: "Sarah brings over 15 years of experience in digital marketing strategies.",
-      imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-        { title: "Instagram", url: "https://instagram.com", color: "pink-500" }
-      ]
-    },
-    {
-      name: "Michael Chen",
-      role: "CTO",
-      description: "Michael oversees all technical operations and development teams.",
-      imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3",
-      socialLinks: [
-        { title: "GitHub", url: "https://github.com", color: "gray-800" },
-        { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" }
-      ]
-    }
-  ]
-);
-
-export const teamMembersCarouselVertical: CustomComponent = {
-  component: {
+  const limitedCards = cards.slice(0, maxCards);
+  const aboutCards = limitedCards.map(card => 
+    layout === "vertical"
+      ? createAboutCardVertical(
+          card.title,
+          card.description,
+          card.imageSrc,
+          card.link,
+          card.linkText
+        )
+      : createAboutCardHorizontal(
+          card.title,
+          card.description,
+          card.imageSrc,
+          card.link,
+          card.linkText
+        )
+  );
+  const container = {
     type: "Frame",
-    name: "TeamMembersCarouselVertical",
+    name: `About${type.charAt(0).toUpperCase() + type.slice(1)}${layout.charAt(0).toUpperCase() + layout.slice(1)}`,
     id: uuidv4(),
     content: "",
     isSelected: false,
@@ -720,13 +304,12 @@ export const teamMembersCarouselVertical: CustomComponent = {
       alignItems: "center",
       padding: "40px 20px",
       backgroundColor: "#f8fafc",
-      position: "relative",
     },
-    tailwindStyles: "w-full flex flex-col items-center p-10 bg-slate-50 relative",
+    tailwindStyles: "w-full flex flex-col items-center p-10 bg-slate-50",
     elements: [
       {
         type: "Text",
-        content: "Our Team",
+        content: "About Us",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -746,237 +329,7 @@ export const teamMembersCarouselVertical: CustomComponent = {
       },
       {
         type: "Text",
-        content: "Swipe to meet our team members",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontSize: "18px",
-          color: "#64748b",
-          marginBottom: "30px",
-          textAlign: "center",
-          maxWidth: "700px",
-        },
-        tailwindStyles: "text-lg text-slate-500 mb-8 text-center max-w-2xl",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Frame",
-        name: "CarouselContainer",
-        id: uuidv4(),
-        content: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          width: "100%",
-          maxWidth: "1200px",
-          position: "relative",
-          overflow: "hidden",
-        },
-        tailwindStyles: "w-full max-w-6xl relative overflow-hidden",
-        elements: [
-          {
-            type: "Frame",
-            name: "CarouselTrack",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              display: "flex",
-              overflowX: "auto",
-              scrollbarWidth: "none",
-              padding: "10px",
-              scrollSnapType: "x mandatory",
-              gap: "20px",
-            },
-            tailwindStyles: "flex overflow-x-auto scrollbar-hide p-2.5 snap-x snap-mandatory gap-5",
-            elements: [
-              createTeamMemberVertical(
-                "Jane Doe",
-                "Product Designer",
-                "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-                "",
-                [
-                  { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-                  { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-                ]
-              ),
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-        ],
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Frame",
-        name: "NavigationControls",
-        id: uuidv4(),
-        content: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-          marginTop: "30px",
-        },
-        tailwindStyles: "flex justify-center gap-5 mt-8",
-        elements: [
-          {
-            type: "Frame",
-            name: "PrevButton",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              padding: "10px 20px",
-              backgroundColor: "#3b82f6",
-              color: "white",
-              borderRadius: "6px",
-              cursor: "pointer",
-              userSelect: "none",
-              transition: "background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
-            },
-            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-300",
-            elements: [
-              {
-                type: "Text",
-                content: "Previous",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  color: "white",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-white font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "NextButton",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              padding: "10px 20px",
-              backgroundColor: "#3b82f6",
-              color: "white",
-              borderRadius: "6px",
-              cursor: "pointer",
-              userSelect: "none",
-              transition: "background-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
-            },
-            tailwindStyles: "px-5 py-2.5 bg-blue-500 text-white rounded-md cursor-pointer select-none hover:bg-blue-600 hover:shadow-md hover:scale-105 transition-all duration-300",
-            elements: [
-              {
-                type: "Text",
-                content: "Next",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  color: "white",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-white font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-        ],
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-    ],
-    href: "",
-    src: "",
-    parentId: "",
-    projectId: "",
-  },
-};
-
-export const teamMembersCarouselHorizontal: CustomComponent = {
-  component: {
-    type: "Frame",
-    name: "TeamMembersCarouselHorizontal",
-    id: uuidv4(),
-    content: "",
-    isSelected: false,
-    x: 0,
-    y: 0,
-    styles: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "50px 20px",
-      backgroundColor: "#ffffff",
-      position: "relative",
-    },
-    tailwindStyles: "w-full flex flex-col items-center py-12 px-5 bg-white relative",
-    elements: [
-      {
-        type: "Text",
-        content: "Meet The Team",
-        id: uuidv4(),
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          fontWeight: "bold",
-          fontSize: "36px",
-          color: "#1e293b",
-          marginBottom: "20px",
-          textAlign: "center",
-        },
-        tailwindStyles: "font-bold text-4xl text-slate-800 mb-5 text-center",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Text",
-        content: "Learn more about our talented professionals",
+        content: "Learn more about what we do",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -994,84 +347,201 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
         parentId: "",
         projectId: "",
       },
-      {
-        type: "Frame",
-        name: "CarouselContainer",
+    ],
+    href: "",
+    src: "",
+    parentId: "",
+    projectId: "",
+  };
+  if (type === "dynamic") {
+    container.elements.push({
+      type: "Frame",
+      name: "AboutGrid",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+        gap: "30px",
+        maxWidth: "1200px",
+      },
+      tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7 max-w-6xl",
+      elements: aboutCards,
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    });
+  } else {
+    // Carousel type
+    container.elements.push({
+      type: "Frame",
+      name: "CarouselContainer",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        maxWidth: "1200px",
+        position: "relative",
+        overflow: "hidden",
+      },
+      tailwindStyles: "w-full max-w-6xl relative overflow-hidden",
+      elements: [
+        {
+          type: "Frame",
+          name: "CarouselTrack",
+          id: uuidv4(),
+          content: "",
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            display: "flex",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            padding: "10px",
+            scrollSnapType: "x mandatory",
+            gap: "20px",
+          },
+          tailwindStyles: "flex overflow-x-auto scrollbar-hide p-2.5 snap-x snap-mandatory gap-5",
+          elements: aboutCards,
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+      ],
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    });
+  }
+
+  return { component: container };
+};
+
+// Function to create a team member card
+const createTeamMemberCard = (
+  name: string = "John Doe",
+  role: string = "Position",
+  bio: string = "Short biography about the team member.",
+  imageSrc: string = "",
+  socialLinks: Array<{url: string, icon: string}> = []
+) => {
+  return {
+    type: "Frame",
+    name: "TeamMemberCard",
+    id: uuidv4(),
+    content: "",
+    isSelected: false,
+    isDraggable: true,
+    dragConstraints: "parent",
+    x: 0,
+    y: 0,
+    styles: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "24px",
+      backgroundColor: "#ffffff",
+      borderRadius: "12px",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+      width: "100%",
+      maxWidth: "280px",
+      margin: "0 auto",
+    },
+    tailwindStyles: "flex flex-col items-center p-6 bg-white rounded-xl shadow-md w-full max-w-xs mx-auto hover:shadow-lg transition-shadow",
+    elements: [
+      imageSrc ? {
+        type: "Image",
+        content: "Team Member Photo",
         id: uuidv4(),
-        content: "",
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
-          width: "100%",
-          maxWidth: "1200px",
-          position: "relative",
+          width: "120px",
+          height: "120px",
+          borderRadius: "100%",
+          objectFit: "cover",
+          marginBottom: "20px",
+          border: "4px solid #f1f5f9",
         },
-        tailwindStyles: "w-full max-w-6xl relative",
-        elements: [
-          {
-            type: "Frame",
-            name: "CarouselViewport",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              width: "100%",
-              overflow: "hidden",
-              borderRadius: "8px",
-            },
-            tailwindStyles: "w-full overflow-hidden rounded-lg",
-            elements: [
-              {
-                type: "Frame",
-                name: "CarouselTrack",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  display: "flex",
-                  overflowX: "auto",
-                  scrollbarWidth: "none",
-                  padding: "10px",
-                  scrollSnapType: "x mandatory",
-                },
-                tailwindStyles: "flex overflow-x-auto scrollbar-hide p-2.5 snap-x snap-mandatory",
-                elements: [
-                  createTeamMemberHorizontal(
-                    "Jane Doe",
-                    "Product Designer",
-                    "Jane has over 10 years of experience in UX design and loves creating intuitive interfaces.",
-                    "",
-                    [
-                      { title: "LinkedIn", url: "https://linkedin.com", color: "blue-600" },
-                      { title: "Twitter", url: "https://twitter.com", color: "blue-400" }
-                    ]
-                  ),
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-        ],
+        tailwindStyles: "w-32 h-32 rounded-full object-cover mb-5 border-4 border-slate-100",
+        href: "",
+        src: imageSrc,
+        parentId: "",
+        projectId: "",
+      } : null,
+      {
+        type: "Text",
+        content: name,
+        id: uuidv4(),
+        isSelected: false,
+        x: 0,
+        y: 0,
+        styles: {
+          fontWeight: "bold",
+          fontSize: "18px",
+          color: "#1e293b",
+          marginBottom: "4px",
+          textAlign: "center",
+        },
+        tailwindStyles: "font-bold text-lg text-slate-800 mb-1 text-center",
         href: "",
         src: "",
         parentId: "",
         projectId: "",
       },
       {
+        type: "Text",
+        content: role,
+        id: uuidv4(),
+        isSelected: false,
+        x: 0,
+        y: 0,
+        styles: {
+          fontSize: "14px",
+          color: "#64748b",
+          marginBottom: "12px",
+          textAlign: "center",
+        },
+        tailwindStyles: "text-sm text-slate-500 mb-3 text-center",
+        href: "",
+        src: "",
+        parentId: "",
+        projectId: "",
+      },
+      {
+        type: "Text",
+        content: bio,
+        id: uuidv4(),
+        isSelected: false,
+        x: 0,
+        y: 0,
+        styles: {
+          fontSize: "14px",
+          color: "#64748b",
+          textAlign: "center",
+          marginBottom: "16px",
+        },
+        tailwindStyles: "text-sm text-slate-500 text-center mb-4",
+        href: "",
+        src: "",
+        parentId: "",
+        projectId: "",
+      },
+      socialLinks.length > 0 ? {
         type: "Frame",
-        name: "CarouselIndicators",
+        name: "SocialLinks",
         id: uuidv4(),
         content: "",
         isSelected: false,
@@ -1079,118 +549,67 @@ export const teamMembersCarouselHorizontal: CustomComponent = {
         y: 0,
         styles: {
           display: "flex",
+          gap: "12px",
           justifyContent: "center",
-          gap: "10px",
-          marginTop: "30px",
         },
-        tailwindStyles: "flex justify-center gap-2.5 mt-8",
-        elements: [
-          {
-            type: "Frame",
-            name: "Indicator",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
-              backgroundColor: "#3b82f6",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-            },
-            tailwindStyles: "w-3 h-3 rounded-full bg-blue-500 hover:scale-125 transition-transform",
-            elements: [],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
+        tailwindStyles: "flex gap-3 justify-center",
+        elements: socialLinks.map(social => ({
+          type: "Link",
+          content: social.icon,
+          id: uuidv4(),
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            color: "#64748b",
+            fontSize: "16px",
+            padding: "8px",
           },
-          {
-            type: "Frame",
-            name: "Indicator",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
-              backgroundColor: "#cbd5e1",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-            },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
-            elements: [],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "Indicator",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
-              backgroundColor: "#cbd5e1",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-            },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
-            elements: [],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "Indicator",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              width: "12px",
-              height: "12px",
-              borderRadius: "50%",
-              backgroundColor: "#cbd5e1",
-              transition: "transform 0.3s ease, background-color 0.3s ease",
-            },
-            tailwindStyles: "w-3 h-3 rounded-full bg-slate-300 hover:scale-125 transition-transform",
-            elements: [],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-        ],
+          tailwindStyles: "text-slate-500 text-base p-2 hover:text-slate-800 transition-colors",
+          href: social.url,
+          src: "",
+          parentId: "",
+          projectId: "",
+        })),
         href: "",
         src: "",
         parentId: "",
         projectId: "",
-      },
-    ],
+      } : null
+    ].filter(Boolean),
     href: "",
     src: "",
     parentId: "",
     projectId: "",
-  },
+  };
 };
 
-export const teamMembersGrid: CustomComponent = {
-  component: {
+// Function to create team members component
+const createTeamMembersComponent = (
+  layout: "grid" | "carousel" = "grid",
+  members: Array<{
+    name: string;
+    role: string;
+    bio: string;
+    imageSrc?: string;
+    socialLinks?: Array<{url: string, icon: string}>;
+  }> = [],
+  maxMembers: number = 6
+): CustomComponent => {
+  const limitedMembers = members.slice(0, maxMembers);
+  const memberCards = limitedMembers.map(member => 
+    createTeamMemberCard(
+      member.name,
+      member.role,
+      member.bio,
+      member.imageSrc,
+      member.socialLinks
+    )
+  );
+
+  const container = {
     type: "Frame",
-    name: "TeamMembersGrid",
+    name: `TeamMembers${layout.charAt(0).toUpperCase() + layout.slice(1)}`,
     id: uuidv4(),
     content: "",
     isSelected: false,
@@ -1202,26 +621,25 @@ export const teamMembersGrid: CustomComponent = {
       flexDirection: "column",
       alignItems: "center",
       padding: "60px 20px",
-      backgroundColor: "#111827",
-      color: "white",
+      backgroundColor: "#f8fafc",
     },
-    tailwindStyles: "flex flex-col items-center w-full p-10 sm:p-14 bg-gray-900 text-white",
+    tailwindStyles: "w-full flex flex-col items-center py-16 px-5 bg-slate-50",
     elements: [
       {
         type: "Text",
-        content: "Meet Our Experts",
+        content: "Our Team",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
           fontWeight: "bold",
-          fontSize: "36px",
-          color: "white",
-          marginBottom: "15px",
+          fontSize: "32px",
+          color: "#1e293b",
+          marginBottom: "16px",
           textAlign: "center",
         },
-        tailwindStyles: "font-bold text-3xl sm:text-4xl text-white mb-4 text-center",
+        tailwindStyles: "font-bold text-3xl text-slate-800 mb-4 text-center",
         href: "",
         src: "",
         parentId: "",
@@ -1229,718 +647,19 @@ export const teamMembersGrid: CustomComponent = {
       },
       {
         type: "Text",
-        content: "We are a team of passionate professionals dedicated to excellence",
+        content: "Meet the talented people behind our success",
         id: uuidv4(),
         isSelected: false,
         x: 0,
         y: 0,
         styles: {
           fontSize: "18px",
-          color: "#9ca3af",
-          marginBottom: "50px",
+          color: "#64748b",
+          marginBottom: "40px",
           textAlign: "center",
           maxWidth: "700px",
         },
-        tailwindStyles: "text-lg text-gray-400 mb-12 text-center max-w-2xl",
-        href: "",
-        src: "",
-        parentId: "",
-        projectId: "",
-      },
-      {
-        type: "Frame",
-        name: "TeamContainer",
-        id: uuidv4(),
-        content: "",
-        isSelected: false,
-        x: 0,
-        y: 0,
-        styles: {
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "30px",
-          maxWidth: "1200px",
-        },
-        tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-6xl",
-        elements: [
-          {
-            type: "Frame",
-            name: "TeamMember",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.4s ease",
-            },
-            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
-            elements: [
-              {
-                type: "Frame",
-                name: "ImageContainer",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "100%",
-                  marginBottom: "20px",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  backgroundColor: "#8b5cf6",
-                },
-                tailwindStyles: "relative w-full pb-full mb-5 rounded-2xl overflow-hidden bg-purple-500",
-                elements: [
-                  {
-                    type: "Image",
-                    content: "",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      position: "absolute",
-                      top: "0",
-                      left: "0",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      mixBlendMode: "luminosity",
-                      opacity: "0.8",
-                      transition: "all 0.3s ease",
-                    },
-                    tailwindStyles: "absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-all duration-300",
-                    href: "",
-                    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Michael Chen",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontWeight: "bold",
-                  fontSize: "22px",
-                  color: "white",
-                  marginBottom: "5px",
-                },
-                tailwindStyles: "font-bold text-xl text-white mb-1",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Chief Technology Officer",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontSize: "16px",
-                  color: "#8b5cf6",
-                  marginBottom: "12px",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-md text-purple-500 mb-3 font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Frame",
-                name: "SocialLinks",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "15px",
-                },
-                tailwindStyles: "flex flex-row gap-4",
-                elements: [
-                  {
-                    type: "Link",
-                    content: "GitHub",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400 hover:scale-110 transition-all",
-                    href: "https://github.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                  {
-                    type: "Link",
-                    content: "LinkedIn",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-purple-400 hover:scale-110 transition-all",
-                    href: "https://linkedin.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "TeamMember",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.4s ease",
-            },
-            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
-            elements: [
-              {
-                type: "Frame",
-                name: "ImageContainer",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "100%",
-                  marginBottom: "20px",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  backgroundColor: "#ec4899",
-                },
-                tailwindStyles: "relative w-full pb-full mb-5 rounded-2xl overflow-hidden bg-pink-500",
-                elements: [
-                  {
-                    type: "Image",
-                    content: "",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      position: "absolute",
-                      top: "0",
-                      left: "0",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      mixBlendMode: "luminosity",
-                      opacity: "0.8",
-                      transition: "all 0.3s ease",
-                    },
-                    tailwindStyles: "absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-all duration-300",
-                    href: "",
-                    src: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Olivia Davis",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontWeight: "bold",
-                  fontSize: "22px",
-                  color: "white",
-                  marginBottom: "5px",
-                },
-                tailwindStyles: "font-bold text-xl text-white mb-1",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Creative Director",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontSize: "16px",
-                  color: "#ec4899",
-                  marginBottom: "12px",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-md text-pink-500 mb-3 font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Frame",
-                name: "SocialLinks",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "15px",
-                },
-                tailwindStyles: "flex flex-row gap-4",
-                elements: [
-                  {
-                    type: "Link",
-                    content: "Dribbble",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400 hover:scale-110 transition-all",
-                    href: "https://dribbble.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                  {
-                    type: "Link",
-                    content: "Instagram",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-pink-400 hover:scale-110 transition-all",
-                    href: "https://instagram.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "TeamMember",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.4s ease",
-            },
-            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
-            elements: [
-              {
-                type: "Frame",
-                name: "ImageContainer",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "100%",
-                  marginBottom: "20px",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  backgroundColor: "#2563eb",
-                },
-                tailwindStyles: "relative w-full pb-full mb-5 rounded-2xl overflow-hidden bg-blue-600",
-                elements: [
-                  {
-                    type: "Image",
-                    content: "",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      position: "absolute",
-                      top: "0",
-                      left: "0",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      mixBlendMode: "luminosity",
-                      opacity: "0.8",
-                      transition: "all 0.3s ease",
-                    },
-                    tailwindStyles: "absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-all duration-300",
-                    href: "",
-                    src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "James Wilson",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontWeight: "bold",
-                  fontSize: "22px",
-                  color: "white",
-                  marginBottom: "5px",
-                },
-                tailwindStyles: "font-bold text-xl text-white mb-1",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Product Manager",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontSize: "16px",
-                  color: "#3b82f6",
-                  marginBottom: "12px",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-md text-blue-500 mb-3 font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Frame",
-                name: "SocialLinks",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "15px",
-                },
-                tailwindStyles: "flex flex-row gap-4",
-                elements: [
-                  {
-                    type: "Link",
-                    content: "LinkedIn",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400 hover:scale-110 transition-all",
-                    href: "https://linkedin.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                  {
-                    type: "Link",
-                    content: "Twitter",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-blue-400 hover:scale-110 transition-all",
-                    href: "https://twitter.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-          {
-            type: "Frame",
-            name: "TeamMember",
-            id: uuidv4(),
-            content: "",
-            isSelected: false,
-            x: 0,
-            y: 0,
-            styles: {
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              position: "relative",
-              transition: "transform 0.4s ease",
-            },
-            tailwindStyles: "flex flex-col items-center relative group hover:scale-105 transition-transform",
-            elements: [
-              {
-                type: "Frame",
-                name: "ImageContainer",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "100%",
-                  marginBottom: "20px",
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  backgroundColor: "#10b981",
-                },
-                tailwindStyles: "relative w-full pb-full mb-5 rounded-2xl overflow-hidden bg-emerald-500",
-                elements: [
-                  {
-                    type: "Image",
-                    content: "",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      position: "absolute",
-                      top: "0",
-                      left: "0",
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      mixBlendMode: "luminosity",
-                      opacity: "0.8",
-                      transition: "all 0.3s ease",
-                    },
-                    tailwindStyles: "absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-all duration-300",
-                    href: "",
-                    src: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "Sophia Garcia",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontWeight: "bold",
-                  fontSize: "22px",
-                  color: "white",
-                  marginBottom: "5px",
-                },
-                tailwindStyles: "font-bold text-xl text-white mb-1",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Text",
-                content: "UX Researcher",
-                id: uuidv4(),
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  fontSize: "16px",
-                  color: "#10b981",
-                  marginBottom: "12px",
-                  fontWeight: "500",
-                },
-                tailwindStyles: "text-md text-emerald-500 mb-3 font-medium",
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-              {
-                type: "Frame",
-                name: "SocialLinks",
-                id: uuidv4(),
-                content: "",
-                isSelected: false,
-                x: 0,
-                y: 0,
-                styles: {
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "15px",
-                },
-                tailwindStyles: "flex flex-row gap-4",
-                elements: [
-                  {
-                    type: "Link",
-                    content: "Medium",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400 hover:scale-110 transition-all",
-                    href: "https://medium.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                  {
-                    type: "Link",
-                    content: "LinkedIn",
-                    id: uuidv4(),
-                    isSelected: false,
-                    x: 0,
-                    y: 0,
-                    styles: {
-                      color: "#d1d5db",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      transition: "color 0.4s ease, transform 0.4s ease",
-                    },
-                    tailwindStyles: "text-gray-300 text-sm font-medium hover:text-emerald-400 hover:scale-110 transition-all",
-                    href: "https://linkedin.com",
-                    src: "",
-                    parentId: "",
-                    projectId: "",
-                  },
-                ],
-                href: "",
-                src: "",
-                parentId: "",
-                projectId: "",
-              },
-            ],
-            href: "",
-            src: "",
-            parentId: "",
-            projectId: "",
-          },
-        ],
+        tailwindStyles: "text-lg text-slate-500 mb-10 text-center max-w-2xl",
         href: "",
         src: "",
         parentId: "",
@@ -1951,11 +670,278 @@ export const teamMembersGrid: CustomComponent = {
     src: "",
     parentId: "",
     projectId: "",
-  },
+  };
+
+  if (layout === "grid") {
+    container.elements.push({
+      type: "Frame",
+      name: "TeamGrid",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+        gap: "30px",
+        maxWidth: "1200px",
+      },
+      tailwindStyles: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl",
+      elements: memberCards,
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    });
+  } else {
+    // Carousel layout
+    container.elements.push({
+      type: "Frame",
+      name: "CarouselContainer",
+      id: uuidv4(),
+      content: "",
+      isSelected: false,
+      x: 0,
+      y: 0,
+      styles: {
+        width: "100%",
+        maxWidth: "1200px",
+        position: "relative",
+        overflow: "hidden",
+      },
+      tailwindStyles: "w-full max-w-6xl relative overflow-hidden",
+      elements: [
+        {
+          type: "Frame",
+          name: "CarouselTrack",
+          id: uuidv4(),
+          content: "",
+          isSelected: false,
+          x: 0,
+          y: 0,
+          styles: {
+            display: "flex",
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            padding: "10px",
+            scrollSnapType: "x mandatory",
+            gap: "24px",
+          },
+          tailwindStyles: "flex overflow-x-auto scrollbar-hide p-2.5 snap-x snap-mandatory gap-6",
+          elements: memberCards,
+          href: "",
+          src: "",
+          parentId: "",
+          projectId: "",
+        },
+      ],
+      href: "",
+      src: "",
+      parentId: "",
+      projectId: "",
+    });
+  }
+
+  return { component: container };
 };
 
-export const teamMembersComponent1: CustomComponent = teamMembersDynamicVertical;
-export const teamMembersComponent2: CustomComponent = teamMembersDynamicHorizontal;
-export const teamMembersComponent3: CustomComponent = teamMembersGrid;
-export const teamMembersComponent4: CustomComponent = teamMembersVerticalWithMultiple;
-export const teamMembersComponent5: CustomComponent = teamMembersHorizontalWithMultiple;
+// Default about components
+export const aboutDynamicVertical: CustomComponent = createAboutComponent(
+  "dynamic",
+  "vertical",
+  [
+    {
+      title: "Our Mission",
+      description: "We are dedicated to providing innovative solutions that make a difference in people's lives.",
+      link: "#mission",
+      linkText: "Read More"
+    },
+    {
+      title: "Our Team",
+      description: "Meet the talented professionals behind our success.",
+      imageSrc: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+      link: "#team",
+      linkText: "Meet the Team"
+    }
+  ]
+);
+
+export const aboutDynamicHorizontal: CustomComponent = createAboutComponent(
+  "dynamic",
+  "horizontal",
+  [
+    {
+      title: "Our Story",
+      description: "From humble beginnings to becoming an industry leader.",
+      imageSrc: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
+      link: "#story",
+      linkText: "Our Journey"
+    }
+  ]
+);
+
+export const aboutCarouselVertical: CustomComponent = createAboutComponent(
+  "carousel",
+  "vertical",
+  [
+    {
+      title: "Our Values",
+      description: "Integrity, innovation, and customer focus drive everything we do.",
+      link: "#values",
+      linkText: "Learn More"
+    },
+    {
+      title: "Community",
+      description: "We believe in giving back to the communities we serve.",
+      imageSrc: "https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1469&q=80",
+      link: "#community",
+      linkText: "Our Initiatives"
+    }
+  ]
+);
+
+export const aboutCarouselHorizontal: CustomComponent = createAboutComponent(
+  "carousel",
+  "horizontal",
+  [
+    {
+      title: "Our Approach",
+      description: "A unique methodology that delivers results.",
+      imageSrc: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
+      link: "#approach",
+      linkText: "How We Work"
+    }
+  ]
+);
+
+// Default team member components
+export const teamMembersComponent1: CustomComponent = createTeamMembersComponent(
+  "vertical",
+  [
+    {
+      name: "Jane Doe",
+      role: "CEO & Founder",
+      bio: "Visionary leader with 15+ years of industry experience.",
+      imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+      socialLinks: [
+        { url: "https://www.linkedin.com/", icon: "LinkedIn" },
+        { url: "#twitter", icon: "Twitter" }
+      ]
+    },
+    {
+      name: "John Smith",
+      role: "CTO",
+      bio: "Tech expert driving our innovative solutions forward.",
+      imageSrc: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+      socialLinks: [
+        { url: "#github", icon: "GitHub" },
+        { url: "https://www.linkedin.com/", icon: "LinkedIn" }
+      ]
+    },
+    {
+      name: "Emily Chen",
+      role: "Design Director",
+      bio: "Award-winning designer with an eye for detail and creativity.",
+      imageSrc: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80"
+    }
+  ]
+);
+
+export const teamMembersComponent2: CustomComponent = createTeamMembersComponent(
+  "carousel",
+  [
+    {
+      name: "Alex Johnson",
+      role: "Marketing Director",
+      bio: "Strategic marketing professional with global brand experience.",
+      imageSrc: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+      socialLinks: [
+        { url: "#instagram", icon: "Instagram" },
+        { url: "#linkedin", icon: "LinkedIn" }
+      ]
+    },
+    {
+      name: "Sarah Williams",
+      role: "Lead Developer",
+      bio: "Full-stack developer with expertise in modern web technologies.",
+      imageSrc: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=761&q=80"
+    }
+  ]
+);
+
+export const teamMembersComponent3: CustomComponent = createTeamMembersComponent(
+  "grid",
+  [
+    {
+      name: "David Kim",
+      role: "Product Manager",
+      bio: "Experienced in bringing products from concept to market.",
+      imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+    },
+    {
+      name: "Michael Brown",
+      role: "Finance Director",
+      bio: "Financial strategist with a focus on sustainable growth.",
+      imageSrc: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+    },
+    {
+      name: "Lisa Garcia",
+      role: "Customer Success",
+      bio: "Dedicated to ensuring our clients achieve their goals.",
+      imageSrc: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=688&q=80"
+    },
+    {
+      name: "Robert Taylor",
+      role: "Sales Manager",
+      bio: "Results-driven sales professional with a consultative approach.",
+      imageSrc: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"
+    }
+  ]
+);
+
+// Function to add a new about card to a component
+export const addAboutCard = (
+  aboutComponent: CustomComponent,
+  cardData: {
+    title: string;
+    description: string;
+    imageSrc?: string;
+    link?: string;
+    linkText?: string;
+  },
+  layout: "vertical" | "horizontal" = "vertical",
+  maxCards: number = 4
+): CustomComponent => {
+  const isCarousel = aboutComponent.component.name.includes("Carousel");
+  const containerName = isCarousel ? "CarouselTrack" : "AboutGrid";
+  
+  const container = aboutComponent.component.elements.find(
+    el => el.name === containerName
+  );
+  
+  if (container && container.elements.length < maxCards) {
+    const newCard = layout === "vertical"
+      ? createAboutCardVertical(
+          cardData.title,
+          cardData.description,
+          cardData.imageSrc,
+          cardData.link,
+          cardData.linkText
+        )
+      : createAboutCardHorizontal(
+          cardData.title,
+          cardData.description,
+          cardData.imageSrc,
+          cardData.link,
+          cardData.linkText
+        );
+    
+    container.elements.push(newCard);
+  } else {
+    console.warn(`Cannot add more than ${maxCards} cards`);
+  }
+  
+  return aboutComponent;
+};
