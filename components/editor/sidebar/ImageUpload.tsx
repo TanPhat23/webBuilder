@@ -31,7 +31,7 @@ const ImageUpload: React.FC = () => {
     }
   };
 
-  const handleImageUpload = async (files: FileList) => {
+  const   handleImageUpload = async (files: FileList) => {
     setUploading(true);
 
     try {

@@ -154,7 +154,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       );
       if (customComponent) {
         startTransition(() => {
-          addElementOptimistically(customComponent.component, projectId);
+          addElementOptimistically((customComponent.component as EditorElement), projectId);
         });
       }
     }

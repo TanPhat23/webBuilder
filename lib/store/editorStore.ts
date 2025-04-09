@@ -4,6 +4,19 @@ import { CarouselElement, EditorElement, FrameElement } from "../type";
 import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 import { v4 as uuidv4 } from "uuid";
 
+// Type for containers that can hold child elements
+type ContainerElement = FrameElement | CarouselElement;
+
+// Helper type guard to check if an element is a container
+const isContainerElement = (
+  element: EditorElement
+): element is ContainerElement => {
+  return (
+    (element.type === "Frame" || element.type === "Carousel") &&
+    Array.isArray((element as ContainerElement).elements)
+  );
+};
+
 interface EditorState {
   elements: EditorElement[];
   history: EditorElement[][];
@@ -72,21 +85,10 @@ export const useEditorStore = create<EditorState>()(
             return { ...element, ...updates };
           }
 
-          if (element.type === "Frame" && (element as FrameElement).elements) {
+          if (isContainerElement(element)) {
             return {
               ...element,
-              elements: (element as FrameElement).elements.map(updateElement),
-            };
-          }
-          if (
-            element.type === "Carousel" &&
-            (element as CarouselElement).elements
-          ) {
-            return {
-              ...element,
-              elements: (element as CarouselElement).elements.map(
-                updateElement
-              ),
+              elements: element.elements.map(updateElement),
             };
           }
 
@@ -106,21 +108,8 @@ export const useEditorStore = create<EditorState>()(
             return null;
           }
 
-          if (element.type === "Frame" && (element as FrameElement).elements) {
-            const updatedElements = (element as FrameElement).elements
-              .map(deleteElement)
-              .filter((el): el is EditorElement => el !== null);
-
-            return {
-              ...element,
-              elements: updatedElements,
-            };
-          }
-          if (
-            element.type === "Carousel" &&
-            (element as CarouselElement).elements
-          ) {
-            const updatedElements = (element as CarouselElement).elements
+          if (isContainerElement(element)) {
+            const updatedElements = element.elements
               .map(deleteElement)
               .filter((el): el is EditorElement => el !== null);
 
@@ -140,34 +129,16 @@ export const useEditorStore = create<EditorState>()(
         _updateHistory(updatedElements);
       },
 
-
-
       updateAllElements: (updates) => {
         const { elements, _updateHistory } = get();
 
         const updateElement = (element: EditorElement): EditorElement => {
           const updatedElement = { ...element, ...updates };
 
-          if (
-            updatedElement.type === "Frame" &&
-            (updatedElement as FrameElement).elements
-          ) {
+          if (isContainerElement(updatedElement)) {
             return {
               ...updatedElement,
-              elements: (updatedElement as FrameElement).elements.map(
-                updateElement
-              ),
-            };
-          }
-          if (
-            updatedElement.type === "Carousel" &&
-            (updatedElement as CarouselElement).elements
-          ) {
-            return {
-              ...updatedElement,
-              elements: (updatedElement as CarouselElement).elements.map(
-                updateElement
-              ),
+              elements: updatedElement.elements.map(updateElement),
             };
           }
 
@@ -189,62 +160,20 @@ export const useEditorStore = create<EditorState>()(
           element: EditorElement
         ): EditorElement => {
           // If this element is selected, update it with the provided updates
-          if (element.isSelected) {
-            const updatedElement = { ...element, ...updates };
+          const shouldUpdate = element.isSelected;
+          const updatedElement = shouldUpdate
+            ? { ...element, ...updates }
+            : element;
 
-            // Process nested elements in Frame elements
-            if (
-              updatedElement.type === "Frame" &&
-              (updatedElement as FrameElement).elements
-            ) {
-              return {
-                ...updatedElement,
-                elements: (updatedElement as FrameElement).elements.map(
-                  updateSelectedElement
-                ),
-              };
-            }
-
-            // Process nested elements in Carousel elements
-            if (
-              updatedElement.type === "Carousel" &&
-              (updatedElement as CarouselElement).elements
-            ) {
-              return {
-                ...updatedElement,
-                elements: (updatedElement as CarouselElement).elements.map(
-                  updateSelectedElement
-                ),
-              };
-            }
-
-            return updatedElement;
-          }
-
-          // If element is not selected, still check its children
-          // because they might be selected independently
-          if (element.type === "Frame" && (element as FrameElement).elements) {
+          // Process nested elements regardless of selection status
+          if (isContainerElement(updatedElement)) {
             return {
-              ...element,
-              elements: (element as FrameElement).elements.map(
-                updateSelectedElement
-              ),
+              ...updatedElement,
+              elements: updatedElement.elements.map(updateSelectedElement),
             };
           }
 
-          if (
-            element.type === "Carousel" &&
-            (element as CarouselElement).elements
-          ) {
-            return {
-              ...element,
-              elements: (element as CarouselElement).elements.map(
-                updateSelectedElement
-              ),
-            };
-          }
-
-          return element;
+          return updatedElement;
         };
 
         _updateHistory(elements.map(updateSelectedElement));
@@ -281,12 +210,10 @@ export const useEditorStore = create<EditorState>()(
           for (const element of elements) {
             if (element.id === id) {
               return element;
-            } else if (
-              element.type === "Frame" ||
-              (element.type === "Carousel" &&
-                (element as FrameElement).elements)
-            ) {
-              const found = findElement((element as FrameElement).elements, id);
+            }
+
+            if (isContainerElement(element)) {
+              const found = findElement(element.elements, id);
               if (found) return found;
             }
           }
@@ -314,13 +241,10 @@ export const useEditorStore = create<EditorState>()(
 
           elementsToCreate.push(newElement);
 
-          if (element.type === "Frame" || element.type === "Carousel") {
-            const containerElement = element as FrameElement;
-            const childElements = containerElement.elements || [];
-
+          if (isContainerElement(element)) {
             return {
               ...newElement,
-              elements: childElements.map((childElement) =>
+              elements: element.elements.map((childElement) =>
                 prepareElements(childElement, newElement.id)
               ),
             };
