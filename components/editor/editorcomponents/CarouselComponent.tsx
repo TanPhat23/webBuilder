@@ -80,7 +80,7 @@ const CarouselComponent: React.FC<Props> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     const elementType = e.dataTransfer.getData("elementType");
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];
@@ -104,7 +104,6 @@ const CarouselComponent: React.FC<Props> = ({
       newElements[fromIndex],
     ];
 
-    
     setOptimisticElements(newElements);
 
     startTransition(() => {
@@ -178,16 +177,15 @@ const CarouselComponent: React.FC<Props> = ({
     <div
       id={element.id}
       onDrop={handleDrop}
-      className="slider-container w-full"
+      className="slider-container h-full mx-10"
       onDragOver={(e) => e.preventDefault()}
-      style={{ minHeight: "200px", position: "relative", width: "100%" }}
     >
       <Slider
         key={`slider-${element.id}-${JSON.stringify(carouselSettings)}`}
         {...carouselSettings}
       >
         {optimisticElements.map((childElement, index) => (
-          <div key={childElement.id} className="h-full px-2 group">
+          <div key={childElement.id} className="h-full ">
             <div className="relative h-full w-full flex items-center justify-center aspect-[4/1] rounded-lg overflow-hidden">
               {renderElement(childElement, index)}
             </div>

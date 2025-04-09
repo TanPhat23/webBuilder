@@ -53,11 +53,6 @@ const FrameComponents = ({
   );
   const dragConstraint = useRef<HTMLDivElement>(null);
 
-  // Check if element is a team member component
-  const isTeamMemberComponent = (element: EditorElement) => {
-    return element.name?.includes("TeamMember") || false;
-  };
-
   const swapElements = () => {
     if (!hoveredElement || !draggingElement || !element) return;
     const frameElements = [...(element as FrameElement).elements];
@@ -120,19 +115,6 @@ const FrameComponents = ({
   ) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (isTeamMemberComponent(element) && element.type === "Frame") {
-      setSelectedElement(element);
-      updateElement(element.id, {
-        isSelected: !element.isSelected,
-      });
-
-      if (element.name === "TeamMemberCard") {
-        console.log("Team member card selected for editing");
-      }
-      return;
-    }
-
     if (!element.isSelected) setSelectedElement(element);
     updateElement(element.id, {
       isSelected: !element.isSelected,
@@ -146,20 +128,6 @@ const FrameComponents = ({
     e.preventDefault();
     e.stopPropagation();
     const newContent = e.currentTarget.innerHTML;
-
-    if (element.type === "Text" && element.parentId) {
-      const parentElement = document.getElementById(element.parentId);
-      if (
-        parentElement &&
-        parentElement.getAttribute("name")?.includes("TeamMember")
-      ) {
-        startTransition(() => {
-          updateElementOptimistically(element.id, { content: newContent });
-        });
-        return;
-      }
-    }
-
     startTransition(() => {
       updateElementOptimistically(element.id, { content: newContent });
     });
@@ -203,18 +171,6 @@ const FrameComponents = ({
     const imgSrc = uploadImages[parseInt(imgIdx)];
     console.log(imgSrc);
 
-    if (element.type === "Image" && element.parentId) {
-      const parentElement = document.getElementById(element.parentId);
-      if (parentElement && parentElement.getAttribute("name") === "TeamMemberCard") {
-        startTransition(() => {
-          updateElementOptimistically(element.id, {
-            src: imgSrc,
-          });
-        });
-        return;
-      }
-    }
-
     if (imgSrc) {
       startTransition(() => {
         updateElementOptimistically(element.id, {
@@ -224,27 +180,10 @@ const FrameComponents = ({
     }
   };
 
-  const handleSocialLinkUpdate = (
-    e: React.FormEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (element.type === "Link" && element.parentId) {
-      const parentFrame = document.getElementById(element.parentId);
-      if (parentFrame && parentFrame.getAttribute("name") === "SocialLinks") {
-        const newContent = e.currentTarget.innerHTML;
-        startTransition(() => {
-          updateElementOptimistically(element.id, { content: newContent });
-        });
-      }
-    }
-  };
-
   // Render all the children
   const renderElement = (element: EditorElement, index: number) => {
-    const commonProps: commonProps = {
+    // Basic props that are compatible with Framer Motion
+    const commonProps : commonProps= {
       onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
         handleDoubleClick(e, element),
       onContextMenu: (e: React.MouseEvent<HTMLElement>) =>
@@ -259,12 +198,6 @@ const FrameComponents = ({
         "border-black border-2 border-solid": element.isSelected,
         "z-0": element.id === draggingElement?.id,
         "z-50": element.id !== draggingElement?.id,
-        "bg-blue-50":
-          element.isSelected &&
-          element.parentId &&
-          document
-            .getElementById(element.parentId)
-            ?.getAttribute("name") === "TeamMemberCard",
       }),
       dragConstraints: dragConstraint,
       drag: !element.isSelected,
@@ -283,36 +216,6 @@ const FrameComponents = ({
         __html: DOMPurify.sanitize(element.content),
       },
     };
-
-    if (element.name === "TeamMemberCard" && element.type === "Frame") {
-      return (
-        <motion.div
-          key={element.id}
-          {...commonProps}
-          data-component-type="team-member"
-          onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, element)}
-        >
-          {(element as FrameElement).elements?.map((childElement, index) =>
-            renderElement(childElement, index)
-          )}
-        </motion.div>
-      );
-    }
-
-    if (element.name === "SocialLinks" && element.type === "Frame") {
-      return (
-        <motion.div
-          key={element.id}
-          {...commonProps}
-          data-component-type="social-links"
-          onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(e, element)}
-        >
-          {(element as FrameElement).elements?.map((childElement, index) =>
-            renderElement(childElement, index)
-          )}
-        </motion.div>
-      );
-    }
 
     switch (element.type) {
       case "Frame":
@@ -341,27 +244,6 @@ const FrameComponents = ({
           />
         );
       case "Link":
-        if (element.parentId) {
-          const parentElement = document.getElementById(element.parentId);
-          if (
-            parentElement &&
-            parentElement.getAttribute("name") === "socialLinks"
-          ) {
-            return (
-              <motion.a
-                key={element.id}
-                {...commonProps}
-                {...contentProps}
-                onKeyDown={(e) => handleKeyDown(e, element)}
-                onBlur={(e) => handleSocialLinkUpdate(e, element)}
-                data-link-type="social"
-                onDrop={(e: React.DragEvent<HTMLAnchorElement>) =>
-                  handleDrop(e as any, element)
-                }
-              />
-            );
-          }
-        }
         return (
           <motion.a
             key={element.id}
@@ -374,42 +256,6 @@ const FrameComponents = ({
           />
         );
       case "Image":
-        if (element.parentId) {
-          const parentElement = document.getElementById(element.parentId);
-          if (
-            parentElement &&
-            parentElement.getAttribute("name") === "TeamMemberCard"
-          ) {
-            if (element.src) {
-              return (
-                <motion.img
-                  key={element.id}
-                  {...commonProps}
-                  src={element.src}
-                  data-image-type="profile"
-                  onDrop={(e: React.DragEvent<HTMLImageElement>) =>
-                    handleImageDrop(e, element)
-                  }
-                  drag={element.isSelected}
-                />
-              );
-            } else {
-              return (
-                <motion.div
-                  key={element.id}
-                  {...commonProps}
-                  data-image-type="profile-placeholder"
-                  onDrop={(e: React.DragEvent<HTMLDivElement>) =>
-                    handleImageDrop(e, element)
-                  }
-                  drag={element.isSelected}
-                  {...contentProps}
-                />
-              );
-            }
-          }
-        }
-
         if (element.src) {
           return (
             <motion.img
@@ -436,27 +282,6 @@ const FrameComponents = ({
           );
         }
       default:
-        if (element.parentId) {
-          const parentElement = document.getElementById(element.parentId);
-          if (
-            parentElement &&
-            parentElement.getAttribute("name") === "TeamMemberCard"
-          ) {
-            return (
-              <motion.div
-                key={element.id}
-                {...commonProps}
-                {...contentProps}
-                data-text-type="team-member-info"
-                onKeyDown={(e) => handleKeyDown(e, element)}
-                onDrop={(e: React.DragEvent<HTMLDivElement>) =>
-                  handleDrop(e, element)
-                }
-              ></motion.div>
-            );
-          }
-        }
-
         return (
           <motion.div
             key={element.id}
@@ -471,10 +296,10 @@ const FrameComponents = ({
     }
   };
 
+  // Render the root frame element
   return (
     <motion.div
       id={element.id}
-      name={element.name}
       style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}

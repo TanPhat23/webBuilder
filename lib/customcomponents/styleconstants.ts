@@ -8,7 +8,7 @@ import { aboutCarouselHorizontal, aboutCarouselVertical, aboutDynamicHorizontal,
 import { missionComponent1, missionComponent2, missionComponentCompact, missionComponentSlider } from "./mission/missionComponents";
 
 export interface CustomComponent {
-  component: EditorElement;
+  component: Partial<EditorElement>;
 }
 
 export const customComponents: CustomComponent[] = [
