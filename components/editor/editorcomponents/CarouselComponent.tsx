@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import createElements from "@/app/utils/CreateFrameElements";
+import createElements from "@/lib/utils/createFrameElements";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
@@ -80,7 +80,7 @@ const CarouselComponent: React.FC<Props> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const elementType = e.dataTransfer.getData("elementType");
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];

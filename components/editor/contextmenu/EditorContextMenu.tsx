@@ -84,6 +84,8 @@ const EditorContextMenu: React.FC<Props> = ({
         return <LinkDropDownMenu />;
       case "Image":
         return <ImageDropDown />;
+      // case "Button":
+      //   return <ButtonDropDown />;
       default:
         return null;
     }

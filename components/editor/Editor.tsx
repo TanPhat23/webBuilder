@@ -3,12 +3,12 @@ import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { CarouselElement, EditorElement } from "@/lib/type";
-import { createElements } from "@/app/utils/CreateElements";
+import { createElements } from "@/lib/utils/createElements";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
-import { DEVICE_SIZES } from "@/lib/constants";
+import { DEVICE_SIZES } from "@/lib/constants/constants";
 import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
@@ -154,7 +154,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       );
       if (customComponent) {
         startTransition(() => {
-          addElementOptimistically((customComponent.component as EditorElement), projectId);
+          addElementOptimistically(
+            customComponent.component as EditorElement,
+            projectId
+          );
         });
       }
     }
@@ -399,7 +402,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
-                  zIndex: element.isSelected ? 10 : 1,                  
+                  zIndex: element.isSelected ? 10 : 1,
                 }}
                 className={cn("cursor-pointer", "", {
                   "border-2 border-black hover:cursor-text": element.isSelected,

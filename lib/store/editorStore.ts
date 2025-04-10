@@ -37,7 +37,8 @@ interface EditorState {
   // Optimistic update methods
   addElementOptimistically: (
     element: EditorElement,
-    projectId: string
+    projectId: string,
+    parentId?: string
   ) => Promise<void>;
   updateElementOptimistically: (
     id: string,
@@ -224,7 +225,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       // Optimistic update methods
-      addElementOptimistically: async (element, projectId) => {
+      addElementOptimistically: async (element, projectId, parentId) => {
         const elementsToCreate: EditorElement[] = [];
 
         const prepareElements = (
@@ -253,15 +254,24 @@ export const useEditorStore = create<EditorState>()(
           return newElement;
         };
 
-        const preparedElement = prepareElements(element, undefined);
+        const preparedElement = prepareElements(element, parentId);
 
         // Immediately update UI
-        get().addElement(preparedElement);
+        if (parentId) {
+          const childElements = (
+            get()._findElementById(parentId) as ContainerElement
+          ).elements;
+          get().updateElement(parentId, {
+            elements: [...(childElements || []), preparedElement],
+          });
+        } else {
+          get().addElement(preparedElement);
+        }
         set({ isLoading: true, error: null });
 
         try {
           // Perform API call
-          await BatchCreate(elementsToCreate);
+          // await BatchCreate(elementsToCreate);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);
@@ -291,7 +301,7 @@ export const useEditorStore = create<EditorState>()(
         try {
           // Perform API call
           const updatedElement = { ...currentElement, ...completeUpdates };
-          await Update(updatedElement);
+          // await Update(updatedElement);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to update element:", error);
@@ -320,7 +330,7 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          await Delete(id);
+          // await Delete(id);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to delete element:", error);

@@ -1,12 +1,14 @@
 import React, { startTransition, useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
-import createElements from "@/app/utils/CreateFrameElements";
-import { EditorElement, FrameElement } from "@/lib/type";
+import createElements from "@/lib/utils/createFrameElements";
+import { ButtonElement, EditorElement, FrameElement } from "@/lib/type";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
+import { commonProps } from "@/lib/interface";
+import { advancedComponents } from "@/lib/customcomponents/advancedComponents";
 
 type Props = {
   element: EditorElement;
@@ -17,24 +19,6 @@ type Props = {
   projectId: string;
 };
 
-interface commonProps {
-  onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
-  onContextMenu: (e: React.MouseEvent<HTMLElement>) => void;
-  onMouseEnter: (e: React.MouseEvent<HTMLElement>) => void;
-  onMouseLeave: (e: React.MouseEvent<HTMLElement>) => void;
-  onBlur: (e: React.FormEvent<HTMLElement>) => void;
-  contentEditable: boolean;
-  suppressContentEditableWarning: boolean;
-  className: string;
-  dragConstraints: React.RefObject<HTMLDivElement | null>;
-  drag: boolean;
-  dragMomentum: boolean;
-  dragSnapToOrigin: boolean;
-  dragElastic: number;
-  onDragOver: (e: React.DragEvent<HTMLElement>) => void;
-  style: React.CSSProperties;
-}
-
 const FrameComponents = ({
   projectId,
   element,
@@ -43,7 +27,11 @@ const FrameComponents = ({
 }: Props) => {
   const { setSelectedElement } = useElementSelectionStore();
   const { uploadImages } = useImageStore();
-  const { updateElement, updateElementOptimistically } = useEditorStore();
+  const {
+    updateElement,
+    updateElementOptimistically,
+    addElementOptimistically,
+  } = useEditorStore();
 
   const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
     null
@@ -98,14 +86,29 @@ const FrameComponents = ({
     e.stopPropagation();
     if (element.type !== "Image" && element.type !== "Frame") return;
     const elementType = e.dataTransfer.getData("elementType");
-    if (!elementType) return;
-    createElements(
-      elementType,
-      null,
-      element as FrameElement,
-      projectId,
-      updateElement
-    );
+    const advancedType = e.dataTransfer.getData("advancedType");
+    if (!elementType && !advancedType) return;
+    if (elementType) {
+      createElements(
+        elementType,
+        null,
+        element as FrameElement,
+        projectId,
+        updateElement
+      );
+    } else if (advancedType) {
+      const advancedElement = advancedComponents.find(
+        (el) => el.component.name === advancedType
+      );
+      if (!advancedElement) return;
+      startTransition(() => {
+        addElementOptimistically(
+          advancedElement.component as EditorElement,
+          projectId,
+          element.id
+        );
+      });
+    }
   };
 
   // Handle double-click to select an element
@@ -182,8 +185,7 @@ const FrameComponents = ({
 
   // Render all the children
   const renderElement = (element: EditorElement, index: number) => {
-    // Basic props that are compatible with Framer Motion
-    const commonProps : commonProps= {
+    const commonProps: Partial<commonProps> = {
       onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
         handleDoubleClick(e, element),
       onContextMenu: (e: React.MouseEvent<HTMLElement>) =>
@@ -233,16 +235,47 @@ const FrameComponents = ({
           </motion.div>
         );
       case "Button":
-        return (
-          <motion.div
-            key={element.id}
-            {...commonProps}
-            {...contentProps}
-            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
-              handleDrop(e, element)
-            }
-          />
-        );
+        if ((element as ButtonElement).buttonType === "multi") {
+          return (
+            <motion.div
+              key={element.id}
+              className={cn("relative group", element.tailwindStyles, {
+                "border-black border-2 border-solid": element.isSelected,
+                "z-0": element.id === draggingElement?.id,
+                "z-50": element.id !== draggingElement?.id,
+              })}
+              style={{ ...element.styles }}
+            >
+              <motion.button
+                {...commonProps}
+                {...contentProps}
+                className={cn(
+                  commonProps.className,
+                  "w-full flex justify-between items-center"
+                )}
+                onKeyDown={(e) => handleKeyDown(e, element)}
+                onDrop={(e: React.DragEvent<HTMLButtonElement>) =>
+                  handleDrop(e as any, element)
+                }
+              >
+                <span>{element.content}</span>
+                <span className="ml-2">▼</span>
+              </motion.button>
+            </motion.div>
+          );
+        } else {
+          return (
+            <motion.button
+              key={element.id}
+              {...commonProps}
+              {...contentProps}
+              onKeyDown={(e) => handleKeyDown(e, element)}
+              onDrop={(e: React.DragEvent<HTMLButtonElement>) =>
+                handleDrop(e as any, element)
+              }
+            />
+          );
+        }
       case "Link":
         return (
           <motion.a

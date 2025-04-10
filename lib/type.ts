@@ -17,8 +17,6 @@ export interface Element {
   projectId?: string;
 }
 
-
-
 export interface FrameElement extends Element {
   elements: EditorElement[];
 }
@@ -27,7 +25,10 @@ export interface CarouselElement extends Element {
   elements: CarouselElementChild[];
 }
 export interface ButtonElement extends Element {
+  buttonType: string
+  elements?: EditorElement[];
 }
+
 
 type CarouselElementChild = Element | ButtonElement | FrameElement;
 

@@ -94,7 +94,11 @@ const Configuration = () => {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
       case "Carousel":
-        return <CarouselConfiguration />;
+        return (
+          <CarouselConfiguration
+            selectedElement={selectedElement as CarouselElement}
+          />
+        );
       default:
         return (
           <BaseConfiguration

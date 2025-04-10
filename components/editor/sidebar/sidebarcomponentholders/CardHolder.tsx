@@ -1,25 +1,25 @@
-import { IdCard } from 'lucide-react';
-import React from 'react'
+import { IdCard } from "lucide-react";
+import React from "react";
 
-type Props = {}
+type Props = {};
 
 const CardHolder = (props: Props) => {
-    const onDragStart = (
-        e: React.DragEvent<HTMLDivElement>,
-        elementType: string
-    ) => {
-        e.dataTransfer.setData("advancedType", elementType);
-    };
+  const onDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    elementType: string
+  ) => {
+    e.dataTransfer.setData("advancedType", elementType);
+  };
   return (
     <div
       draggable
       onDragStart={(e) => onDragStart(e, "Card")}
-      className="flex flex-row justify-between items-center w-full"
+      className="flex flex-row justify-between items-center w-full  py-1.5 rounded-md hover:bg-gray-100 cursor-grab active:cursor-grabbing transition-colors"
     >
-      <div>Card</div>
-      <IdCard/>
+      <div className="font-medium">Card</div>
+      <IdCard className="text-indigo-600"  />
     </div>
   );
-}
+};
 
-export default CardHolder
+export default CardHolder;

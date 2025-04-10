@@ -15,7 +15,10 @@ export function createElements(
   x: number,
   y: number,
   projectId: string,
-  addElement?: (element: EditorElement, projectId: string) => Promise<void>
+  addElementOptimistically?: (
+    element: EditorElement,
+    projectId: string
+  ) => Promise<void>
 ) {
   const tempId = `${name}-${uuidv4()}`;
   const baseElement = {
@@ -71,6 +74,7 @@ export function createElements(
       newElement = {
         type: "Frame",
         ...baseElement,
+        x: 0,
         styles: {
           ...baseElement.styles,
           minHeight: "100px",
@@ -144,7 +148,7 @@ export function createElements(
   }
 
   // Use Zustand store method if provided
-  if (addElement) {
-    addElement(newElement, projectId);
+  if (addElementOptimistically) {
+    addElementOptimistically(newElement, projectId);
   }
 }
