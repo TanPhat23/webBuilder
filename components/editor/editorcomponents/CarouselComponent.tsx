@@ -1,6 +1,5 @@
 "use client";
 
-import { CarouselElement, EditorElement } from "@/lib/type";
 import { useOptimistic, useMemo, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
@@ -15,14 +14,13 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
+import ButtonComponent from "./ButtonComponent";
+import { CarouselElement, EditorComponentProps } from "@/lib/interface";
+import { EditorElement } from "@/lib/type";
+import ListItemComponent from "./ListItemComponent";
 
-type Props = {
+type Props = EditorComponentProps & {
   element: CarouselElement;
-  setContextMenuPosition: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number }>
-  >;
-  setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  projectId: string;
 };
 
 const CarouselComponent: React.FC<Props> = ({
@@ -62,8 +60,8 @@ const CarouselComponent: React.FC<Props> = ({
         {
           breakpoint: 1024,
           settings: {
-            slidesToShow: Math.min(element.settings?.slidesToShow || 3, 2),
-            slidesToScroll: Math.min(element.settings?.slidesToScroll || 1, 1),
+            slidesToShow: 2,
+            slidesToScroll: 1,
           },
         },
         {
@@ -87,7 +85,6 @@ const CarouselComponent: React.FC<Props> = ({
 
     createElements(
       imgSrc ? "Image" : elementType,
-      null,
       element,
       projectId,
       updateElement,
@@ -125,7 +122,10 @@ const CarouselComponent: React.FC<Props> = ({
     updateElement(element.id, { isSelected: newSelectionState });
   };
 
-  const renderElement = (element: EditorElement, index: number) => {
+  const renderElement = (
+    element: EditorElement,
+    index: number
+  ): React.ReactNode => {
     const commonProps = {
       onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
         handleDoubleClick(e, element),
@@ -157,6 +157,17 @@ const CarouselComponent: React.FC<Props> = ({
             alt={`Carousel Image ${index}`}
             className={cn(commonProps.className, "slick-slide")}
             loading="lazy"
+          />
+        );
+      case "ListItem":
+        return (
+          <ListItemComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+            {...commonProps}
           />
         );
       default:

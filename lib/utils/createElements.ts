@@ -11,7 +11,6 @@ const commonStyles: CSSProperties = {
 
 export function createElements(
   name: string,
-  dispatch: null,
   x: number,
   y: number,
   projectId: string,
@@ -55,6 +54,7 @@ export function createElements(
     case "Button": {
       newElement = {
         type: "Button",
+        buttonType: "primary",
         ...baseElement,
         styles: {
           ...baseElement.styles,
@@ -80,7 +80,22 @@ export function createElements(
           minHeight: "100px",
           width: "100%",
           display: "flex",
-          backgroundColor: "lightgreen",
+          backgroundColor: "white"
+        },
+        elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "ListItem": {
+      newElement = {
+        type: "ListItem",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
         },
         elements: [],
         projectId: projectId,

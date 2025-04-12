@@ -18,26 +18,29 @@ const EditorContextMenu: React.FC<Props> = ({
   setOpen,
   contextMenuPosition,
 }) => {
-  const [addEvent, setAddEvent] = useState(false);
-  const { selectedElement } = useElementSelectionStore();
-  const { elements, deleteElementOptimistically, addElementOptimistically } =
+  const { selectedElement, setSelectedElement } = useElementSelectionStore();
+  const { deleteElementOptimistically, addElementOptimistically } =
     useEditorStore();
 
-  const handleDelete = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      if (selectedElement) {
-        startTransition(() => {
-          deleteElementOptimistically(selectedElement.id);
-        });
-      }
-      setOpen(false);
-    },
-    [selectedElement, deleteElementOptimistically, setOpen]
-  );
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Only proceed if there is a selected element
+    if (selectedElement) {
+      console.log("Delete element", selectedElement);
+
+      startTransition(() => {
+        deleteElementOptimistically(selectedElement.id);
+       
+        setSelectedElement(undefined);
+      });
+    }
+    setOpen(false);
+  };
 
   const handleCopy = useCallback(() => {
-    const selectedElement = elements.find((element) => element.isSelected);
+    // Use the selectedElement from the selection store rather than finding it again
     if (selectedElement) {
       const textToCopy = JSON.stringify(selectedElement);
       if (navigator.clipboard) {
@@ -46,7 +49,7 @@ const EditorContextMenu: React.FC<Props> = ({
         });
       }
     }
-  }, [elements]);
+  }, [selectedElement]);
 
   const handlePaste = useCallback(() => {
     navigator.clipboard

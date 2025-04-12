@@ -38,7 +38,14 @@ const CarouselHolder = React.lazy(
 const CardHolder = React.lazy(
   () => import("@/components/editor/sidebar/sidebarcomponentholders/CardHolder")
 );
-
+const ButtonMultiHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/ButtonMultiHolder")
+);
+const ListItemHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/ListItemHolder")
+);
 // Constants
 export const BASIC_COMPONENTS: DraggableComponent[] = [
   {
@@ -71,6 +78,11 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     label: "Carousel",
     type: "carousel",
   },
+  {
+    component: <ListItemHolder />,
+    label: "List Item",
+    type: "listItem",
+  }
 ];
 
 export const ADVANCED_COMPONENTS: DraggableComponent[] = [
@@ -79,6 +91,12 @@ export const ADVANCED_COMPONENTS: DraggableComponent[] = [
     label: "Card",
     type: "card",
   },
+  {
+    component: <ButtonMultiHolder />,
+    label: "Button Multi",
+    type: "buttonMulti",
+  },
+ 
 ];
 
 export const COMPONENT_CATEGORIES: ComponentCategory[] = [
