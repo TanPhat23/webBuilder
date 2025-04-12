@@ -2,29 +2,27 @@ import React, { startTransition, useCallback, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import createElements from "@/lib/utils/createFrameElements";
-import { ButtonElement, EditorElement, FrameElement } from "@/lib/type";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
-import { commonProps } from "@/lib/interface";
+import {
+  ButtonElement,
+  commonProps,
+  EditorComponentProps,
+  FrameElement,
+} from "@/lib/interface";
 import { advancedComponents } from "@/lib/customcomponents/advancedComponents";
-
-type Props = {
-  element: EditorElement;
-  setContextMenuPosition: React.Dispatch<
-    React.SetStateAction<{ x: number; y: number }>
-  >;
-  setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  projectId: string;
-};
+import ButtonComponent from "./ButtonComponent";
+import { EditorElement } from "@/lib/type";
+import ListItemComponent from "./ListItemComponent";
 
 const FrameComponents = ({
   projectId,
   element,
   setShowContextMenu,
   setContextMenuPosition,
-}: Props) => {
+}: EditorComponentProps) => {
   const { setSelectedElement } = useElementSelectionStore();
   const { uploadImages } = useImageStore();
   const {
@@ -91,7 +89,6 @@ const FrameComponents = ({
     if (elementType) {
       createElements(
         elementType,
-        null,
         element as FrameElement,
         projectId,
         updateElement
@@ -130,10 +127,26 @@ const FrameComponents = ({
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    const newContent = e.currentTarget.innerHTML;
-    startTransition(() => {
-      updateElementOptimistically(element.id, { content: newContent });
-    });
+
+    // Special handling for multi-button elements
+    if (
+      element.type === "Button" &&
+      (element as ButtonElement).buttonType === "multi"
+    ) {
+      // Find the content div inside the multi-button
+      const contentDiv = e.currentTarget.querySelector("div");
+      if (contentDiv) {
+        const newContent = contentDiv.innerHTML;
+        startTransition(() => {
+          updateElementOptimistically(element.id, { content: newContent });
+        });
+      }
+    } else {
+      const newContent = e.currentTarget.innerHTML;
+      startTransition(() => {
+        updateElementOptimistically(element.id, { content: newContent });
+      });
+    }
   };
 
   const handleContextMenu = (
@@ -184,7 +197,10 @@ const FrameComponents = ({
   };
 
   // Render all the children
-  const renderElement = (element: EditorElement, index: number) => {
+  const renderElement = (
+    element: EditorElement,
+    index: number
+  ): React.ReactNode => {
     const commonProps: Partial<commonProps> = {
       onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
         handleDoubleClick(e, element),
@@ -229,53 +245,33 @@ const FrameComponents = ({
               handleDrop(e, element)
             }
           >
-            {(element as FrameElement).elements?.map((childElement, index) =>
-              renderElement(childElement, index)
-            )}
+            {(element as FrameElement).elements?.map((childElement, index) => (
+              <React.Fragment key={childElement.id}>
+                {renderElement(childElement, index)}
+              </React.Fragment>
+            ))}
           </motion.div>
         );
       case "Button":
-        if ((element as ButtonElement).buttonType === "multi") {
-          return (
-            <motion.div
-              key={element.id}
-              className={cn("relative group", element.tailwindStyles, {
-                "border-black border-2 border-solid": element.isSelected,
-                "z-0": element.id === draggingElement?.id,
-                "z-50": element.id !== draggingElement?.id,
-              })}
-              style={{ ...element.styles }}
-            >
-              <motion.button
-                {...commonProps}
-                {...contentProps}
-                className={cn(
-                  commonProps.className,
-                  "w-full flex justify-between items-center"
-                )}
-                onKeyDown={(e) => handleKeyDown(e, element)}
-                onDrop={(e: React.DragEvent<HTMLButtonElement>) =>
-                  handleDrop(e as any, element)
-                }
-              >
-                <span>{element.content}</span>
-                <span className="ml-2">▼</span>
-              </motion.button>
-            </motion.div>
-          );
-        } else {
-          return (
-            <motion.button
-              key={element.id}
-              {...commonProps}
-              {...contentProps}
-              onKeyDown={(e) => handleKeyDown(e, element)}
-              onDrop={(e: React.DragEvent<HTMLButtonElement>) =>
-                handleDrop(e as any, element)
-              }
-            />
-          );
-        }
+        return (
+          <ButtonComponent
+            element={element}
+            commonProps={commonProps}
+            draggingElement={draggingElement}
+            projectId={projectId}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+          />
+        );
+      case "ListItem":
+        return (
+          <ListItemComponent
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
       case "Link":
         return (
           <motion.a
@@ -324,7 +320,7 @@ const FrameComponents = ({
             onDrop={(e: React.DragEvent<HTMLDivElement>) =>
               handleDrop(e, element)
             }
-          ></motion.div>
+          />
         );
     }
   };
@@ -343,9 +339,11 @@ const FrameComponents = ({
       })}
       ref={dragConstraint}
     >
-      {(element as FrameElement).elements?.map((childElement, index) =>
-        renderElement(childElement, index)
-      )}
+      {(element as FrameElement).elements?.map((childElement, index) => (
+        <React.Fragment key={childElement.id}>
+          {renderElement(childElement, index)}
+        </React.Fragment>
+      ))}
     </motion.div>
   );
 };

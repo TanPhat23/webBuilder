@@ -1,4 +1,4 @@
-import { CarouselElement } from "@/lib/type";
+import { CarouselElement } from "@/lib/interface";
 import React from "react";
 import {
   Accordion,

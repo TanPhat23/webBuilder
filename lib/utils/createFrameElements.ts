@@ -1,12 +1,12 @@
+import { EditorElement } from "@/lib/type";
 import {
-  EditorElement,
   ButtonElement,
   FrameElement,
   CarouselElement,
-} from "@/lib/type";
+  ListElement,
+} from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Create } from "../../app/api/element/route";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -24,13 +24,12 @@ export const listItemStyles: CSSProperties = {
 
 const createElements = async (
   name: string,
-  dispatch: null,
-  parentElement: FrameElement | CarouselElement,
+  parentElement: FrameElement | CarouselElement | ListElement,
   projectId: string,
   updateElement?: (id: string, updates: Partial<EditorElement>) => void,
   src?: string
 ) => {
-  const tempId = `${name}-${uuidv4()}`; 
+  const tempId = `${name}-${uuidv4()}`;
   const baseElement = {
     id: tempId,
     content: name,
@@ -75,6 +74,35 @@ const createElements = async (
       };
       break;
     }
+    case "ListItem": {
+      newElement = {
+        type: "ListItem",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100px",
+          width: "100px",
+          display: "flex",
+          flexDirection: "column",
+        },
+        elements: [
+          {
+            type: "Text",
+            ...baseElement,
+            id: `Text-${uuidv4}`,
+            content: "Item 1",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              width: "70%",
+              fontSize: "16px",
+            },
+          },
+        ],
+        projectId: projectId,
+      };
+      break;
+    }
     case "Image": {
       newElement = {
         type: "Image",
@@ -113,7 +141,7 @@ const createElements = async (
     } catch (error) {
       // Rollback on error
       updateElement(parentElement.id, {
-        elements: parentElement.elements.filter(  
+        elements: parentElement.elements.filter(
           (element) => element.id !== newElement.id
         ),
       });

@@ -2,9 +2,8 @@
 import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
-import { CarouselElement, EditorElement } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import { createElements } from "@/lib/utils/createElements";
-import FrameComponents from "./editorcomponents/FrameComponents";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
@@ -16,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import OptimisticFeedback from "./OptimisticFeedback";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import FrameComponents from "./editorcomponents/FrameComponents";
+import { CarouselElement } from "@/lib/interface";
+import ListItemComponent from "./editorcomponents/ListItemComponent";
 
 type Props = {
   projectId: string;
@@ -141,7 +143,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     if (newElement) {
       createElements(
         newElement,
-        null,
         e.clientX,
         e.clientY,
         projectId,
@@ -444,6 +445,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     projectId={projectId}
                   />
                 )}
+                {element.type === "ListItem" && (
+                  <ListItemComponent
+                    element={element}
+                    setContextMenuPosition={setContextMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    projectId={projectId}
+                  />
+                )}
                 {element.type === "Button" && (
                   <button
                     style={{ ...element.styles }}
@@ -462,6 +471,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     style={{ ...element.styles, pointerEvents: "none" }}
                   />
                 )}
+
                 {element.type === "Link" && (
                   <Link
                     href={element.href || "#"}
