@@ -1,18 +1,26 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { CarouselElement, EditorElement, FrameElement } from "../type";
+import {
+  ButtonElement,
+  CarouselElement,
+  FrameElement,
+  ListElement,
+} from "../interface";
+import { EditorElement } from "../type";
 import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 import { v4 as uuidv4 } from "uuid";
 
 // Type for containers that can hold child elements
-type ContainerElement = FrameElement | CarouselElement;
+type ContainerElement = FrameElement | CarouselElement | ListElement;
 
 // Helper type guard to check if an element is a container
 const isContainerElement = (
   element: EditorElement
 ): element is ContainerElement => {
   return (
-    (element.type === "Frame" || element.type === "Carousel") &&
+    (element.type === "Frame" ||
+      element.type === "Carousel" ||
+      element.type === "ListItem") &&
     Array.isArray((element as ContainerElement).elements)
   );
 };
@@ -37,7 +45,8 @@ interface EditorState {
   // Optimistic update methods
   addElementOptimistically: (
     element: EditorElement,
-    projectId: string
+    projectId: string,
+    parentId?: string
   ) => Promise<void>;
   updateElementOptimistically: (
     id: string,
@@ -85,6 +94,17 @@ export const useEditorStore = create<EditorState>()(
             return { ...element, ...updates };
           }
 
+          // Improved Button element handling with better type safety
+          if (element.type === "Button" && (element as ButtonElement).element) {
+            const buttonElement = element as ButtonElement;
+            return {
+              ...element,
+              element: buttonElement.element
+                ? (updateElement(buttonElement.element) as FrameElement)
+                : undefined,
+            };
+          }
+
           if (isContainerElement(element)) {
             return {
               ...element,
@@ -106,6 +126,19 @@ export const useEditorStore = create<EditorState>()(
         ): EditorElement | null => {
           if (element.id === id) {
             return null;
+          }
+
+          // Improved Button element handling with better type safety
+          if (element.type === "Button" && (element as ButtonElement).element) {
+            const buttonElement = element as ButtonElement;
+            const updatedButtonElement = buttonElement.element
+              ? deleteElement(buttonElement.element)
+              : undefined;
+
+            return {
+              ...element,
+              element: updatedButtonElement as FrameElement | undefined,
+            };
           }
 
           if (isContainerElement(element)) {
@@ -134,6 +167,16 @@ export const useEditorStore = create<EditorState>()(
 
         const updateElement = (element: EditorElement): EditorElement => {
           const updatedElement = { ...element, ...updates };
+
+          if (element.type === "Button" && (element as ButtonElement).element) {
+            const buttonElement = element as ButtonElement;
+            return {
+              ...updatedElement,
+              element: buttonElement.element
+                ? (updateElement(buttonElement.element) as FrameElement)
+                : undefined,
+            };
+          }
 
           if (isContainerElement(updatedElement)) {
             return {
@@ -164,6 +207,17 @@ export const useEditorStore = create<EditorState>()(
           const updatedElement = shouldUpdate
             ? { ...element, ...updates }
             : element;
+
+          // Check for Button with element property
+          if (element.type === "Button" && (element as ButtonElement).element) {
+            const buttonElement = element as ButtonElement;
+            return {
+              ...updatedElement,
+              element: buttonElement.element
+                ? (updateSelectedElement(buttonElement.element) as FrameElement)
+                : undefined,
+            };
+          }
 
           // Process nested elements regardless of selection status
           if (isContainerElement(updatedElement)) {
@@ -212,6 +266,23 @@ export const useEditorStore = create<EditorState>()(
               return element;
             }
 
+            if (
+              element.type === "Button" &&
+              (element as ButtonElement).element
+            ) {
+              const buttonElement = element as ButtonElement;
+              if (buttonElement.element) {
+                if (buttonElement.element.id === id) {
+                  return buttonElement.element;
+                }
+
+                if (isContainerElement(buttonElement.element)) {
+                  const found = findElement(buttonElement.element.elements, id);
+                  if (found) return found;
+                }
+              }
+            }
+
             if (isContainerElement(element)) {
               const found = findElement(element.elements, id);
               if (found) return found;
@@ -224,7 +295,7 @@ export const useEditorStore = create<EditorState>()(
       },
 
       // Optimistic update methods
-      addElementOptimistically: async (element, projectId) => {
+      addElementOptimistically: async (element, projectId, parentId) => {
         const elementsToCreate: EditorElement[] = [];
 
         const prepareElements = (
@@ -253,15 +324,24 @@ export const useEditorStore = create<EditorState>()(
           return newElement;
         };
 
-        const preparedElement = prepareElements(element, undefined);
+        const preparedElement = prepareElements(element, parentId);
 
         // Immediately update UI
-        get().addElement(preparedElement);
+        if (parentId) {
+          const childElements = (
+            get()._findElementById(parentId) as ContainerElement
+          ).elements;
+          get().updateElement(parentId, {
+            elements: [...(childElements || []), preparedElement],
+          });
+        } else {
+          get().addElement(preparedElement);
+        }
         set({ isLoading: true, error: null });
 
         try {
           // Perform API call
-          await BatchCreate(elementsToCreate);
+          // await BatchCreate(elementsToCreate);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);
@@ -291,7 +371,7 @@ export const useEditorStore = create<EditorState>()(
         try {
           // Perform API call
           const updatedElement = { ...currentElement, ...completeUpdates };
-          await Update(updatedElement);
+          // await Update(updatedElement);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to update element:", error);
@@ -320,7 +400,7 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          await Delete(id);
+          // await Delete(id);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to delete element:", error);

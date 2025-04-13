@@ -15,7 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { fontSize } from "@/lib/constants";
+import { fontSize } from "@/lib/constants/constants";
 import { EditorElement } from "@/lib/type";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 type Props = {
@@ -27,8 +27,7 @@ const FontSizeComboBox = (props: Props) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<number | null>(null);
 
-  const { updateElementOptimistically } =
-    useOptimisticElement();
+  const { updateElementOptimistically } = useOptimisticElement();
   useEffect(() => {
     if (selectedElement) {
       const fontSize = selectedElement.styles?.fontSize;
@@ -45,7 +44,7 @@ const FontSizeComboBox = (props: Props) => {
         updateElementOptimistically(selectedElement.id, {
           styles: {
             ...selectedElement.styles,
-            fontSize: size, 
+            fontSize: size,
           },
         });
       });

@@ -14,7 +14,7 @@ import JustifyContentSelect from "./selects/FrameJustifyContentSelect";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
-import { CarouselElement } from "@/lib/type";
+import { CarouselElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
@@ -94,7 +94,11 @@ const Configuration = () => {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
       case "Carousel":
-        return <CarouselConfiguration />;
+        return (
+          <CarouselConfiguration
+            selectedElement={selectedElement as CarouselElement}
+          />
+        );
       default:
         return (
           <BaseConfiguration

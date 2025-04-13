@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { links, authLinks } from "../../lib/constants";
+import { links, authLinks } from "../../lib/constants/constants";
 import Image from "next/image";
 import Link from "next/link";
 import {

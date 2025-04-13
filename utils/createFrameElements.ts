@@ -1,12 +1,12 @@
+import { EditorElement } from "@/lib/type";
 import {
-  EditorElement,
   ButtonElement,
   FrameElement,
   CarouselElement,
-} from "@/lib/type";
+  ListElement,
+} from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Create } from "../api/element/route";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -24,9 +24,7 @@ export const listItemStyles: CSSProperties = {
 
 const createElements = async (
   name: string,
-  // Keep null as fallback for backward compatibility
-  dispatch: null,
-  parentElement: FrameElement | CarouselElement,
+  parentElement: FrameElement | CarouselElement | ListElement,
   projectId: string,
   updateElement?: (id: string, updates: Partial<EditorElement>) => void,
   src?: string
@@ -40,7 +38,6 @@ const createElements = async (
     y: 0,
     styles: {
       ...commonStyles,
-  
     },
     parentId: parentElement.id,
   };
@@ -73,6 +70,52 @@ const createElements = async (
           flexDirection: "column",
         },
         elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "ListItem": {
+      newElement = {
+        type: "ListItem",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100px",
+          width: "100px",
+          display: "flex",
+          flexDirection: "column",
+        },
+        elements: [
+          {
+            type: "Text", 
+            ...baseElement,
+            id: `Text-${uuidv4}`,
+            content: "Item 1",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              fontSize: "16px",
+            },
+          },
+          
+        ],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "Input" : {
+      newElement  = {
+        type: "Input",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100%",
+          width: "100%",
+        },
+        inputSettings: {
+          type: "text",
+          placeholder: "Enter text",
+        },
         projectId: projectId,
       };
       break;
@@ -111,7 +154,7 @@ const createElements = async (
     });
 
     try {
-      await Create(newElement);
+      // await Create(newElement);
     } catch (error) {
       // Rollback on error
       updateElement(parentElement.id, {

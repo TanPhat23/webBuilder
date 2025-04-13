@@ -2,13 +2,12 @@
 import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
-import { CarouselElement, EditorElement } from "@/lib/type";
-import { createElements } from "@/app/utils/CreateElements";
-import FrameComponents from "./editorcomponents/FrameComponents";
+import { EditorElement } from "@/lib/type";
+import { createElements } from "@/utils/createElements";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
-import { DEVICE_SIZES } from "@/lib/constants";
+import { DEVICE_SIZES } from "@/lib/constants/constants";
 import { customComponents } from "@/lib/customcomponents/styleconstants";
 import Link from "next/link";
 import CarouselComponent from "./editorcomponents/CarouselComponent";
@@ -16,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import OptimisticFeedback from "./OptimisticFeedback";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import FrameComponents from "./editorcomponents/FrameComponents";
+import { CarouselElement } from "@/lib/interface";
+import ListItemComponent from "./editorcomponents/ListItemComponent";
 
 type Props = {
   projectId: string;
@@ -141,7 +143,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     if (newElement) {
       createElements(
         newElement,
-        null,
         e.clientX,
         e.clientY,
         projectId,
@@ -154,7 +155,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       );
       if (customComponent) {
         startTransition(() => {
-          addElementOptimistically((customComponent.component as EditorElement), projectId);
+          addElementOptimistically(
+            customComponent.component as EditorElement,
+            projectId
+          );
         });
       }
     }
@@ -399,7 +403,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   position: "absolute",
                   width: element.styles?.width || "100px",
                   height: element.styles?.height || "100px",
-                  zIndex: element.isSelected ? 10 : 1,                  
+                  zIndex: element.isSelected ? 10 : 1,
                 }}
                 className={cn("cursor-pointer", "", {
                   "border-2 border-black hover:cursor-text": element.isSelected,
@@ -441,6 +445,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     projectId={projectId}
                   />
                 )}
+                {element.type === "ListItem" && (
+                  <ListItemComponent
+                    element={element}
+                    setContextMenuPosition={setContextMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    projectId={projectId}
+                  />
+                )}
                 {element.type === "Button" && (
                   <button
                     style={{ ...element.styles }}
@@ -459,6 +471,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     style={{ ...element.styles, pointerEvents: "none" }}
                   />
                 )}
+
                 {element.type === "Link" && (
                   <Link
                     href={element.href || "#"}

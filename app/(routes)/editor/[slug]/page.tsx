@@ -16,23 +16,23 @@ export default function EditorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = React.use(params);
-  const loadElementsFromDB = useEditorStore(
-    (state) => state.loadElementsFromDB
-  );
+  // const loadElementsFromDB = useEditorStore(
+  //   (state) => state.loadElementsFromDB
+  // );
   const { startTour, setStartTour } = useElementSelectionStore();
 
-  const { data: elements } = useSWR<EditorElement[]>(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
-    GetAll
-  );
+  // const { data: elements } = useSWR<EditorElement[]>(
+  //   `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
+  //   GetAll
+  // );
 
   const handleEndTour = () => setStartTour(false);
 
-  React.useEffect(() => {
-    if (elements) {
-      loadElementsFromDB(elements);
-    }
-  }, [elements, loadElementsFromDB]);
+  // React.useEffect(() => {
+  //   if (elements) {
+  //     loadElementsFromDB(elements);
+  //   }
+  // }, [elements, loadElementsFromDB]);
 
 
   return (

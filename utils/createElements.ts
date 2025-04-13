@@ -11,11 +11,13 @@ const commonStyles: CSSProperties = {
 
 export function createElements(
   name: string,
-  dispatch: null,
   x: number,
   y: number,
   projectId: string,
-  addElement?: (element: EditorElement, projectId: string) => Promise<void>
+  addElementOptimistically?: (
+    element: EditorElement,
+    projectId: string
+  ) => Promise<void>
 ) {
   const tempId = `${name}-${uuidv4()}`;
   const baseElement = {
@@ -52,6 +54,7 @@ export function createElements(
     case "Button": {
       newElement = {
         type: "Button",
+        buttonType: "primary",
         ...baseElement,
         styles: {
           ...baseElement.styles,
@@ -71,12 +74,28 @@ export function createElements(
       newElement = {
         type: "Frame",
         ...baseElement,
+        x: 0,
         styles: {
           ...baseElement.styles,
           minHeight: "100px",
           width: "100%",
           display: "flex",
-          backgroundColor: "lightgreen",
+          backgroundColor: "white"
+        },
+        elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "ListItem": {
+      newElement = {
+        type: "ListItem",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
         },
         elements: [],
         projectId: projectId,
@@ -144,7 +163,7 @@ export function createElements(
   }
 
   // Use Zustand store method if provided
-  if (addElement) {
-    addElement(newElement, projectId);
+  if (addElementOptimistically) {
+    addElementOptimistically(newElement, projectId);
   }
 }
