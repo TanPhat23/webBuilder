@@ -10,7 +10,7 @@ import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 type ListItemProps = EditorComponentProps & {
   parentHandlers?: {
     handleDrop: (
-      e: React.DragEvent<HTMLDivElement>,
+      e: React.DragEvent<HTMLElement>,
       element: EditorElement
     ) => void;
     handleDoubleClick: (
@@ -52,9 +52,7 @@ const ListItemComponent = (props: ListItemProps) => {
     draggingElement,
   } = parentHandlers || useEditorElementHandlers(props);
 
-  const renderElement = (
-    element: EditorElement,
-  ): React.ReactNode => {
+  const renderElement = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(element);
     const contentProps = getContentProps(element);
 
@@ -133,7 +131,7 @@ const ListItemComponent = (props: ListItemProps) => {
     <motion.ul
       id={element.id}
       style={{ ...element.styles }}
-      onDrop={(e) => handleDrop(e as any, element)}
+      onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
       tabIndex={0}
       drag={!element.isSelected}

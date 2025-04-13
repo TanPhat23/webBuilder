@@ -11,6 +11,7 @@ import ButtonComponent from "./ButtonComponent";
 import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
+import InputComponent from "./InputComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
@@ -49,8 +50,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }
             onDragStart={(e, info) => handleDragStart(e, element, info)}
             onDrag={(e, info) => handleDragOver(e, element, info)}
-            onMouseEnter={()=>console.log("mouse enter", element.id)}
-            
+            onMouseEnter={() => console.log("mouse enter", element.id)}
             onDragEnd={(e, info) => handleDragEnd(e, info)}
           >
             {(element as FrameElement).elements?.map((childElement) => (
@@ -92,6 +92,14 @@ const FrameComponents = (props: EditorComponentProps) => {
             }}
           />
         );
+      case "Input":
+        return <InputComponent
+          element={element} 
+          setContextMenuPosition={setContextMenuPosition}
+          setShowContextMenu={setShowContextMenu}
+          projectId={projectId}
+          commonProps={commonProps} 
+        />;
       case "Link":
         return (
           <motion.a
@@ -154,7 +162,7 @@ const FrameComponents = (props: EditorComponentProps) => {
   return (
     <motion.div
       id={element.id}
-      // style={{ ...element.styles }}
+      style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragStart={(e, info) => handleDragStart(e, element, info)}
       onDragOver={(e) => e.preventDefault()}

@@ -54,7 +54,12 @@ export interface ButtonElement extends Element {
   buttonType: string;
   element?: FrameElement;
 }
-
+export interface InputElement extends Element {
+  inputSettings: Partial<HTMLInputElement>;
+}
 export interface ListElement extends Element {
+  elements: EditorElement[];
+}
+export interface SelectElement extends Element {
   elements: EditorElement[];
 }

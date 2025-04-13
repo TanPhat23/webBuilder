@@ -3,7 +3,9 @@ import {
   CarouselElement,
   Element,
   FrameElement,
+  InputElement,
   ListElement,
+  SelectElement,
 } from "./interface";
 
 export type CarouselElementChild = Element | ButtonElement | FrameElement;
@@ -13,7 +15,9 @@ export type EditorElement =
   | FrameElement
   | ButtonElement
   | CarouselElement
-  | ListElement;
+  | ListElement
+  | InputElement
+  | SelectElement;
 
 /** this is DEPRECIATED use The
  * @file editorStore.tsx to mange your state

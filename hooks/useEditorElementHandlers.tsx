@@ -32,7 +32,7 @@ export interface ElementHandlers {
     element: EditorElement
   ) => void;
   handleDrop: (
-    e: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLElement>,
     element: EditorElement
   ) => void;
   handleImageDrop: (
@@ -181,12 +181,12 @@ export function useEditorElementHandlers({
   };
 
   const handleDrop = (
-    e: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLElement>,
     element: EditorElement
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    if (element.type !== "Image" && element.type !== "Frame") return;
+    // if (element.type !== "Image" && element.type !== "Frame") return;
     const elementType = e.dataTransfer.getData("elementType");
     const advancedType = e.dataTransfer.getData("advancedType");
     if (!elementType && !advancedType) return;

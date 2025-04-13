@@ -40,12 +40,29 @@ const CardHolder = React.lazy(
 );
 const ButtonMultiHolder = React.lazy(
   () =>
-    import("@/components/editor/sidebar/sidebarcomponentholders/ButtonMultiHolder")
+    import(
+      "@/components/editor/sidebar/sidebarcomponentholders/ButtonMultiHolder"
+    )
 );
 const ListItemHolder = React.lazy(
   () =>
     import("@/components/editor/sidebar/sidebarcomponentholders/ListItemHolder")
 );
+
+const ImageHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/ImageHolder")
+);
+const InputHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/InputHolder")
+);
+const SelectHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/SelectHolder")
+);
+
+
 // Constants
 export const BASIC_COMPONENTS: DraggableComponent[] = [
   {
@@ -82,7 +99,24 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     component: <ListItemHolder />,
     label: "List Item",
     type: "listItem",
-  }
+  },
+
+  {
+    component: <ImageHolder />,
+    label: "Image",
+    type: "image",
+  },
+  {
+    component: <InputHolder />,
+    label: "Input",
+    type: "input",
+  },
+  {
+    component: <SelectHolder />,
+    label: "Select",
+    type: "select",
+  },
+
 ];
 
 export const ADVANCED_COMPONENTS: DraggableComponent[] = [
@@ -96,7 +130,6 @@ export const ADVANCED_COMPONENTS: DraggableComponent[] = [
     label: "Button Multi",
     type: "buttonMulti",
   },
- 
 ];
 
 export const COMPONENT_CATEGORIES: ComponentCategory[] = [

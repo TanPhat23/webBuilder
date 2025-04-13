@@ -103,6 +103,23 @@ const createElements = async (
       };
       break;
     }
+    case "Input" : {
+      newElement  = {
+        type: "Input",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100%",
+          width: "100%",
+        },
+        inputSettings: {
+          type: "text",
+          placeholder: "Enter text",
+        },
+        projectId: projectId,
+      };
+      break;
+    }
     case "Image": {
       newElement = {
         type: "Image",
