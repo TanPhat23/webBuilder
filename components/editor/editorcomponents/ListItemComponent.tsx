@@ -1,123 +1,68 @@
-import { EditorElement } from "@/lib/type";
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import createElements from "@/lib/utils/createFrameElements";
-import { useEditorStore } from "@/lib/store/editorStore";
-import FrameComponents from "./FrameComponents";
-import {
-  commonProps,
-  EditorComponentProps,
-  ListElement,
-} from "@/lib/interface";
-import DOMPurify from "dompurify";
+import { ListElement, EditorComponentProps } from "@/lib/interface";
+import { EditorElement } from "@/lib/type";
 import ButtonComponent from "./ButtonComponent";
-import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
-import { Trash2 } from "lucide-react"; // Import Trash2 icon for delete button
+import FrameComponents from "./FrameComponents";
+import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 
-type Props = EditorComponentProps & {};
-
-const ListItemComponent: React.FC<Props> = ({
-  element,
-  projectId,
-  setContextMenuPosition,
-  setShowContextMenu,
-}) => {
-  const { updateElement, deleteElement, deleteElementOptimistically } =
-    useEditorStore();
-  const { setSelectedElement, selectedElement } = useElementSelectionStore();
-
-  const handleDrop = (
-    e: React.DragEvent<HTMLUListElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const elementType = e.dataTransfer.getData("elementType");
-    if (!elementType) return;
-    if (elementType) {
-      createElements(
-        elementType,
-        element as ListElement,
-        projectId,
-        updateElement
-      );
-    }
+type ListItemProps = EditorComponentProps & {
+  parentHandlers?: {
+    handleDrop: (
+      e: React.DragEvent<HTMLDivElement>,
+      element: EditorElement
+    ) => void;
+    handleDoubleClick: (
+      e: React.MouseEvent<HTMLElement>,
+      element: EditorElement
+    ) => void;
+    handleContextMenu: (
+      e: React.MouseEvent<HTMLElement>,
+      element: EditorElement
+    ) => void;
+    handleImageDrop: (
+      e: React.DragEvent<HTMLElement>,
+      element: EditorElement
+    ) => void;
+    getContentProps: (element: EditorElement) => {
+      dangerouslySetInnerHTML: { __html: string };
+    };
+    getCommonProps: (element: EditorElement) => any;
+    draggingElement: EditorElement | null;
   };
+};
 
-  const handleDoubleClick = (
-    e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
+const ListItemComponent = (props: ListItemProps) => {
+  const {
+    element,
+    projectId,
+    setContextMenuPosition,
+    setShowContextMenu,
+    parentHandlers,
+  } = props;
 
-    if (!element.isSelected) setSelectedElement(element);
-
-    updateElement(element.id, {
-      isSelected: !element.isSelected,
-    });
-  };
-
-  const handleContextMenu = (
-    e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Set position for context menu
-    setContextMenuPosition({ x: e.clientX, y: e.clientY });
-
-    // Set the specific element that was clicked as the selected element
-    setSelectedElement(element);
-
-    // Mark this specific element as selected
-    updateElement(element.id, {
-      isSelected: true,
-    });
-
-    // Show context menu
-    setShowContextMenu(true);
-  };
-
-  const handleDeleteList = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (element && element.id) {
-      deleteElementOptimistically(element.id);
-      setSelectedElement(undefined);
-    }
-  };
-
-  const handleImageDrop = (
-    e: React.DragEvent<HTMLImageElement | HTMLDivElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (element.type !== "Image") return;
-    const src = e.dataTransfer.getData("src");
-    if (src) {
-      updateElement(element.id, { src });
-    }
-  };
+  const {
+    handleDoubleClick,
+    handleContextMenu,
+    handleDrop,
+    handleImageDrop,
+    getContentProps,
+    getCommonProps,
+    draggingElement,
+  } = parentHandlers || useEditorElementHandlers(props);
 
   const renderElement = (
     element: EditorElement,
-    index: number
   ): React.ReactNode => {
-    const contentProps = {
-      dangerouslySetInnerHTML: {
-        __html: DOMPurify.sanitize(element.content),
-      },
-    };
+    const commonProps = getCommonProps(element);
+    const contentProps = getContentProps(element);
+
     switch (element.type) {
       case "Frame":
         return (
           <FrameComponents
+            key={element.id}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
@@ -127,30 +72,42 @@ const ListItemComponent: React.FC<Props> = ({
       case "ListItem":
         return (
           <ListItemComponent
+            key={element.id}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
+            parentHandlers={{
+              handleDrop,
+              handleDoubleClick,
+              handleContextMenu,
+              handleImageDrop,
+              getContentProps,
+              getCommonProps,
+              draggingElement,
+            }}
           />
         );
       case "Image":
         if (element.src) {
           return (
             <motion.img
+              key={element.id}
               src={element.src}
               onDrop={(e: React.DragEvent<HTMLImageElement>) =>
                 handleImageDrop(e, element)
               }
-              drag={element.isSelected}
+              {...commonProps}
             />
           );
         } else {
           return (
             <motion.div
+              key={element.id}
               onDrop={(e: React.DragEvent<HTMLDivElement>) =>
                 handleImageDrop(e, element)
               }
-              drag={element.isSelected}
+              {...commonProps}
               {...contentProps}
             />
           );
@@ -158,28 +115,17 @@ const ListItemComponent: React.FC<Props> = ({
       case "Button":
         return (
           <ButtonComponent
+            key={element.id}
             element={element}
             projectId={projectId}
-            draggingElement={null}
+            draggingElement={draggingElement}
+            commonProps={commonProps}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
           />
         );
       default:
-        return (
-          <motion.p
-            key={element.id}
-            contentEditable={element.isSelected}
-            suppressContentEditableWarning={true}
-            className={cn(
-              element.tailwindStyles,
-              element.isSelected && "border-black border-2 border-solid"
-            )}
-            onDoubleClick={(e) => handleDoubleClick(e, element)}
-            onContextMenu={(e) => handleContextMenu(e, element)}
-            {...contentProps}
-          />
-        );
+        return <motion.p key={element.id} {...commonProps} {...contentProps} />;
     }
   };
 
@@ -187,16 +133,21 @@ const ListItemComponent: React.FC<Props> = ({
     <motion.ul
       id={element.id}
       style={{ ...element.styles }}
-      onDrop={(e) => handleDrop(e, element)}
+      onDrop={(e) => handleDrop(e as any, element)}
       onDragOver={(e) => e.preventDefault()}
+      tabIndex={0}
+      drag={!element.isSelected}
+      dragMomentum={false}
+      dragSnapToOrigin={true}
+      dragElastic={0.1}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
       onContextMenu={(e) => handleContextMenu(e, element)}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
       })}
     >
-      {(element as ListElement).elements?.map((childElement, index) => (
-        <li key={childElement.id}>{renderElement(childElement, index)}</li>
+      {(element as ListElement).elements?.map((childElement) => (
+        <li key={childElement.id}>{renderElement(childElement)}</li>
       ))}
     </motion.ul>
   );

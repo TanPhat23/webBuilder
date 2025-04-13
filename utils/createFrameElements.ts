@@ -87,17 +87,17 @@ const createElements = async (
         },
         elements: [
           {
-            type: "Text",
+            type: "Text", 
             ...baseElement,
             id: `Text-${uuidv4}`,
             content: "Item 1",
             styles: {
               ...baseElement.styles,
               display: "flex",
-              width: "70%",
               fontSize: "16px",
             },
           },
+          
         ],
         projectId: projectId,
       };

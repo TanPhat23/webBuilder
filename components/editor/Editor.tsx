@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { EditorElement } from "@/lib/type";
-import { createElements } from "@/lib/utils/createElements";
+import { createElements } from "@/utils/createElements";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";

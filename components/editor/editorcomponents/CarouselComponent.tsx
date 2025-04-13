@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import createElements from "@/lib/utils/createFrameElements";
+import createElements from "@/utils/createFrameElements";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
@@ -33,13 +33,11 @@ const CarouselComponent: React.FC<Props> = ({
   const { updateElement } = useEditorStore();
   const { setSelectedElement } = useElementSelectionStore();
 
-  // Optimistic UI for element reordering
-  const [optimisticElements, setOptimisticElements] = useOptimistic(
+  const [optimisticElements] = useOptimistic(
     element.elements,
     (state, newElements: EditorElement[]) => newElements
   );
 
-  // Memoized carousel settings with React 19 cache
   const carouselSettings = useMemo<Settings>(() => {
     const defaults = {
       dots: true,
@@ -100,8 +98,6 @@ const CarouselComponent: React.FC<Props> = ({
       newElements[toIndex],
       newElements[fromIndex],
     ];
-
-    setOptimisticElements(newElements);
 
     startTransition(() => {
       updateElement(element.id, { elements: newElements });
@@ -196,18 +192,18 @@ const CarouselComponent: React.FC<Props> = ({
         {...carouselSettings}
       >
         {optimisticElements.map((childElement, index) => (
-          <div key={childElement.id} className="h-full ">
+          <div key={childElement.id} className="h-full group relative">
             <div className="relative h-full w-full flex items-center justify-center aspect-[4/1] rounded-lg overflow-hidden">
               {renderElement(childElement, index)}
             </div>
 
-            <div className="flex gap-2 justify-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-2 justify-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-0 left-0 right-0 z-10 bg-white/30 py-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleSwap(index, index - 1)}
                 disabled={index === 0}
-                className="gap-1"
+                className="gap-1 "
               >
                 <ArrowLeftCircle className="h-4 w-4" />
                 <span>Move Left</span>
@@ -217,7 +213,7 @@ const CarouselComponent: React.FC<Props> = ({
                 size="sm"
                 onClick={() => handleSwap(index, index + 1)}
                 disabled={index === optimisticElements.length - 1}
-                className="gap-1"
+                className="gap-1 "
               >
                 <span>Move Right</span>
                 <ArrowRightCircle className="h-4 w-4" />

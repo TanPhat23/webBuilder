@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import DOMPurify from "dompurify";
 import {
   ButtonElement,
   commonProps,
   EditorComponentProps,
 } from "@/lib/interface";
 import FrameComponents from "./FrameComponents";
-import { useEditorStore } from "@/lib/store/editorStore";
-import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
 import { ChevronUp } from "lucide-react";
+import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 
 type Props = EditorComponentProps & {
   commonProps?: Partial<commonProps>;
@@ -25,14 +23,17 @@ const ButtonComponent = ({
   projectId,
   setContextMenuPosition,
   setShowContextMenu,
+  
 }: Props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { getContentProps } = useEditorElementHandlers({
+    element,
+    projectId,
+    setContextMenuPosition,
+    setShowContextMenu,
+  });
 
-  const contentProps = {
-    dangerouslySetInnerHTML: {
-      __html: DOMPurify.sanitize(element.content),
-    },
-  };
+  const contentProps = getContentProps(element);
 
   if ((element as ButtonElement).buttonType === "multi") {
     return (
