@@ -12,6 +12,7 @@ import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 import InputComponent from "./InputComponent";
+import SelectComponent from "./SelectComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
@@ -27,6 +28,8 @@ const FrameComponents = (props: EditorComponentProps) => {
     handleDragStart,
     handleDragOver,
     handleDragEnd,
+    handleCopy,
+    handlePaste,
     getContentProps,
     getCommonProps,
     draggingElement,
@@ -92,14 +95,34 @@ const FrameComponents = (props: EditorComponentProps) => {
             }}
           />
         );
+      case "Select":
+        return (
+          <SelectComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+            parentHandlers={{
+              handleDrop,
+              handleDoubleClick,
+              handleContextMenu,
+              getContentProps,
+              getCommonProps,
+              draggingElement,
+            }}
+          />
+        );
       case "Input":
-        return <InputComponent
-          element={element} 
-          setContextMenuPosition={setContextMenuPosition}
-          setShowContextMenu={setShowContextMenu}
-          projectId={projectId}
-          commonProps={commonProps} 
-        />;
+        return (
+          <InputComponent
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+            commonProps={commonProps}
+          />
+        );
       case "Link":
         return (
           <motion.a
@@ -169,6 +192,8 @@ const FrameComponents = (props: EditorComponentProps) => {
       onDragEnd={(e, info) => handleDragEnd(e, info)}
       onContextMenu={(e) => handleContextMenu(e, element)}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
+      onCopy={(e) => handleCopy(e, element)}
+      onPaste={(e) => handlePaste(e, element)}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
       })}

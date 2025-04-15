@@ -31,10 +31,7 @@ export interface ElementHandlers {
     e: React.KeyboardEvent<HTMLElement>,
     element: EditorElement
   ) => void;
-  handleDrop: (
-    e: React.DragEvent<HTMLElement>,
-    element: EditorElement
-  ) => void;
+  handleDrop: (e: React.DragEvent<HTMLElement>, element: EditorElement) => void;
   handleImageDrop: (
     e: React.DragEvent<HTMLElement>,
     element: EditorElement
@@ -53,7 +50,6 @@ export interface ElementHandlers {
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
     info?: PanInfo
   ) => void;
-
   swapElements: () => void;
   getContentProps: (element: EditorElement) => {
     dangerouslySetInnerHTML: { __html: string };
@@ -137,13 +133,11 @@ export function useEditorElementHandlers({
       e.preventDefault();
       e.stopPropagation();
 
-      // Set dropEffect to "move" for better visual feedback
       if ("dataTransfer" in e && e.dataTransfer) {
         e.dataTransfer.dropEffect = "move";
       }
     }
 
-    // Only set hoveredElement if we have a valid dragging element that's different from current
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(element);
       console.log("hovering", element.id, "while dragging", draggingElement.id);

@@ -13,6 +13,7 @@ const commonStyles: CSSProperties = {
   justifyContent: "center",
   alignItems: "center",
   textAlign: "center",
+  fontSize: "16px",
 };
 
 export const listItemStyles: CSSProperties = {
@@ -84,10 +85,11 @@ const createElements = async (
           width: "100px",
           display: "flex",
           flexDirection: "column",
+          fontSize: "16px",
         },
         elements: [
           {
-            type: "Text", 
+            type: "Text",
             ...baseElement,
             id: `Text-${uuidv4}`,
             content: "Item 1",
@@ -97,7 +99,28 @@ const createElements = async (
               fontSize: "16px",
             },
           },
-          
+          {
+            type: "Text",
+            ...baseElement,
+            id: `Text2-${uuidv4}`,
+            content: "Item 2",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              fontSize: "16px",
+            },
+          },
+          {
+            type: "Text",
+            ...baseElement,
+            id: `Text3-${uuidv4}`,
+            content: "Item 3",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              fontSize: "16px",
+            },
+          },
         ],
         projectId: projectId,
       };
@@ -118,6 +141,30 @@ const createElements = async (
         },
         projectId: projectId,
       };
+      break;
+    }
+    case "Select": {
+      newElement = {
+        type: "Select",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          height: "100%",
+          width: "100%",
+        },
+        
+        options: [
+          {
+            value: "Option 1",
+            label: "Option 1",
+          },
+          {
+            value: "Option 2",
+            label: "Option 2",
+          },
+        ],
+        projectId: projectId,
+      }
       break;
     }
     case "Image": {
