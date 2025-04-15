@@ -19,8 +19,11 @@ const EditorContextMenu: React.FC<Props> = ({
   contextMenuPosition,
 }) => {
   const { selectedElement, setSelectedElement } = useElementSelectionStore();
-  const { deleteElementOptimistically, addElementOptimistically } =
-    useEditorStore();
+  const {
+    deleteElementOptimistically,
+    addElementOptimistically,
+    updateElement,
+  } = useEditorStore();
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -32,7 +35,7 @@ const EditorContextMenu: React.FC<Props> = ({
 
       startTransition(() => {
         deleteElementOptimistically(selectedElement.id);
-       
+
         setSelectedElement(undefined);
       });
     }
@@ -42,44 +45,96 @@ const EditorContextMenu: React.FC<Props> = ({
   const handleCopy = useCallback(() => {
     // Use the selectedElement from the selection store rather than finding it again
     if (selectedElement) {
-      const textToCopy = JSON.stringify(selectedElement);
+      const elementToSerialize = { ...selectedElement };
+      
+      window.sessionStorage.setItem(
+        "editorClipboard",
+        JSON.stringify(elementToSerialize)
+      );
+
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          console.log("Element copied to clipboard:", selectedElement);
-        });
+        navigator.clipboard
+          .writeText(JSON.stringify(elementToSerialize))
+          .then(() => {
+            console.log("Element copied to clipboard:", selectedElement);
+          });
       }
+
+      // Visual feedback for copy action
+      const originalBorder = selectedElement.styles?.border;
+      updateElement(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          border: "2px dashed green",
+        },
+      });
+
+      setTimeout(() => {
+        updateElement(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            border: originalBorder,
+          },
+        });
+      }, 300);
     }
-  }, [selectedElement]);
+
+  }, [selectedElement, updateElement]);
 
   const handlePaste = useCallback(() => {
-    navigator.clipboard
-      .readText()
-      .then((text) => {
-        try {
-          const clipboardText: EditorElement = JSON.parse(text);
-          const newElement: EditorElement = {
-            type: clipboardText.type,
-            id: `${clipboardText.type}-${uuidv4()}`,
-            content: clipboardText.content,
-            isSelected: false,
-            x: clipboardText.x + 50,
-            y: clipboardText.y + 50,
-            styles: {
-              ...clipboardText.styles,
-            },
-            projectId: clipboardText.projectId,
-          };
+    try {
+      const storedElement = window.sessionStorage.getItem("editorClipboard");
+      if (storedElement) {
+        const parsedElement = JSON.parse(storedElement);
 
-          // Use the optimistic add method from the store
-          addElementOptimistically(newElement, clipboardText.projectId || "");
-        } catch (err) {
-          console.error("Failed to parse clipboard content:", err);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to read clipboard content:", err);
-      });
-  }, [addElementOptimistically]);
+        const newElement = {
+          ...parsedElement,
+          id: `${parsedElement.type}-${uuidv4()}`,
+          x: parsedElement.x,
+          y: parsedElement.y,
+          isSelected: true, 
+        };
+
+        startTransition(() => {
+          addElementOptimistically(newElement, parsedElement.projectId || "");
+          setSelectedElement(newElement);
+        });
+      } else {
+        navigator.clipboard
+          .readText()
+          .then((text) => {
+            try {
+              const clipboardText = JSON.parse(text);
+              const newElement = {
+                ...clipboardText,
+                id: `${clipboardText.type}-${uuidv4()}`,
+                x: clipboardText.x + 20,
+                y: clipboardText.y + 20,
+                isSelected: true,
+              };
+
+              startTransition(() => {
+                addElementOptimistically(
+                  newElement,
+                  clipboardText.projectId || ""
+                );
+                setSelectedElement(newElement);
+              });
+            } catch (err) {
+              console.error("Failed to parse clipboard content:", err);
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to read clipboard content:", err);
+          });
+      }
+    } catch (error) {
+      console.error("Error pasting element:", error);
+    }
+
+    // Close the context menu after paste
+    setOpen(false);
+  }, [addElementOptimistically, setSelectedElement, setOpen]);
 
   const renderDropDownMenu = useCallback(() => {
     switch (selectedElement?.type) {
