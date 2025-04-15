@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -41,9 +41,9 @@
     "lucide-react": "^0.474.0",
     "motion": "^12.4.1",
     "next": "^15.3.0",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-contenteditable": "^3.3.7",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.1.0",
     "react-hook-form": "^7.54.2",
     "react-joyride": "^3.0.0-7",
     "react-slick": "^0.30.3",

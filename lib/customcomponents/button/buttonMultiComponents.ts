@@ -6,7 +6,7 @@ export const buttonMultiComponent: CustomComponent = {
     type: "Button",
     name: "Button Multi",
     buttonType: "multi",
-    content: "Dropdown Menu",
+    content: "Dropdown",
     isSelected: false,
     x: 0,
     tailwindStyles:

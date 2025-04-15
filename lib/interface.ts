@@ -13,6 +13,14 @@ export interface EditorComponentProps {
 export interface commonProps {
   onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
   onContextMenu: (e: React.MouseEvent<HTMLElement>) => void;
+  handleCopy: (
+    e: React.ClipboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => void;
+  handlePaste: (
+    e: React.ClipboardEvent<HTMLElement>,
+    element: EditorElement
+  ) => void;
   onMouseEnter: (e: React.MouseEvent<HTMLElement>) => void;
   onMouseLeave: (e: React.MouseEvent<HTMLElement>) => void;
   onBlur: (e: React.FormEvent<HTMLElement>) => void;
@@ -62,4 +70,5 @@ export interface ListElement extends Element {
 }
 export interface SelectElement extends Element {
   elements: EditorElement[];
+  options: Array<Partial<HTMLOptionElement>>;
 }

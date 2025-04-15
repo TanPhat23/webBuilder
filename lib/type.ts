@@ -42,6 +42,7 @@ export type TextAlign = "left" | "center" | "right" | "justify";
 
 export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";
 
+export type ContainerElement = FrameElement | CarouselElement | ListElement | SelectElement;
 export interface appProjectTypes {
   id?: string;
   name: string;

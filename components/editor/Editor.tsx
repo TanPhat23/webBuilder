@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
-import { EditorElement } from "@/lib/type";
+import { ContainerElement, EditorElement } from "@/lib/type";
 import { createElements } from "@/utils/createElements";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
@@ -18,6 +18,8 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { CarouselElement } from "@/lib/interface";
 import ListItemComponent from "./editorcomponents/ListItemComponent";
+import { v4 as uuidv4 } from "uuid";
+import handlePasteElement from "@/utils/handlePasteElment";
 
 type Props = {
   projectId: string;
@@ -36,7 +38,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     redo,
   } = useEditorStore();
 
-  const { setSelectedElement } = useElementSelectionStore();
+  const { setSelectedElement, selectedElement } = useElementSelectionStore();
 
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
     "DESKTOP"
@@ -87,6 +89,19 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       ) {
         e.preventDefault();
         redo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        e.preventDefault();
+        if (selectedElement) {
+          handleCopy(selectedElement);
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+        e.preventDefault();
+        handlePaste();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "x") {
+        e.preventDefault();
+        if (selectedElement) {
+          handleCut(selectedElement);
+        }
       }
     };
 
@@ -94,7 +109,61 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [undo, redo]);
+  }, [undo, redo, selectedElement]);
+
+  const handleCopy = (element: EditorElement) => {
+    const elementToSerialize = { ...element };
+    window.sessionStorage.setItem(
+      "editorClipboard",
+      JSON.stringify(elementToSerialize)
+    );
+
+    const originalBorder = element.styles?.border;
+    updateElement(element.id, {
+      styles: {
+        ...element.styles,
+        border: "2px dashed green",
+      },
+    });
+
+    setTimeout(() => {
+      updateElement(element.id, {
+        styles: {
+          ...element.styles,
+          border: originalBorder,
+        },
+      });
+    }, 300);
+  };
+
+  const handleCut = (element: EditorElement) => {
+    const elementToSerialize = { ...element };
+    window.sessionStorage.setItem(
+      "editorClipboard",
+      JSON.stringify(elementToSerialize)
+    );
+
+    deleteElementOptimistically(element.id);
+  };
+
+  const handlePaste = () => {
+    try {
+      const storedElement = window.sessionStorage.getItem("editorClipboard");
+      if (storedElement) {
+        const parsedElement: EditorElement = JSON.parse(storedElement);
+
+        handlePasteElement(
+          parsedElement,
+          addElementOptimistically,
+          setSelectedElement,
+          projectId,
+          selectedElement
+        );
+      }
+    } catch (error) {
+      console.error("Error pasting element:", error);
+    }
+  };
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -296,31 +365,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     }
   };
 
-  const handleCopy = (
-    e: React.ClipboardEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.clipboardData.setData("copiedElement", JSON.stringify(element));
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLElement>) => {
-    e.preventDefault();
-    const copiedElement = e.clipboardData.getData("copiedElement");
-    if (copiedElement) {
-      const parsedElement = JSON.parse(copiedElement);
-      const newElement = {
-        ...parsedElement,
-        id: `${parsedElement.id}-${Date.now()}`,
-        x: parsedElement.x + 20,
-        y: parsedElement.y + 20,
-      };
-      startTransition(() => {
-        addElementOptimistically(newElement, projectId);
-      });
-    }
-  };
-
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleResize);
@@ -379,8 +423,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
               <motion.div
                 key={element.id}
                 onDoubleClick={(e) => handleDoubleClick(e, element)}
-                onCopy={(e) => handleCopy(e, element)}
-                onPaste={(e) => handlePaste(e)}
                 onDragEnd={(e, info) => handleDragEnd(e, info, element)}
                 onDragStart={() => setDraggingElement({ id: element.id })}
                 onKeyDown={(e) => handleKeyPress(e, element)}
