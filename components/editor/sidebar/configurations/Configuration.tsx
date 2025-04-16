@@ -1,22 +1,16 @@
 import React, { startTransition, useEffect, useState } from "react";
 import { Input } from "../../../ui/input";
-import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
-import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
-import TextAlignButton from "./buttons/TextAlignButton";
-import TextStyleButtons from "./buttons/TextStyleButtons";
-import TextColorInput from "./inputs/TextColorInput";
-import BackGroundColorInput from "./inputs/BackGroundColorInput";
 import BorderRadiusInput from "./inputs/BorderRadiusInput";
 import BorderWeightPopover from "./popovers/BorderWeightPopover";
-import FlexDirectionSelect from "./selects/FrameFlexDirectionSelect";
-import AlignItemSelect from "./selects/FrameAlignItemSelect";
-import JustifyContentSelect from "./selects/FrameJustifyContentSelect";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
 import { CarouselElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import InputConfiguration from "./InputConfiguration";
+import { Button } from "@/components/ui/button";
+import ButtonConfiguration from "./ButtonConfiguration";
 
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
@@ -99,6 +93,12 @@ const Configuration = () => {
             selectedElement={selectedElement as CarouselElement}
           />
         );
+      case "Input":
+        return <InputConfiguration selectedElement={selectedElement} />;
+      case "Button":
+        return (
+          <ButtonConfiguration selectedElement={selectedElement}/>
+        )
       default:
         return (
           <BaseConfiguration

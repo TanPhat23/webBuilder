@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import { EditorElement, ElementTypes, FrameElement } from "@/lib/type";
 import useSWR from "swr";
 import { useParams } from "next/navigation";
 import { GetAll } from "@/app/api/element/route";
+import { EditorElement, ElementTypes } from "@/lib/type";
+import { FrameElement } from "@/lib/interface";
 
 function PreviewPage() {
   const params = useParams();
@@ -15,7 +16,7 @@ function PreviewPage() {
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${params.slug}`,
     GetAll
   );
-  if (error) console.log(error);
+  // if (error) console.log(error);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data</div>;
