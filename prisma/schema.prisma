@@ -34,7 +34,9 @@ model Projects {
   Name        String
   Description String?
   OwnerId     String
-  Elements    Elements[] 
+  subdomain   String?    @unique
+  published   Boolean    @default(false)
+  Elements    Elements[]
   Users       Users      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
 
   @@index([OwnerId], map: "IX_Projects_OwnerId")
