@@ -28,8 +28,6 @@ const FrameComponents = (props: EditorComponentProps) => {
     handleDragStart,
     handleDragOver,
     handleDragEnd,
-    handleCopy,
-    handlePaste,
     getContentProps,
     getCommonProps,
     draggingElement,
@@ -185,15 +183,13 @@ const FrameComponents = (props: EditorComponentProps) => {
   return (
     <motion.div
       id={element.id}
-      style={{ ...element.styles }}
+      // style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragStart={(e, info) => handleDragStart(e, element, info)}
       onDragOver={(e) => e.preventDefault()}
       onDragEnd={(e, info) => handleDragEnd(e, info)}
       onContextMenu={(e) => handleContextMenu(e, element)}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
-      onCopy={(e) => handleCopy(e, element)}
-      onPaste={(e) => handlePaste(e, element)}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
       })}

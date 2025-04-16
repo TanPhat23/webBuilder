@@ -11,16 +11,18 @@ export const navbarComponent: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "50px",
+      height: "auto",
+      minHeight: "50px",
       width: "100%",
       backgroundColor: "white",
       display: "flex",
-      flexDirection: "row",
+      flexDirection: "column",
       alignItems: "center",
-      justifyContent: "flex-start",
-      gap: "20px",
+      justifyContent: "center",
+      gap: "15px",
+      padding: "15px 10px",
     },
-    tailwindStyles: "h-[50px] w-full bg-white flex flex-row items-center justify-start px-4 md:px-8 gap-4 md:gap-6",
+    tailwindStyles: "min-h-[50px] w-full bg-white flex flex-col md:flex-row items-center justify-center md:justify-start p-4 md:px-8 gap-4 md:gap-6",
     elements: [
       {
         type: "Image",
@@ -35,7 +37,7 @@ export const navbarComponent: CustomComponent = {
             "background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
         },
         tailwindStyles:
-          "w-32 text-sm md:text-base text-gray-800 hover:scale-105 transition-transform",
+          "w-32 text-sm md:text-base md:text-left text-center text-gray-800 hover:scale-105 transition-transform",
         href: "/",
         src: "",
         parentId: "",
@@ -97,15 +99,16 @@ export const navbarComponent2: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "80px",
+      height: "auto",
+      minHeight: "80px",
       width: "100%",
       backgroundColor: "#222831",
       display: "flex",
       alignItems: "center", 
       justifyContent: "space-between",
-      padding: "0 20px",
+      padding: "10px 20px",
     },
-    tailwindStyles: "h-[80px] w-full bg-[#222831] flex flex-col md:flex-row items-center justify-between px-6 md:px-8 gap-4 text-white",
+    tailwindStyles: "min-h-[80px] w-full bg-[#222831] flex flex-col items-center gap-4 py-4 px-4 text-white md:flex-row md:justify-between md:px-8",
     elements: [
       {
         type: "Image",
@@ -129,14 +132,13 @@ export const navbarComponent2: CustomComponent = {
         isSelected: false,
         x: 0,
         y: 0,
-        styles: {
+        styles: { 
           display: "flex",
-          flexDirection: "row",
           alignItems: "center",
           gap: "10px",
-          color: "white", 
+          color: "white",
         },
-        tailwindStyles: "flex flex-col md:flex-row items-center gap-6 md:gap-8 text-white",
+        tailwindStyles: "flex flex-col items-center  gap-4 md:flex-row md:gap-8 md:w-auto",
         elements: [
           {
             type: "Link",
@@ -219,17 +221,19 @@ export const navbarComponent3: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "65px",
+      height: "auto",
+      minHeight: "65px",
       width: "100%",
       backgroundColor: "#f8f9fa",
       display: "flex",
-      flexDirection: "row",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
       gap: "15px",
+      padding: "10px",
     },
-    tailwindStyles: "h-[65px] w-full bg-[#f8f9fa] flex flex-row items-center justify-center shadow-md gap-4 md:gap-6",
+    tailwindStyles: "min-h-[65px] py-4 w-full bg-[#f8f9fa] flex flex-col md:flex-row items-center justify-center shadow-md gap-4 md:gap-6",
     elements: [
       {
         type: "Link",
@@ -339,16 +343,17 @@ export const navbarComponent4: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
-      height: "70px",
+      height: "auto",
+      minHeight: "70px",
       width: "100%",
       backgroundColor: "transparent",
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: "0 30px",
+      padding: "10px 30px",
       borderBottom: "1px solid #e0e0e0",
     },
-    tailwindStyles: "h-[70px] w-full bg-transparent flex flex-col md:flex-row items-center justify-between px-6 md:px-8 border-b border-gray-300 gap-6 md:gap-8",
+    tailwindStyles: "min-h-[70px] py-4 w-full bg-transparent flex flex-col md:flex-row items-center justify-between px-6 md:px-8 border-b border-gray-300 gap-6 md:gap-8",
     elements: [
       {
         type: "Text",
@@ -380,7 +385,6 @@ export const navbarComponent4: CustomComponent = {
         y: 0,
         styles: {
           display: "flex",
-          flexDirection: "row",
           alignItems: "center",
           gap: "20px",
         },
@@ -473,16 +477,19 @@ export const navbarComponent5: CustomComponent = {
     x: 0,
     y: 0,
     styles: {
+      height: "auto",
+      minHeight: "60px",
       width: "100%",
       backgroundColor: "#6200ea",
       display: "flex",
       alignItems: "center",
       justifyContent: "flex-start",
-      padding: "0 15px",
+      padding: "10px 15px",
       color: "white",
       gap: "24px",
+      flexDirection: "column",
     },
-    tailwindStyles: "flex flex-col md:flex-row items-center h-auto w-full p-3 bg-purple-800 text-white md:justify-start gap-6 md:gap-8",
+    tailwindStyles: "min-h-[60px] py-4 flex flex-col md:flex-row items-center w-full p-3 bg-purple-800 text-white md:justify-start gap-6 md:gap-8",
     elements: [
       {
         type: "Text",

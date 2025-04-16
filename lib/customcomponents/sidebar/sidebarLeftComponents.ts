@@ -22,7 +22,7 @@ export const sidebarLeftComponent: CustomComponent = {
       transition: "all 0.3s ease",
     },
     tailwindStyles:
-      "flex flex-col justify-between w-64 h-full p-6 bg-white shadow-sm border-r border-gray-100 md:w-60 sm:w-20 transition-all duration-300",
+      "flex flex-col justify-between h-full bg-white shadow-sm border-r border-gray-100 w-full md:w-64 sm:w-20 p-4 sm:p-2 md:p-6 transition-all duration-300",
     elements: [
       // Top section with logo and navigation
       {
@@ -407,7 +407,7 @@ export const sidebarLeftComponent: CustomComponent = {
                         width: "100%",
                         textAlign: "left",
                         backgroundColor: "transparent",
-                        color: "#ffffff",
+                        color: "#000000",
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
@@ -495,7 +495,7 @@ export const sidebarLeftComponent2: CustomComponent = {
       gap: "16px",
     },
     tailwindStyles:
-      "flex flex-col items-start w-72 h-full p-6 gap-4 bg-gray-900 md:w-60 sm:w-20 sm:gap-2 transition-all",
+      "flex flex-col items-start h-full bg-gray-900 w-full md:w-64 sm:w-20 p-4 sm:p-2 md:p-6 gap-4 sm:gap-6 transition-all duration-300",
     elements: [
       {
         type: "Text",
@@ -766,7 +766,7 @@ export const sidebarLeftComponent3: CustomComponent = {
       borderRight: "1px solid #e0e0e0",
     },
     tailwindStyles:
-      "flex flex-col items-start w-72 h-full p-5 bg-gray-100 border-r border-gray-200 md:w-64 sm:w-20 transition-all",
+      "flex flex-col items-start h-full bg-gray-100 border-r border-gray-200 w-full md:w-64 sm:w-20 p-4 sm:p-2 md:p-5 transition-all duration-300",
     elements: [
       {
         type: "Text",
@@ -1040,7 +1040,7 @@ export const sidebarLeftComponent4: CustomComponent = {
       borderRight: "1px solid #eaeaea",
     },
     tailwindStyles:
-      "flex flex-col items-center w-75 h-full p-8 bg-white border-r border-gray-100 md:w-64 sm:w-20 transition-all",
+      "hidden sm:flex flex-col items-center h-full bg-white border-r border-gray-100 w-full md:w-64 sm:w-20 p-4 sm:p-3 md:p-8 transition-all duration-300",
     elements: [
       {
         type: "Text",
@@ -1095,7 +1095,7 @@ export const sidebarLeftComponent4: CustomComponent = {
               borderRadius: "8px",
             },
             tailwindStyles:
-              "w-full text-gray-600 my-2 py-3 px-4 text-center rounded-lg hover:bg-gray-50 text-sm md:text-base sm:px-2",
+              "w-full text-gray-600 my-2 py-3 px-4 rounded-lg hover:bg-gray-50 text-center md:text-center sm:text-sm sm:py-2 sm:px-2",
             href: "/",
             src: "",
             parentId: "",
