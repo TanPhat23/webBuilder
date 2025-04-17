@@ -1,12 +1,8 @@
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
-import {
-  commonProps,
-  EditorComponentProps,
-  InputElement,
-} from "@/lib/interface";
+import { EditorComponentProps } from "@/lib/interface";
 import { EditorElement } from "@/lib/type";
 import { cn } from "@/lib/utils";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import React from "react";
 
 type Props = EditorComponentProps & {
@@ -27,7 +23,9 @@ type Props = EditorComponentProps & {
     getContentProps: (element: EditorElement) => {
       dangerouslySetInnerHTML: { __html: string };
     };
-    getCommonProps: (element: EditorElement) => any;
+    getCommonProps: (
+      element: EditorElement
+    ) => React.HTMLAttributes<HTMLElement>;
     draggingElement: EditorElement | null;
   };
 };
@@ -39,26 +37,25 @@ const SelectComponent = ({
   setShowContextMenu,
   parentHandlers,
 }: Props) => {
-  const {
-    handleDoubleClick,
-    handleContextMenu,
-    handleDrop,
-    getContentProps,
-    getCommonProps,
-  } =
-    parentHandlers ||
-    useEditorElementHandlers({
-      element,
-      projectId,
-      setContextMenuPosition,
-      setShowContextMenu,
-    });
+  const [clicked, setClicked] = React.useState(false);
+
+  const hookHandlers = useEditorElementHandlers({
+    element,
+    projectId,
+    setContextMenuPosition,
+    setShowContextMenu,
+  });
+
+  const { handleDoubleClick, handleContextMenu, handleDrop, getCommonProps } =
+    parentHandlers || hookHandlers;
+
   const renderOptions = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(element);
-    const contentProps = getContentProps(element);
     switch (element.type) {
       default:
-        return <motion.option {...commonProps} {...contentProps} />;
+        return (
+          <motion.option {...commonProps}>{element.content}</motion.option>
+        );
     }
   };
 

@@ -28,7 +28,7 @@ type ListItemProps = EditorComponentProps & {
     getContentProps: (element: EditorElement) => {
       dangerouslySetInnerHTML: { __html: string };
     };
-    getCommonProps: (element: EditorElement) => any;
+    getCommonProps: (element: EditorElement) => unknown;
     draggingElement: EditorElement | null;
   };
 };
@@ -42,6 +42,8 @@ const ListItemComponent = (props: ListItemProps) => {
     parentHandlers,
   } = props;
 
+  const hookHandlers = useEditorElementHandlers(props);
+
   const {
     handleDoubleClick,
     handleContextMenu,
@@ -50,7 +52,7 @@ const ListItemComponent = (props: ListItemProps) => {
     getContentProps,
     getCommonProps,
     draggingElement,
-  } = parentHandlers || useEditorElementHandlers(props);
+  } = parentHandlers || hookHandlers;
 
   const renderElement = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(element);

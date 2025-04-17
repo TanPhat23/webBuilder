@@ -3,7 +3,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
 import { FrameElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
@@ -11,9 +10,8 @@ import { EditorElement } from "@/lib/type";
 import { ChevronDown } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const LayoutSideBarElements = (props: Props) => {
+const LayoutSideBarElements = () => {
   const { elements } = useEditorStore();
   const { setSelectedElement } = useElementSelectionStore();
   const handleDoubleClick = (element: EditorElement) => {

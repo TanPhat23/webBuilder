@@ -1,9 +1,7 @@
 import { MousePointerClick } from "lucide-react";
 import React from "react";
 
-type Props = {};
-
-const ButtonHolder = (props: Props) => {
+const ButtonHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

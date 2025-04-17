@@ -1,5 +1,5 @@
 
-import { EditorElement, Element, TextAlign } from "@/lib/type";
+import { EditorElement, TextAlign } from "@/lib/type";
 import React, { startTransition } from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,7 @@ const TextAlignButton = ({ selectedElement }: Props) => {
         setCurrentAlignmentKey(currentAlignmentKey);
       }
     }
-  }, [selectedElement]);
+  }, [selectedElement, alignmentKeys]);
   return (
     <Button
       className="bg-white text-black hover:bg-gray-100 h-8 w-8"

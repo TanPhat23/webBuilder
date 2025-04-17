@@ -1,12 +1,7 @@
-import React, { useRef, useMemo } from "react";
-import { motion, PanInfo } from "framer-motion";
+import React, { useRef } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import {
-  FrameElement,
-  EditorComponentProps,
-  ButtonElement,
-  commonProps,
-} from "@/lib/interface";
+import { FrameElement, EditorComponentProps } from "@/lib/interface";
 import ButtonComponent from "./ButtonComponent";
 import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";
@@ -129,7 +124,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             {...contentProps}
             onKeyDown={(e) => handleKeyDown(e, element)}
             onDrop={(e: React.DragEvent<HTMLAnchorElement>) =>
-              handleDrop(e as any, element)
+              handleDrop(e, element)
             }
           />
         );

@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect, startTransition } from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
-import { ContainerElement, EditorElement } from "@/lib/type";
+import { EditorElement } from "@/lib/type";
 import { createElements } from "@/utils/createElements";
 import { motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
@@ -18,7 +18,6 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import FrameComponents from "./editorcomponents/FrameComponents";
 import { CarouselElement } from "@/lib/interface";
 import ListItemComponent from "./editorcomponents/ListItemComponent";
-import { v4 as uuidv4 } from "uuid";
 import handlePasteElement from "@/utils/handlePasteElment";
 
 type Props = {
@@ -75,41 +74,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         loadedFonts.add(fontFamily);
       }
     });
-    fontsToLoad.forEach((font) => {});
+    
   }, [elements]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
-        e.preventDefault();
-        undo();
-      } else if (
-        (e.ctrlKey || e.metaKey) &&
-        (e.key === "y" || (e.shiftKey && e.key === "z"))
-      ) {
-        e.preventDefault();
-        redo();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === "c") {
-        e.preventDefault();
-        if (selectedElement) {
-          handleCopy(selectedElement);
-        }
-      } else if ((e.ctrlKey || e.metaKey) && e.key === "v") {
-        e.preventDefault();
-        handlePaste();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === "x") {
-        e.preventDefault();
-        if (selectedElement) {
-          handleCut(selectedElement);
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [undo, redo, selectedElement]);
+ 
 
   const handleCopy = (element: EditorElement) => {
     const elementToSerialize = { ...element };
@@ -164,8 +132,40 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       console.error("Error pasting element:", error);
     }
   };
+   useEffect(() => {
+     const handleKeyDown = (e: KeyboardEvent) => {
+       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+         e.preventDefault();
+         undo();
+       } else if (
+         (e.ctrlKey || e.metaKey) &&
+         (e.key === "y" || (e.shiftKey && e.key === "z"))
+       ) {
+         e.preventDefault();
+         redo();
+       } else if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+         e.preventDefault();
+         if (selectedElement) {
+           handleCopy(selectedElement);
+         }
+       } else if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+         e.preventDefault();
+         handlePaste();
+       } else if ((e.ctrlKey || e.metaKey) && e.key === "x") {
+         e.preventDefault();
+         if (selectedElement) {
+           handleCut(selectedElement);
+         }
+       }
+     };
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+     document.addEventListener("keydown", handleKeyDown);
+     return () => {
+       document.removeEventListener("keydown", handleKeyDown);
+     };
+   }, [undo, redo, selectedElement, handleCopy, handleCut, handlePaste]);
+  
+   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     setShowContextMenu(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
@@ -258,7 +258,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     setSelectedElement(undefined);
   };
 
-  const handleZoom = (event: WheelEvent) => {
+  const handleZoom = React.useCallback((event: WheelEvent) => {
     if (event.ctrlKey || event.metaKey) {
       event.preventDefault();
       event.stopPropagation();
@@ -270,7 +270,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       setLockedTransformOrigin(`${x}px ${y}px`);
       setZoom(newZoom);
     }
-  };
+  },[zoom]);
 
   const handleResizeStart = (
     direction: "nw" | "ne" | "sw" | "se",
@@ -370,7 +370,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       document.removeEventListener("mousemove", handleResize);
       document.removeEventListener("mouseup", handleResizeEnd);
     };
-  }, []);
+  }, [handleResize, handleResizeEnd]);
 
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {

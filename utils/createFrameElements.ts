@@ -126,8 +126,8 @@ const createElements = async (
       };
       break;
     }
-    case "Input" : {
-      newElement  = {
+    case "Input": {
+      newElement = {
         type: "Input",
         ...baseElement,
         styles: {
@@ -152,7 +152,30 @@ const createElements = async (
           height: "100%",
           width: "100%",
         },
-        
+        elements: [
+          {
+            type: "Text",
+            ...baseElement,
+            id: `Text-${uuidv4}`,
+            content: "Text 1",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              fontSize: "16px",
+            },
+          },
+          {
+            type: "Text",
+            ...baseElement,
+            id: `Option2-${uuidv4}`,
+            content: "Text 2",
+            styles: {
+              ...baseElement.styles,
+              display: "flex",
+              fontSize: "16px",
+            },
+          },
+        ],
         options: [
           {
             value: "Option 1",
@@ -164,7 +187,7 @@ const createElements = async (
           },
         ],
         projectId: projectId,
-      }
+      };
       break;
     }
     case "Image": {

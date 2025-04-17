@@ -1,9 +1,8 @@
-import { IdCard, Image } from "lucide-react";
+import { Image } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const ImageHolder = (props: Props) => {
+const ImageHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

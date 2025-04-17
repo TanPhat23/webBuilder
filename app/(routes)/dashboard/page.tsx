@@ -17,7 +17,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { appProjectTypes } from "@/lib/type";
-import { getProjectSubdomainUrl } from "@/lib/subdomain";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 

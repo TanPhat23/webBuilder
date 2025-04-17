@@ -9,8 +9,19 @@ import { CarouselElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
-import { Button } from "@/components/ui/button";
 import ButtonConfiguration from "./ButtonConfiguration";
+
+// Define Google Font interface
+interface GoogleFont {
+  family: string;
+  variants: string[];
+  subsets: string[];
+  version: string;
+  lastModified: string;
+  files?: Record<string, string>;
+  category?: string;
+  kind?: string;
+}
 
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
@@ -30,7 +41,7 @@ const Configuration = () => {
   useEffect(() => {
     setLocalWidth(selectedElement?.styles?.width || "");
     setLocalHeight(selectedElement?.styles?.height || "");
-    setLocalFontSize(selectedElement?.styles?.fontSize || "");
+    setLocalFontSize(selectedElement?.styles?.fontSize || localFontSize);
   }, [selectedElement]);
 
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -69,7 +80,7 @@ const Configuration = () => {
         `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`
       );
       const data = await response.json();
-      return data.items.map((font: any) => font.family);
+      return data.items.map((font: GoogleFont) => font.family);
     } catch (error) {
       console.error("Error fetching fonts:", error);
       return [];
@@ -96,9 +107,7 @@ const Configuration = () => {
       case "Input":
         return <InputConfiguration selectedElement={selectedElement} />;
       case "Button":
-        return (
-          <ButtonConfiguration selectedElement={selectedElement}/>
-        )
+        return <ButtonConfiguration selectedElement={selectedElement} />;
       default:
         return (
           <BaseConfiguration
