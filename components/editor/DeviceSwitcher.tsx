@@ -1,6 +1,6 @@
 import React from "react";
 import { Smartphone, Tablet, Monitor } from "lucide-react";
-import { DEVICE_SIZES } from "@/lib/constants";
+import { DEVICE_SIZES } from "@/lib/constants/constants";
 
 type DeviceViewType = "PHONE" | "TABLET" | "DESKTOP";
 

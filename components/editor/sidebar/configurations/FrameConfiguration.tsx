@@ -7,7 +7,6 @@ import FrameFlexWrapSelect from "./selects/FrameFlexWrapSelect";
 import FramePaddingControls from "./selects/FramePaddingControls";
 import FrameBackgroundColorPicker from "./selects/FrameBackgroundColorPicker";
 import { EditorElement } from "@/lib/type";
-import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
   AccordionContent,

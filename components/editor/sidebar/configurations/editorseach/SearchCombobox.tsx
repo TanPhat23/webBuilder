@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, Component } from "lucide-react";
+import { ChevronDown, Component } from "lucide-react";
 import {
   Command,
   CommandGroup,
@@ -15,99 +15,8 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { customComponents } from "@/lib/customcomponents/styleconstants";
+import { ADVANCED_COMPONENTS, BASIC_COMPONENTS, COMPONENT_CATEGORIES } from "@/lib/constants/componentsconstants";
 
-// Types
-type DraggableComponent = {
-  component: React.ReactNode;
-  label: string;
-  type: string;
-};
-
-type ComponentCategory = {
-  id: string;
-  label: string;
-  prefix: string;
-  defaultOpen?: boolean;
-};
-
-// Component imports (consider lazy loading for better performance)
-const TextHolder = React.lazy(
-  () => import("../../sidebarcomponentholders/TextHolder")
-);
-const LinkHolder = React.lazy(
-  () => import("../../sidebarcomponentholders/LinkHolder")
-);
-const ButtonHolder = React.lazy(
-  () => import("../../sidebarcomponentholders/ButtonHolder")
-);
-const FrameHolder = React.lazy(
-  () => import("../../sidebarcomponentholders/FrameHolder")
-);
-const CarouselHolder = React.lazy(
-  () => import("../../sidebarcomponentholders/CarouselHolder")
-);
-
-// Constants
-const BASIC_COMPONENTS: DraggableComponent[] = [
-  {
-    component: <TextHolder />,
-    label: "Text",
-    type: "text",
-  },
-  {
-    component: <LinkHolder />,
-    label: "Link",
-    type: "link",
-  },
-  {
-    component: <ButtonHolder />,
-    label: "Button",
-    type: "button",
-  },
-  {
-    component: <FrameHolder />,
-    label: "Frame",
-    type: "frame",
-  },
-  {
-    component: <CarouselHolder />,
-    label: "Carousel",
-    type: "carousel",
-  },
-];
-
-const COMPONENT_CATEGORIES: ComponentCategory[] = [
-  {
-    id: "navbar",
-    label: "Navbar Components",
-    prefix: "NavBar",
-  },
-  {
-    id: "footer",
-    label: "Footer Components",
-    prefix: "Footer",
-  },
-  {
-    id: "header",
-    label: "Header Components",
-    prefix: "Header",
-  },
-  {
-    id: "sidebar",
-    label: "Sidebar Components",
-    prefix: "Sidebar",
-  },
-  {
-    id: "teamMembers",
-    label: "Team Members Components",
-    prefix: "TeamMembers",
-  },
-  {
-    id: "missionComponents",
-    label: "Mission Components",
-    prefix: "MissionComponent",
-  },
-];
 
 const handleDragStart = (
   e: React.DragEvent<HTMLDivElement>,
@@ -118,7 +27,6 @@ const handleDragStart = (
 };
 
 export const SearchCombobox: React.FC = () => {
-  // State for open sections with proper initialization
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >(
@@ -132,14 +40,14 @@ export const SearchCombobox: React.FC = () => {
   );
 
   // Memoized filtered components to prevent unnecessary recalculations
-  const filteredComponents = React.useMemo(() => {
+  const filteredComponents = () => {
     return COMPONENT_CATEGORIES.reduce((acc, category) => {
       acc[category.id] = customComponents.filter((component) =>
-        component.component.name?.startsWith(category.prefix)
+        component?.component?.name?.startsWith(category.prefix)
       );
       return acc;
     }, {} as Record<string, typeof customComponents>);
-  }, [customComponents]);
+  };
 
   const toggleSection = (sectionId: string) => {
     setOpenSections((prev) => ({
@@ -171,9 +79,25 @@ export const SearchCombobox: React.FC = () => {
               </div>
             </CommandItem>
           ))}
+          {ADVANCED_COMPONENTS.map((component) => (
+            <CommandItem
+              key={component.type}
+              value={component.label}
+              className="cursor-grab active:cursor-grabbing"
+            >
+              <div
+                draggable
+                onDragStart={(e) => handleDragStart(e, component.type)}
+                className="w-full"
+              >
+                <React.Suspense fallback={<div>Loading component...</div>}>
+                  {component.component}
+                </React.Suspense>
+              </div>
+            </CommandItem>
+          ))}
         </CommandGroup>
 
-        {/* Component Categories */}
         {COMPONENT_CATEGORIES.map((category) => (
           <Collapsible
             key={category.id}
@@ -190,7 +114,7 @@ export const SearchCombobox: React.FC = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CommandGroup>
-                {filteredComponents[category.id]?.map((component) => (
+                {filteredComponents()[category.id]?.map((component) => (
                   <CommandItem
                     key={component.component.name}
                     value={component.component.name ?? ""}
@@ -212,6 +136,7 @@ export const SearchCombobox: React.FC = () => {
             </CollapsibleContent>
           </Collapsible>
         ))}
+        {/* Component Categories */}
       </CommandList>
     </Command>
   );

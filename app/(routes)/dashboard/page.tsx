@@ -22,12 +22,18 @@ import useSWR from "swr";
 
 export default function Page() {
   const router = useRouter();
-  const { data: projects, error, isLoading } = useSWR<appProjectTypes[]>(
+  const {
+    data: projects,
+    error,
+    isLoading,
+  } = useSWR<appProjectTypes[]>(
     process.env.NEXT_PUBLIC_API_URL + "/projects",
     GetAll
   );
-  
+
   if (error) console.log(error);
+
+  
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -63,16 +69,21 @@ export default function Page() {
             ) : (
               <ul className="m-4 grid gap-4 grid-cols-6">
                 {projects?.map((project) => (
-                  <li key={project.id} className="bg-white rounded-lg shadow-md">
+                  <li
+                    key={project.id}
+                    className="bg-white rounded-lg shadow-md"
+                  >
                     <div className="p-4">
                       <h3 className="text-lg font-semibold">{project.name}</h3>
                       <p className="text-sm">{project.description}</p>
-                      <Button
-                        onClick={() => router.push(`/editor/${project.id}`)}
-                        className="mt-4"
-                      >
-                        Edit
-                      </Button>
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          onClick={() => router.push(`/editor/${project.id}`)}
+                        >
+                          Edit
+                        </Button>
+                        
+                      </div>
                     </div>
                   </li>
                 ))}

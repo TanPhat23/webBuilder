@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 
-interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-export function Container({ className, ...props }: ContainerProps) {
+export function Container({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn("container mx-auto px-4 md:px-6", className)}

@@ -11,7 +11,7 @@ const BackGroundColorInput = ({ selectedElement }: Props) => {
   const [color, setColor] = useState("#000000");
   const [backColor, setBackColor] = useState("#000000");
 
-  const { optimisticElements, updateElementOptimistically } =
+  const { updateElementOptimistically } =
     useOptimisticElement();
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {

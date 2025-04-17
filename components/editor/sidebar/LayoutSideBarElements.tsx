@@ -3,56 +3,23 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
-import { FrameElement, EditorElement } from "@/lib/type";
+import { FrameElement } from "@/lib/interface";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { EditorElement } from "@/lib/type";
 import { ChevronDown } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const LayoutSideBarElements = (props: Props) => {
-  const { elements, dispatch } = useEditorContext();
-  const { setSelectedElement } = useEditorContextProvider();
-  const handleDoubleClick = React.useCallback(
-    (element: EditorElement) => {
-      if (!element) return;
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: { isSelected: !element.isSelected },
-        },
-      });
-      setSelectedElement(element);
-    },
-    [dispatch]
-  );
+const LayoutSideBarElements = () => {
+  const { elements } = useEditorStore();
+  const { setSelectedElement } = useElementSelectionStore();
+  const handleDoubleClick = (element: EditorElement) => {
+    if (!element) return;
 
-  const handleMouseEnter = React.useCallback(
-    (element: EditorElement) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: { isSelected: true },
-        },
-      });
-    },
-    [dispatch]
-  );
+    setSelectedElement(element);
+  };
 
-  const handleMouseLeave = React.useCallback(
-    (element: EditorElement) => {
-      dispatch({
-        type: "UPDATE_ELEMENT",
-        payload: {
-          id: element.id,
-          updates: { isSelected: false },
-        },
-      });
-    },
-    [dispatch]
-  );
   const renderElement = (element: EditorElement, level: number = 0) => {
     const isFrame = element.type === "Frame";
     const nestedElements = isFrame ? (element as FrameElement).elements : [];

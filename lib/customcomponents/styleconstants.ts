@@ -4,11 +4,11 @@ import { footerComponent, footerComponent2, footerComponent3, footerComponent4 }
 import { headerComponent, headerComponent2, headerComponent3 } from "./header/headerComponents";
 import { sidebarLeftComponent, sidebarLeftComponent2, sidebarLeftComponent3, sidebarLeftComponent4 } from "./sidebar/sidebarLeftComponents";
 import { sidebarRightComponent, sidebarRightComponent2, sidebarRightComponent3, sidebarRightComponent4 } from "./sidebar/sidebarRightComponents";
-import { teamMembersComponent1, teamMembersComponent2, teamMembersComponent3 } from "./team/teamMembersComponents";
+import { aboutCarouselHorizontal, aboutCarouselVertical, aboutDynamicHorizontal, aboutDynamicVertical, teamMembersComponent1, teamMembersComponent2, teamMembersComponent3 } from "./team/teamMembersComponents";
 import { missionComponent1, missionComponent2, missionComponentCompact, missionComponentSlider } from "./mission/missionComponents";
 
 export interface CustomComponent {
-  component: EditorElement;
+  component: Partial<EditorElement>;
 }
 
 export const customComponents: CustomComponent[] = [
@@ -32,6 +32,10 @@ export const customComponents: CustomComponent[] = [
   sidebarRightComponent2,
   sidebarRightComponent3,
   sidebarRightComponent4,
+  aboutDynamicVertical,
+  aboutDynamicHorizontal,
+  aboutCarouselVertical,
+  aboutCarouselHorizontal,
   teamMembersComponent1,
   teamMembersComponent2,
   teamMembersComponent3,

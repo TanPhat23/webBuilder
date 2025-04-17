@@ -34,6 +34,8 @@ model Projects {
   Name        String
   Description String?
   OwnerId     String
+  subdomain   String?    @unique
+  published   Boolean    @default(false)
   Elements    Elements[]
   Users       Users      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
 

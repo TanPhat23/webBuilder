@@ -1,10 +1,9 @@
-import { MousePointerClick } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-type Props = {};
 
-const CarouselHolder = (props: Props) => {
+
+const CarouselHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

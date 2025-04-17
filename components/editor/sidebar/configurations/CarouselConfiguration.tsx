@@ -1,4 +1,4 @@
-import { CarouselElement } from "@/lib/type";
+import { CarouselElement } from "@/lib/interface";
 import React from "react";
 import {
   Accordion,
@@ -7,39 +7,38 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
-import { useEditorContext } from "@/lib/context";
 import CarouselSwitch from "./switch/CarouselSwitch";
 import CarouselNumberInput from "./inputs/CarouselNumberInput";
 import CarouselTextInput from "./inputs/CarouselTextInput";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
 type Props = {
   selectedElement: CarouselElement;
 };
 
-const CarouselConfiguration: React.FC<Props> = ({ selectedElement }) => {
+const CarouselConfiguration: React.FC<Props> = () => {
   const router = useRouter();
-  const settings = selectedElement.settings || {};
-  const { dispatch } = useEditorContext();
+  const { selectedElement } = useElementSelectionStore();
+  const settings = (selectedElement as CarouselElement).settings || {};
+  const { updateElement } = useEditorStore();
 
-  const handleChange = (property: string, value: any) => {
+  const handleChange = <T,>(property: string, value: T) => {
     const updatedSettings = {
       ...settings,
       [property]: value,
     };
 
-
     if (typeof value === "boolean" && property === "autoplay") {
       updatedSettings.autoplay = Boolean(value);
     }
 
-    dispatch({
-      type: "UPDATE_ELEMENT",
-      payload: {
-        id: selectedElement.id,
-        updates: { settings: updatedSettings },
-      },
-    });
-
+    if (selectedElement) {
+      updateElement(selectedElement?.id, {
+        ...selectedElement,
+        settings: updatedSettings,
+      });
+    }
     router.refresh();
   };
 

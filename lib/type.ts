@@ -1,42 +1,28 @@
-import React from "react";
-import { Settings } from "react-slick";
+import {
+  ButtonElement,
+  CarouselElement,
+  Element,
+  FrameElement,
+  InputElement,
+  ListElement,
+  SelectElement,
+} from "./interface";
 
-export interface Element {
-  type: string;
-  id: string;
-  content: string;
-  isSelected: boolean;
-  name?: string;
-  styles?: React.CSSProperties;
-  tailwindStyles?: string;
-  x: number;
-  y: number;
-  src?: string;
-  href?: string;
-  parentId?: string;
-  projectId?: string;
-}
-
-
-
-export interface FrameElement extends Element {
-  elements: EditorElement[];
-}
-export interface CarouselElement extends Element {
-  settings: Settings;
-  elements: CarouselElementChild[];
-}
-export interface ButtonElement extends Element {
-}
-
-type CarouselElementChild = Element | ButtonElement | FrameElement;
+export type CarouselElementChild = Element | ButtonElement | FrameElement;
 
 export type EditorElement =
   | Element
   | FrameElement
   | ButtonElement
-  | CarouselElement;
+  | CarouselElement
+  | ListElement
+  | InputElement
+  | SelectElement;
 
+/** this is DEPRECIATED use The
+ * @file editorStore.tsx to mange your state
+ * @deprecated
+ * */
 export type EditorAction =
   | { type: "ADD_ELEMENT"; payload: EditorElement }
   | {
@@ -56,6 +42,7 @@ export type TextAlign = "left" | "center" | "right" | "justify";
 
 export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";
 
+export type ContainerElement = FrameElement | CarouselElement | ListElement | SelectElement;
 export interface appProjectTypes {
   id?: string;
   name: string;

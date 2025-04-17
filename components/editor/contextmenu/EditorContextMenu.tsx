@@ -1,13 +1,12 @@
-import { EditorElement, Element } from "@/lib/type";
 import { Button } from "@/components/ui/button";
 import { ContextMenu, ContextMenuPortal } from "@/components/ui/context-menu";
 import { ContextMenuContent } from "@radix-ui/react-context-menu";
-import React, { startTransition, useCallback, useState } from "react";
-import { useEditorContext, useEditorContextProvider } from "@/lib/context";
+import React, { startTransition, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
+import { useEditorStore } from "@/lib/store/editorStore";
 import LinkDropDownMenu from "./dropdownmenu/LinkDropDownMenu";
 import ImageDropDown from "./dropdownmenu/ImageDropDown";
+import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 
 type Props = {
   setOpen: (open: boolean) => void;
@@ -18,73 +17,123 @@ const EditorContextMenu: React.FC<Props> = ({
   setOpen,
   contextMenuPosition,
 }) => {
-  
-  const [addEvent, setAddEvent] = useState(false);
-  const { selectedElement } = useEditorContextProvider();
-  const { deleteElementOptimistically, updateElementOptimistically } =
-    useOptimisticElement();
+  const { selectedElement, setSelectedElement } = useElementSelectionStore();
+  const {
+    deleteElementOptimistically,
+    addElementOptimistically,
+    updateElement,
+  } = useEditorStore();
 
-  const { elements, dispatch } = useEditorContext();
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  
+    // Only proceed if there is a selected element
+    if (selectedElement) {
+      console.log("Delete element", selectedElement);
 
-  const handleDelete = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
+      startTransition(() => {
+        deleteElementOptimistically(selectedElement.id);
 
-      if (selectedElement) {
-        startTransition(() => {
-          deleteElementOptimistically(selectedElement.id);
-        });
-      }
-      setOpen(false);
-    },
-    [selectedElement, dispatch]
-  );
+        setSelectedElement(undefined);
+      });
+    }
+    setOpen(false);
+  };
 
   const handleCopy = useCallback(() => {
-    const selectedElement = elements.find((element) => element.isSelected);
+    // Use the selectedElement from the selection store rather than finding it again
     if (selectedElement) {
-      const textToCopy = JSON.stringify(selectedElement);
+      const elementToSerialize = { ...selectedElement };
+      
+      window.sessionStorage.setItem(
+        "editorClipboard",
+        JSON.stringify(elementToSerialize)
+      );
 
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          console.log("Element copied to clipboard:", selectedElement);
-        });
+        navigator.clipboard
+          .writeText(JSON.stringify(elementToSerialize))
+          .then(() => {
+            console.log("Element copied to clipboard:", selectedElement);
+          });
       }
+
+      // Visual feedback for copy action
+      const originalBorder = selectedElement.styles?.border;
+      updateElement(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          border: "2px dashed green",
+        },
+      });
+
+      setTimeout(() => {
+        updateElement(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            border: originalBorder,
+          },
+        });
+      }, 300);
     }
-  }, [elements]);
+
+  }, [selectedElement, updateElement]);
 
   const handlePaste = useCallback(() => {
-    navigator.clipboard
-      .readText()
-      .then((text) => {
-        try {
-          const clipboardText: EditorElement = JSON.parse(text);
-          const newElement: EditorElement = {
-            type: clipboardText.type,
-            id: `${clipboardText.type}-${uuidv4()}`,
-            content: clipboardText.content,
-            isSelected: false,
-            x: clipboardText.x + 50,
-            y: clipboardText.y + 50,
-            styles: {
-              ...clipboardText.styles,
-            },
-            projectId: clipboardText.projectId,
-          };
-          dispatch({
-            type: "ADD_ELEMENT",
-            payload: newElement,
+    try {
+      const storedElement = window.sessionStorage.getItem("editorClipboard");
+      if (storedElement) {
+        const parsedElement = JSON.parse(storedElement);
+
+        const newElement = {
+          ...parsedElement,
+          id: `${parsedElement.type}-${uuidv4()}`,
+          x: parsedElement.x,
+          y: parsedElement.y,
+          isSelected: true, 
+        };
+
+        startTransition(() => {
+          addElementOptimistically(newElement, parsedElement.projectId || "");
+          setSelectedElement(newElement);
+        });
+      } else {
+        navigator.clipboard
+          .readText()
+          .then((text) => {
+            try {
+              const clipboardText = JSON.parse(text);
+              const newElement = {
+                ...clipboardText,
+                id: `${clipboardText.type}-${uuidv4()}`,
+                x: clipboardText.x + 20,
+                y: clipboardText.y + 20,
+                isSelected: true,
+              };
+
+              startTransition(() => {
+                addElementOptimistically(
+                  newElement,
+                  clipboardText.projectId || ""
+                );
+                setSelectedElement(newElement);
+              });
+            } catch (err) {
+              console.error("Failed to parse clipboard content:", err);
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to read clipboard content:", err);
           });
-        } catch (err) {
-          console.error("Failed to parse clipboard content:", err);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to read clipboard content:", err);
-      });
-  }, [dispatch]);
+      }
+    } catch (error) {
+      console.error("Error pasting element:", error);
+    }
+
+    // Close the context menu after paste
+    setOpen(false);
+  }, [addElementOptimistically, setSelectedElement, setOpen]);
 
   const renderDropDownMenu = useCallback(() => {
     switch (selectedElement?.type) {
@@ -92,6 +141,10 @@ const EditorContextMenu: React.FC<Props> = ({
         return <LinkDropDownMenu />;
       case "Image":
         return <ImageDropDown />;
+      // case "Button":
+      //   return <ButtonDropDown />;
+      default:
+        return null;
     }
   }, [selectedElement]);
 

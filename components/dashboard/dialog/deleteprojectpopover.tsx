@@ -12,9 +12,9 @@ import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 
-type Props = {};
 
-const DeleteProjectDialog = (props: Props) => {
+
+const DeleteProjectDialog = () => {
   const [selectedProject, setSelectedProject] = React.useState<string>("");
   const { data: projects } = useSWR<appProjectTypes[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/projects`,
@@ -31,6 +31,7 @@ const DeleteProjectDialog = (props: Props) => {
         toast.success("Project deleted successfully");
         setSelectedProject("");
       } catch (error) {
+        console.error("Error deleting project:", error);
         toast.error("Failed to delete project");
       }
     }
