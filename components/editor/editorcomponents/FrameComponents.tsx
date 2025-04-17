@@ -97,10 +97,8 @@ const FrameComponents = (props: EditorComponentProps) => {
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
             parentHandlers={{
-              handleDrop,
               handleDoubleClick,
               handleContextMenu,
-              getContentProps,
               getCommonProps,
               draggingElement,
             }}

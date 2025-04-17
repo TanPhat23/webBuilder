@@ -1,10 +1,5 @@
 import { EditorElement } from "@/lib/type";
-import {
-  ButtonElement,
-  FrameElement,
-  CarouselElement,
-  ListElement,
-} from "@/lib/interface";
+import { FrameElement, CarouselElement, ListElement } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -152,38 +147,13 @@ const createElements = async (
           height: "100%",
           width: "100%",
         },
-        elements: [
-          {
-            type: "Text",
-            ...baseElement,
-            id: `Text-${uuidv4}`,
-            content: "Text 1",
-            styles: {
-              ...baseElement.styles,
-              display: "flex",
-              fontSize: "16px",
-            },
-          },
-          {
-            type: "Text",
-            ...baseElement,
-            id: `Option2-${uuidv4}`,
-            content: "Text 2",
-            styles: {
-              ...baseElement.styles,
-              display: "flex",
-              fontSize: "16px",
-            },
-          },
-        ],
+
         options: [
           {
             value: "Option 1",
-            label: "Option 1",
           },
           {
             value: "Option 2",
-            label: "Option 2",
           },
         ],
         projectId: projectId,
