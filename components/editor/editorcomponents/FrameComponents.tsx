@@ -8,6 +8,8 @@ import ListItemComponent from "./ListItemComponent";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
+import ChartComponent from "./ChartComponent";
+import DataTableComponent from "./DataTableComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
@@ -57,6 +59,28 @@ const FrameComponents = (props: EditorComponentProps) => {
           </motion.div>
         );
 
+      case "Chart":
+        return (
+          <ChartComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
+      case "DataTable":
+        return (
+          <DataTableComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
       case "Button":
         return (
           <ButtonComponent
@@ -69,6 +93,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             setShowContextMenu={setShowContextMenu}
           />
         );
+
       case "ListItem":
         return (
           <ListItemComponent
@@ -88,6 +113,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }}
           />
         );
+
       case "Select":
         return (
           <SelectComponent
@@ -104,6 +130,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }}
           />
         );
+
       case "Input":
         return (
           <InputComponent
@@ -114,6 +141,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             commonProps={commonProps}
           />
         );
+
       case "Link":
         return (
           <motion.a
@@ -126,6 +154,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }
           />
         );
+
       case "Image":
         if (element.src) {
           return (
@@ -155,6 +184,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             />
           );
         }
+
       default:
         return (
           <motion.div

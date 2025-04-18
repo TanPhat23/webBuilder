@@ -1,6 +1,8 @@
 import {
   ButtonElement,
   CarouselElement,
+  ChartElement,
+  DataTableElement,
   Element,
   FrameElement,
   InputElement,
@@ -17,7 +19,9 @@ export type EditorElement =
   | CarouselElement
   | ListElement
   | InputElement
-  | SelectElement;
+  | SelectElement
+  | ChartElement
+  | DataTableElement;
 
 /** this is DEPRECIATED use The
  * @file editorStore.tsx to mange your state
