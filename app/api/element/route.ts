@@ -11,6 +11,7 @@ export const Create = async (data: EditorElement) => {
 
     const client = await clerkClient();
     const token = await client.sessions.getToken(sessionId, "usertemp");
+
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -132,6 +133,26 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
   } catch (error: Error | unknown) {
     console.error(
       "Error in GetAll:",
+      error instanceof Error ? error.message : String(error)
+    );
+    throw error;
+  }
+};
+
+export const GetAllPublic = async (url: string): Promise<EditorElement[]> => {
+  try {
+    const response = await fetch(url , {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data: EditorElement[] = await response.json();
+    return data;
+  } catch (error: Error | unknown) {
+    console.error(
+      "Error in GetAllPublic:",
       error instanceof Error ? error.message : String(error)
     );
     throw error;

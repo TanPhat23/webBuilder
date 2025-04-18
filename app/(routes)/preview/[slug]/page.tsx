@@ -1,25 +1,28 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import { GetAll } from "@/app/api/element/route";
 import { EditorElement, ElementTypes } from "@/lib/type";
 import { FrameElement } from "@/lib/interface";
+import React from "react";
+import { GetAllPublic } from "@/app/api/element/route";
+export const revalidate = 60;
+export const dynamicParams = true;
 
-function PreviewPage() {
-  const params = useParams();
-  const {
-    data: elements,
-    error,
-    isLoading,
-  } = useSWR<EditorElement[]>(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/${params.slug}`,
-    GetAll
+export async function generateStaticParams() {
+  try {
+    return [];
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
+}
+
+export default async function PreviewPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const elements = await GetAllPublic(
+    `${process.env.NEXT_PUBLIC_API_URL}/elements/public/${slug}`
   );
-  // if (error) console.log(error);
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
 
   const renderFrameElement = (element: FrameElement) => {
     return (
@@ -63,6 +66,8 @@ function PreviewPage() {
               );
             case "Frame":
               return renderFrameElement(childElement as FrameElement);
+            default:
+              return null;
           }
         })}
       </div>
@@ -75,10 +80,10 @@ function PreviewPage() {
         switch (element.type as ElementTypes) {
           case "Frame":
             return renderFrameElement(element as FrameElement);
+          default:
+            return null;
         }
       })}
     </div>
   );
 }
-
-export default PreviewPage;

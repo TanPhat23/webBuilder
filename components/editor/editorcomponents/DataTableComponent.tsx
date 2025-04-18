@@ -103,7 +103,7 @@ const DataTableComponent = ({
   };
 
   // Settings operations
-  const handleSettingChange = (key: string, value: any) => {
+  const handleSettingChange = (key: string, value: unknown) => {
     setTableSettings(prev => ({
       ...prev,
       [key]: value

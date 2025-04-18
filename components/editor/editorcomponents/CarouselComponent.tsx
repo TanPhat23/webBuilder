@@ -34,7 +34,7 @@ const CarouselComponent: React.FC<Props> = ({
 
   const [optimisticElements] = useOptimistic(
     element.elements,
-    (state, newElements: EditorElement[]) => newElements
+    (newElements: EditorElement[]) => newElements
   );
 
   const carouselSettings = useMemo<Settings>(() => {
@@ -150,7 +150,7 @@ const CarouselComponent: React.FC<Props> = ({
             {...commonProps}
             src={element.src}
             alt={`Carousel Image ${index}`}
-            className={cn(commonProps.className, "slick-slide")}
+            className={cn(commonProps.className, "")}
             loading="lazy"
           />
         );

@@ -2,6 +2,7 @@ import { EditorElement } from "@/lib/type";
 import { FrameElement, CarouselElement, ListElement } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Create } from "@/app/api/element/route";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -167,7 +168,6 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
           height: "100%",
-          width: "100%",
         },
         src: src,
         projectId: projectId,
@@ -187,14 +187,13 @@ const createElements = async (
   const parentElementCopy = { ...parentElement };
   parentElementCopy.elements.push(newElement);
 
-  // Use the Zustand store if available
   if (updateElement) {
     updateElement(parentElement.id, {
       elements: parentElementCopy.elements,
     });
 
     try {
-      // await Create(newElement);
+      await Create(newElement);
     } catch (error) {
       // Rollback on error
       updateElement(parentElement.id, {

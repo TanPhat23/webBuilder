@@ -51,8 +51,6 @@ const SelectComponent = ({
     e.stopPropagation();
     const data = e.dataTransfer.getData("text/plain");
     if (data === "Text") {
-      console.log("Text dropped");
-      
       startTransition(() => {
         updateElementOptimistically(element.id, {
           options: [
@@ -85,18 +83,21 @@ const SelectComponent = ({
       multiple={selectSettings.multiple}
       disabled={selectSettings.disabled}
       size={selectSettings.size}
+      defaultValue={options
+        .filter((option) => option.selected)
+        .map((option) => option.value || "")}
     >
       {options &&
         options.length > 0 &&
         options.map((option, index) => (
-          <motion.option
+ 
+          <option
             key={`option-${index}`}
-            value={option.value || "default"}
-            selected={option.selected || false}
+            value={option.value || ""}
             disabled={option.disabled || false}
           >
             {option.text || option.value || `Option ${index + 1}`}
-          </motion.option>
+          </option>
         ))}
     </motion.select>
   );
