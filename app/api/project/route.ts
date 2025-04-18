@@ -22,13 +22,12 @@ export const Create = async (data: appProjectTypes) => {
     });
 
     return response.json();
-  } catch (error: any) {
-    console.error("Create Error:", error);
-    throw new Error(error.message || "Failed to create project");
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));    
   }
 };
 
-export const GetAll = async () : Promise<appProjectTypes[]> => {
+export const GetAll = async (): Promise<appProjectTypes[]> => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");
@@ -36,7 +35,7 @@ export const GetAll = async () : Promise<appProjectTypes[]> => {
     const token = await client.sessions.getToken(sessionId, "usertemp");
 
     const response = await fetch(URL, {
-    method: "GET",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
@@ -44,9 +43,8 @@ export const GetAll = async () : Promise<appProjectTypes[]> => {
     });
 
     return response.json();
-  } catch (error: any) {
-    console.error("GetAll Error:", error);
-    throw new Error(error.message || "Failed to get projects");
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 };
 
@@ -65,9 +63,8 @@ export const Delete = async (id: string) => {
       },
     });
 
-    if(response.status === 204) return "Project deleted successfully";
-  } catch (error: any) {
-    console.error("Delete Error:", error);
-    throw new Error(error.message || "Failed to delete project");
+    if (response.status === 204) return "Project deleted successfully";
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 };

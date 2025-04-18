@@ -1,8 +1,7 @@
 import React from 'react'
 
-type Props = {}
 
-const ButtonMultiHolder = (props: Props) => {
+const ButtonMultiHolder = () => {
   return (
     <div
       draggable

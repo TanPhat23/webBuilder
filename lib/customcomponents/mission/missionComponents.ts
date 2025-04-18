@@ -2,13 +2,18 @@ import { CustomComponent } from "../styleconstants";
 import { v4 as uuidv4 } from "uuid";
 
 // Helper function to create customizable badges
-const createBadge = (text: string, bgColor: string, textColor: string, style: "rounded" | "pill" | "square" = "rounded") => {
+const createBadge = (
+  text: string,
+  bgColor: string,
+  textColor: string,
+  style: "rounded" | "pill" | "square" = "rounded"
+) => {
   const borderRadius = {
     rounded: "8px",
     pill: "30px",
     square: "0px",
   };
-  
+
   return {
     type: "Text",
     content: text,
@@ -26,7 +31,13 @@ const createBadge = (text: string, bgColor: string, textColor: string, style: "r
       fontWeight: "500",
       marginBottom: "8px",
     },
-    tailwindStyles: `inline-block ${style === "pill" ? "rounded-full" : style === "rounded" ? "rounded-lg" : ""} px-3 py-1 text-sm font-medium mb-2`,
+    tailwindStyles: `inline-block ${
+      style === "pill"
+        ? "rounded-full"
+        : style === "rounded"
+        ? "rounded-lg"
+        : ""
+    } px-3 py-1 text-sm font-medium mb-2`,
     href: "",
     src: "",
     parentId: "",
@@ -60,25 +71,17 @@ const createMissionLayout = (layout: "left" | "right" | "center") => {
   if (layout === "left" || layout === "right") {
     baseComponent.styles = {
       ...baseComponent.styles,
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "64px",
-      alignItems: "center",
     };
-    baseComponent.tailwindStyles = "grid grid-cols-1 md:grid-cols-2 gap-16 items-center py-10 px-5";
+    baseComponent.tailwindStyles =
+      "grid grid-cols-1 md:grid-cols-2 gap-16 items-center py-10 px-5";
   } else if (layout === "center") {
     baseComponent.styles = {
       ...baseComponent.styles,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      textAlign: "center",
-      maxWidth: "800px",
-      margin: "0 auto",
     };
-    baseComponent.tailwindStyles = "flex flex-col items-center text-center max-w-4xl mx-auto py-10 px-5";
+    baseComponent.tailwindStyles =
+      "flex flex-col items-center text-center max-w-4xl mx-auto py-10 px-5";
   }
-  
+
   return baseComponent;
 };
 
@@ -125,7 +128,8 @@ missionComponent1.component.elements = [
       },
       {
         type: "Text",
-        content: "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
+        content:
+          "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -344,7 +348,8 @@ missionComponent1.component.elements = [
     styles: {
       borderRadius: "12px",
       overflow: "hidden",
-      boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+      boxShadow:
+        "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
       order: "1",
     },
     tailwindStyles: "rounded-xl overflow-hidden shadow-xl order-1 md:order-2",
@@ -424,7 +429,8 @@ export const missionComponent2: CustomComponent = {
               maxWidth: "600px",
               margin: "0 auto",
             },
-            tailwindStyles: "text-4xl font-bold text-gray-900 max-w-2xl mx-auto",
+            tailwindStyles:
+              "text-4xl font-bold text-gray-900 max-w-2xl mx-auto",
             href: "",
             src: "",
             parentId: "",
@@ -462,7 +468,8 @@ export const missionComponent2: CustomComponent = {
             styles: {
               width: "100%",
               borderRadius: "12px",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
             },
             tailwindStyles: "w-full rounded-xl shadow-md",
             href: "",
@@ -487,7 +494,8 @@ export const missionComponent2: CustomComponent = {
             elements: [
               {
                 type: "Text",
-                content: "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
+                content:
+                  "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -553,7 +561,8 @@ export const missionComponent2: CustomComponent = {
                           fontWeight: "bold",
                           fontSize: "14px",
                         },
-                        tailwindStyles: "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                        tailwindStyles:
+                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -617,7 +626,8 @@ export const missionComponent2: CustomComponent = {
                           fontWeight: "bold",
                           fontSize: "14px",
                         },
-                        tailwindStyles: "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                        tailwindStyles:
+                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -681,7 +691,8 @@ export const missionComponent2: CustomComponent = {
                           fontWeight: "bold",
                           fontSize: "14px",
                         },
-                        tailwindStyles: "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                        tailwindStyles:
+                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -745,7 +756,8 @@ export const missionComponent2: CustomComponent = {
                           fontWeight: "bold",
                           fontSize: "14px",
                         },
-                        tailwindStyles: "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                        tailwindStyles:
+                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -819,7 +831,8 @@ missionComponentLeft.component.elements = [
     styles: {
       borderRadius: "12px",
       overflow: "hidden",
-      boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+      boxShadow:
+        "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
       order: "1",
     },
     tailwindStyles: "rounded-xl overflow-hidden shadow-xl order-1",
@@ -885,7 +898,8 @@ missionComponentLeft.component.elements = [
       },
       {
         type: "Text",
-        content: "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
+        content:
+          "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -1141,7 +1155,8 @@ missionComponentCentered.component.elements = [
       },
       {
         type: "Text",
-        content: "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
+        content:
+          "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp, mà không cần kiến thức lập trình phức tạp.",
         id: uuidv4(),
         isSelected: false,
         x: 0,
@@ -1175,7 +1190,8 @@ missionComponentCentered.component.elements = [
       width: "100%",
       maxWidth: "700px",
       borderRadius: "12px",
-      boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+      boxShadow:
+        "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
     },
     tailwindStyles: "w-full max-w-3xl rounded-xl shadow-xl",
     href: "",
@@ -1203,7 +1219,8 @@ export const missionComponentCompact: CustomComponent = {
       backgroundColor: "#f8f9fa",
       boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
     },
-    tailwindStyles: "w-full max-w-3xl mx-auto p-6 sm:p-8 rounded-xl bg-gray-50 shadow-md",
+    tailwindStyles:
+      "w-full max-w-3xl mx-auto p-6 sm:p-8 rounded-xl bg-gray-50 shadow-md",
     elements: [
       {
         type: "Frame",
@@ -1237,7 +1254,8 @@ export const missionComponentCompact: CustomComponent = {
               fontWeight: "600",
               marginRight: "15px",
             },
-            tailwindStyles: "bg-blue-100 text-blue-800 px-2.5 py-1 rounded-md text-xs font-semibold mr-4",
+            tailwindStyles:
+              "bg-blue-100 text-blue-800 px-2.5 py-1 rounded-md text-xs font-semibold mr-4",
             elements: [
               {
                 type: "Text",
@@ -1252,7 +1270,7 @@ export const missionComponentCompact: CustomComponent = {
                 src: "",
                 parentId: "",
                 projectId: "",
-              }
+              },
             ],
             href: "",
             src: "",
@@ -1276,7 +1294,7 @@ export const missionComponentCompact: CustomComponent = {
             src: "",
             parentId: "",
             projectId: "",
-          }
+          },
         ],
         href: "",
         src: "",
@@ -1335,7 +1353,8 @@ export const missionComponentCompact: CustomComponent = {
             elements: [
               {
                 type: "Text",
-                content: "Chúng tôi giúp bạn xây dựng giao diện web chuyên nghiệp mà không cần kiến thức lập trình phức tạp.",
+                content:
+                  "Chúng tôi giúp bạn xây dựng giao diện web chuyên nghiệp mà không cần kiến thức lập trình phức tạp.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -1414,7 +1433,7 @@ export const missionComponentCompact: CustomComponent = {
                         src: "",
                         parentId: "",
                         projectId: "",
-                      }
+                      },
                     ],
                     href: "",
                     src: "",
@@ -1469,7 +1488,7 @@ export const missionComponentCompact: CustomComponent = {
                         src: "",
                         parentId: "",
                         projectId: "",
-                      }
+                      },
                     ],
                     href: "",
                     src: "",
@@ -1524,7 +1543,7 @@ export const missionComponentCompact: CustomComponent = {
                         src: "",
                         parentId: "",
                         projectId: "",
-                      }
+                      },
                     ],
                     href: "",
                     src: "",
@@ -1579,37 +1598,37 @@ export const missionComponentCompact: CustomComponent = {
                         src: "",
                         parentId: "",
                         projectId: "",
-                      }
+                      },
                     ],
                     href: "",
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
                 parentId: "",
                 projectId: "",
-              }
+              },
             ],
             href: "",
             src: "",
             parentId: "",
             projectId: "",
-          }
+          },
         ],
         href: "",
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
     parentId: "",
     projectId: "",
-  }
+  },
 };
 
 export const missionComponentSlider: CustomComponent = {
@@ -1644,7 +1663,8 @@ export const missionComponentSlider: CustomComponent = {
           padding: "10px 20px",
           scrollbarWidth: "none",
         },
-        tailwindStyles: "flex gap-3 w-full overflow-x-auto scrollbar-hide px-5 pb-2",
+        tailwindStyles:
+          "flex gap-3 w-full overflow-x-auto scrollbar-hide px-5 pb-2",
         elements: [
           {
             type: "Frame",
@@ -1664,7 +1684,8 @@ export const missionComponentSlider: CustomComponent = {
               boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
               border: "1px solid #f3f4f6",
             },
-            tailwindStyles: "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-sm border border-gray-100",
+            tailwindStyles:
+              "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-sm border border-gray-100",
             elements: [
               {
                 type: "Text",
@@ -1706,7 +1727,8 @@ export const missionComponentSlider: CustomComponent = {
               },
               {
                 type: "Text",
-                content: "Giúp bạn xây dựng giao diện web chuyên nghiệp, dễ dàng mà không cần kiến thức lập trình phức tạp.",
+                content:
+                  "Giúp bạn xây dựng giao diện web chuyên nghiệp, dễ dàng mà không cần kiến thức lập trình phức tạp.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -1771,7 +1793,7 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
@@ -1826,13 +1848,13 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
                 parentId: "",
                 projectId: "",
-              }
+              },
             ],
             href: "",
             src: "",
@@ -1857,7 +1879,8 @@ export const missionComponentSlider: CustomComponent = {
               boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
               border: "1px solid #e5e7eb",
             },
-            tailwindStyles: "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-sm border border-gray-200",
+            tailwindStyles:
+              "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-sm border border-gray-200",
             elements: [
               {
                 type: "Text",
@@ -1899,7 +1922,8 @@ export const missionComponentSlider: CustomComponent = {
               },
               {
                 type: "Text",
-                content: "Trở thành công cụ xây dựng web tốt nhất, giúp người dùng tạo ra giao diện đẹp mắt.",
+                content:
+                  "Trở thành công cụ xây dựng web tốt nhất, giúp người dùng tạo ra giao diện đẹp mắt.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -1964,7 +1988,7 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
@@ -2019,13 +2043,13 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
                 parentId: "",
                 projectId: "",
-              }
+              },
             ],
             href: "",
             src: "",
@@ -2050,7 +2074,8 @@ export const missionComponentSlider: CustomComponent = {
               boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
               border: "1px solid #dbeafe",
             },
-            tailwindStyles: "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-sm border border-blue-100",
+            tailwindStyles:
+              "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-sm border border-blue-100",
             elements: [
               {
                 type: "Text",
@@ -2092,7 +2117,8 @@ export const missionComponentSlider: CustomComponent = {
               },
               {
                 type: "Text",
-                content: "Chúng tôi tin rằng công cụ tốt nhất là công cụ đơn giản nhưng mạnh mẽ và hiệu quả.",
+                content:
+                  "Chúng tôi tin rằng công cụ tốt nhất là công cụ đơn giản nhưng mạnh mẽ và hiệu quả.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -2157,7 +2183,7 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
@@ -2212,31 +2238,31 @@ export const missionComponentSlider: CustomComponent = {
                     src: "",
                     parentId: "",
                     projectId: "",
-                  }
+                  },
                 ],
                 href: "",
                 src: "",
                 parentId: "",
                 projectId: "",
-              }
+              },
             ],
             href: "",
             src: "",
             parentId: "",
             projectId: "",
-          }
+          },
         ],
         href: "",
         src: "",
         parentId: "",
         projectId: "",
-      }
+      },
     ],
     href: "",
     src: "",
     parentId: "",
     projectId: "",
-  }
+  },
 };
 
 // New component with alternating sections
@@ -2310,7 +2336,8 @@ export const missionComponentAlternating: CustomComponent = {
               },
               {
                 type: "Text",
-                content: "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp.",
+                content:
+                  "Chúng tôi ra đời với mục tiêu giúp mọi người dễ dàng tiếp cận và xây dựng giao diện web chuyên nghiệp.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -2428,7 +2455,8 @@ export const missionComponentAlternating: CustomComponent = {
               },
               {
                 type: "Text",
-                content: "Trở thành công cụ xây dựng web tốt nhất, giúp người dùng tạo ra giao diện đẹp mắt một cách dễ dàng.",
+                content:
+                  "Trở thành công cụ xây dựng web tốt nhất, giúp người dùng tạo ra giao diện đẹp mắt một cách dễ dàng.",
                 id: uuidv4(),
                 isSelected: false,
                 x: 0,
@@ -2461,5 +2489,5 @@ export const missionComponentAlternating: CustomComponent = {
     src: "",
     parentId: "",
     projectId: "",
-  }
+  },
 };

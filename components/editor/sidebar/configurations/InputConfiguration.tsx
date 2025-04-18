@@ -1,6 +1,6 @@
 import { EditorElement } from "@/lib/type";
 import { InputElement } from "@/lib/interface";
-import React, { startTransition, useState, useEffect } from "react";
+import React, { startTransition } from "react";
 import {
   Accordion,
   AccordionContent,

@@ -1,8 +1,5 @@
-import { Pointer } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Joyride, {
-  ACTIONS,
-  EVENTS,
   STATUS,
   CallBackProps,
   Step,

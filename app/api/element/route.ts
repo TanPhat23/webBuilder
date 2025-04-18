@@ -1,7 +1,6 @@
 "use server";
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { Type } from "lucide-react";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/elements`;
 
@@ -25,8 +24,8 @@ export const Create = async (data: EditorElement) => {
       const errorData = await response.text();
       throw new Error(errorData || "Failed to create element");
     }
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 };
 
@@ -49,21 +48,17 @@ export const BatchCreate = async (elements: EditorElement[]) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch (e) {
-        errorData = errorText;
-      }
-      console.error("BatchCreate API error:", errorData);
+
       throw new Error(
-        typeof errorData === "string" ? errorData : JSON.stringify(errorData)
+        errorText || `Failed to create batch elements: ${elements}`
       );
     }
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("BatchCreate error:", error);
     throw new Error(
-      error.message || "Failed to process batch element creation"
+      error instanceof Error
+        ? error.message
+        : "Failed to process batch element creation"
     );
   }
 };
@@ -89,8 +84,8 @@ export const Update = async (data: EditorElement) => {
           `Failed to update element + ${JSON.stringify(data)} at ${URL}`
       );
     }
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 };
 
@@ -111,8 +106,8 @@ export const Delete = async (id: string) => {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to delete element");
     }
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: Error | unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 };
 
@@ -134,8 +129,11 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
 
     const data: EditorElement[] = await response.json();
     return data;
-  } catch (error: any) {
-    console.error("Error in GetAll:", error.message);
+  } catch (error: Error | unknown) {
+    console.error(
+      "Error in GetAll:",
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   }
 };

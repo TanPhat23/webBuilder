@@ -3,15 +3,12 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { EditorElement } from "@/lib/type";
 import React, { startTransition, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ListPlus } from "lucide-react";
 import { ButtonElement } from "@/lib/interface";
 
 type Props = {

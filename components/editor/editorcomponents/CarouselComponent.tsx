@@ -14,7 +14,6 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
-import ButtonComponent from "./ButtonComponent";
 import { CarouselElement, EditorComponentProps } from "@/lib/interface";
 import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";

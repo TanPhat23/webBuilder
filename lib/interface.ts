@@ -69,6 +69,6 @@ export interface ListElement extends Element {
   elements: EditorElement[];
 }
 export interface SelectElement extends Element {
-  elements: EditorElement[];
   options: Array<Partial<HTMLOptionElement>>;
+  selectSettings?: Partial<HTMLSelectElement>;
 }

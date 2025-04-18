@@ -1,10 +1,5 @@
 import { EditorElement } from "@/lib/type";
-import {
-  ButtonElement,
-  FrameElement,
-  CarouselElement,
-  ListElement,
-} from "@/lib/interface";
+import { FrameElement, CarouselElement, ListElement } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -126,8 +121,8 @@ const createElements = async (
       };
       break;
     }
-    case "Input" : {
-      newElement  = {
+    case "Input": {
+      newElement = {
         type: "Input",
         ...baseElement,
         styles: {
@@ -152,19 +147,17 @@ const createElements = async (
           height: "100%",
           width: "100%",
         },
-        
+
         options: [
           {
             value: "Option 1",
-            label: "Option 1",
           },
           {
             value: "Option 2",
-            label: "Option 2",
           },
         ],
         projectId: projectId,
-      }
+      };
       break;
     }
     case "Image": {

@@ -1,8 +1,7 @@
-import { EditorElement } from "@/lib/type";
 import { Button } from "@/components/ui/button";
 import { ContextMenu, ContextMenuPortal } from "@/components/ui/context-menu";
 import { ContextMenuContent } from "@radix-ui/react-context-menu";
-import React, { startTransition, useCallback, useState } from "react";
+import React, { startTransition, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useEditorStore } from "@/lib/store/editorStore";
 import LinkDropDownMenu from "./dropdownmenu/LinkDropDownMenu";
