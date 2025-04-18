@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React from "react";
 
 type ResizeHandleProps = {
   ref?: React.Ref<HTMLDivElement>;

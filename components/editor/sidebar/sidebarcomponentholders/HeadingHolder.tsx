@@ -1,9 +1,8 @@
-import { Heading, TypeIcon } from "lucide-react";
+import { Heading } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const HeadingHolder = (props: Props) => {
+const HeadingHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

@@ -11,20 +11,18 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
 import React from "react";
 import LayoutSideBarElements from "./LayoutSideBarElements";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Configuration from "./configurations/Configuration";
 import { Button } from "@/components/ui/button";
 import { getProjectSubdomainUrl } from "@/lib/subdomain";
 
-type Props = {};
 
-function LayoutSideBar({}: Props) {
+function LayoutSideBar() {
   const params = useParams();
   const visitProjectSubdomain = (projectId: string) => {
     const subdomainUrl = getProjectSubdomainUrl(projectId);

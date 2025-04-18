@@ -1,10 +1,8 @@
 import { LinkIcon } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 
-type Props = {};
 
-const LinkHolder = (props: Props) => {
+const LinkHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

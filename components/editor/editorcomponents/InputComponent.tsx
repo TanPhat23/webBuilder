@@ -13,12 +13,10 @@ type Props = EditorComponentProps & {
 const InputComponent = ({
   element,
   commonProps,
-  projectId,
-  setContextMenuPosition,
-  setShowContextMenu,
+
 }: Props) => {
   const inputProps: HTMLMotionProps<"input"> = {
-    ...((element as InputElement).inputSettings as any),
+    ...((element as InputElement).inputSettings as HTMLMotionProps<"input">),
   };
 
   return (

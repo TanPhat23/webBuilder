@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useImageStore } from "@/lib/store/imageStore";
-import { useEditorStore } from "@/lib/store/editorStore";
 
 const ImageUpload: React.FC = () => {
   const { uploadImages, addImage, removeImage} = useImageStore();

@@ -23,7 +23,7 @@ const CarouselConfiguration: React.FC<Props> = () => {
   const settings = (selectedElement as CarouselElement).settings || {};
   const { updateElement } = useEditorStore();
 
-  const handleChange = (property: string, value: any) => {
+  const handleChange = <T,>(property: string, value: T) => {
     const updatedSettings = {
       ...settings,
       [property]: value,

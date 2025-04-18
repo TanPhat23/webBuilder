@@ -26,14 +26,12 @@ import { Create } from "@/app/api/project/route";
 import { appProjectTypes } from "@/lib/type";
 import { useRouter } from "next/navigation";
 
-type Props = {};
-
 const formSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
 });
 
-const CreatePojectDialog = (props: Props) => {
+const CreatePojectDialog = () => {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,11 +64,13 @@ const CreatePojectDialog = (props: Props) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project's name</FormLabel>
+                  <FormLabel>Project&apos;s name</FormLabel>
                   <FormControl>
                     <Input placeholder="Project's name" {...field} />
                   </FormControl>
-                  <FormDescription>This is your project's name</FormDescription>
+                  <FormDescription>
+                    This is your project&apos;s name
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -84,7 +84,7 @@ const CreatePojectDialog = (props: Props) => {
                     <Input placeholder="Project's description" {...field} />
                   </FormControl>
                   <FormDescription>
-                    This is your project's description
+                    This is your project&apos;s description
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

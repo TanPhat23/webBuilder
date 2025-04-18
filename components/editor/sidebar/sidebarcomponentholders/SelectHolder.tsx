@@ -1,9 +1,9 @@
-import { IdCard, Image, TextSelect } from "lucide-react";
+import { TextSelect } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const InputHolder = (props: Props) => {
+
+const InputHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

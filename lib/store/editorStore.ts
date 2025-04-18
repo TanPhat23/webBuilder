@@ -7,7 +7,6 @@ import {
   ListElement,
 } from "../interface";
 import { EditorElement } from "../type";
-import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 import { v4 as uuidv4 } from "uuid";
 
 // Type for containers that can hold child elements
@@ -370,7 +369,7 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          const updatedElement = { ...currentElement, ...completeUpdates };
+          // const updatedElement = { ...currentElement, ...completeUpdates };
           // await Update(updatedElement);
           set({ isLoading: false });
         } catch (error) {

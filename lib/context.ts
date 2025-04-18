@@ -1,6 +1,6 @@
 /**
  * @file context.ts
- * 
+ *
  * This file provides a compatibility layer for components still importing from the old context system.
  * It redirects all context hooks to use the new Zustand stores internally.
  */
@@ -82,8 +82,7 @@ export function useEditorContext() {
  * Legacy hook that now uses Zustand image store internally
  */
 export function useImageUploadContext() {
-  const { uploadImages, addImage, removeImage } =
-    useImageStore();
+  const { uploadImages } = useImageStore();
 
   return { uploadImages };
 }
@@ -92,13 +91,8 @@ export function useImageUploadContext() {
  * Legacy hook that now uses Zustand element selection store internally
  */
 export function useEditorContextProvider() {
-  const {
-    selectedElement,
-    setSelectedElement,
-    startTour,
-    setStartTour,
-
-  } = useElementSelectionStore();
+  const { selectedElement, setSelectedElement, startTour, setStartTour } =
+    useElementSelectionStore();
 
   return { selectedElement, setSelectedElement, startTour, setStartTour };
 }

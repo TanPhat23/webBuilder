@@ -4,7 +4,6 @@ import {
   Folder,
   Forward,
   MoreHorizontal,
-  Plus,
   Trash2,
   type LucideIcon,
 } from "lucide-react";
@@ -28,7 +27,7 @@ import {
 
 import Link from "next/link";
 import CreatePojectDialog from "./dialog/createprojectpopover";
-import React, { useState } from "react";
+import React from "react";
 import DeleteProjectDialog from "./dialog/deleteprojectpopover";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogPortal, DialogTrigger } from "../ui/dialog";

@@ -33,10 +33,10 @@ export async function POST(req: NextRequest) {
       subdomain,
       url: subdomainUrl,
     });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Subdomain generation error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to generate subdomain" },
+      { error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -86,10 +86,10 @@ export async function GET(req: NextRequest) {
       subdomain,
       url: subdomainUrl,
     });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Project subdomain lookup error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to get project subdomain" },
+      { error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -140,10 +140,10 @@ export async function HEAD(req: NextRequest) {
         },
       }
     );
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error("Project by subdomain lookup error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to find project by subdomain" },
+      { error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

@@ -1,10 +1,10 @@
-import { Frame, LinkIcon, List } from "lucide-react";
-import Link from "next/link";
+import { List } from "lucide-react";
+
 import React from "react";
 
-type Props = {};
 
-const ListItemHolder = (props: Props) => {
+
+const ListItemHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

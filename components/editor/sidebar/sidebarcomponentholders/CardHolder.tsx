@@ -1,9 +1,8 @@
 import { IdCard } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const CardHolder = (props: Props) => {
+const CardHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

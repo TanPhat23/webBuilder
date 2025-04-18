@@ -1,9 +1,8 @@
-import { Component, FormInput } from "lucide-react";
+import { FormInput } from "lucide-react";
 import React from "react";
 
-type Props = {};
 
-const InputHolder = (props: Props) => {
+const InputHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string

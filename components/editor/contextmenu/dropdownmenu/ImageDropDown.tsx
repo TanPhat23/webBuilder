@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { EditorElement } from "@/lib/type";
 
 export default function ImageDropDown() {
   const { updateElement } = useEditorStore();
@@ -36,7 +37,7 @@ export default function ImageDropDown() {
               type="text"
               placeholder="Enter Image URL"
               className="w-full p-2 text-sm border rounded"
-              value={(selectedElement as any)?.src || ""}
+              value={(selectedElement as EditorElement)?.src || ""}
               onChange={(e) => handleImageUrlChange(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
