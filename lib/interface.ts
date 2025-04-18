@@ -72,3 +72,35 @@ export interface SelectElement extends Element {
   options: Array<Partial<HTMLOptionElement>>;
   selectSettings?: Partial<HTMLSelectElement>;
 }
+
+export interface ChartElement extends Element {
+  type: "Chart";
+  chartType: "bar" | "line" | "pie" | "doughnut" | "radar" | "polarArea";
+  chartData: {
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string | string[];
+      borderWidth?: number;
+      fill?: boolean;
+    }>;
+  };
+  chartOptions?: Record<string, any>;
+}
+
+export interface DataTableElement extends Element {
+  type: "DataTable";
+  headers: string[];
+  rows: Array<Array<string | number>>;
+  tableSettings?: {
+    sortable?: boolean;
+    searchable?: boolean;
+    pagination?: boolean;
+    rowsPerPage?: number;
+    striped?: boolean;
+    bordered?: boolean;
+    hoverEffect?: boolean;
+  };
+}

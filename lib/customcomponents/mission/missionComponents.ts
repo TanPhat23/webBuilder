@@ -813,12 +813,10 @@ export const missionComponent2: CustomComponent = {
   },
 };
 
-// Create left-aligned variant
 export const missionComponentLeft: CustomComponent = {
   component: createMissionLayout("left"),
 };
 
-// Add the content to the left-aligned variant
 missionComponentLeft.component.elements = [
   {
     type: "Frame",
@@ -1109,12 +1107,9 @@ missionComponentLeft.component.elements = [
   },
 ];
 
-// Create centered variant
 export const missionComponentCentered: CustomComponent = {
   component: createMissionLayout("center"),
 };
-
-// Add the content to the centered variant
 missionComponentCentered.component.elements = [
   {
     type: "Frame",
@@ -2265,7 +2260,6 @@ export const missionComponentSlider: CustomComponent = {
   },
 };
 
-// New component with alternating sections
 export const missionComponentAlternating: CustomComponent = {
   component: {
     type: "Frame",

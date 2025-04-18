@@ -16,6 +16,7 @@ import { useEditorStore } from "@/lib/store/editorStore";
 import OptimisticFeedback from "./OptimisticFeedback";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import FrameComponents from "./editorcomponents/FrameComponents";
+import WidgetComponent from "./editorcomponents/WidgetComponent";
 import { CarouselElement } from "@/lib/interface";
 import ListItemComponent from "./editorcomponents/ListItemComponent";
 import handlePasteElement from "@/utils/handlePasteElment";
@@ -471,7 +472,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     ref={editableRef}
                   />
                 )}
-                {element.type === "Frame" && (
+                {element.type === "Frame" && element.name?.includes("Widget") ? (
+                  <WidgetComponent
+                    setContextMenuPosition={setContextMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    element={element}
+                    projectId={projectId}
+                  />
+                ) : element.type === "Frame" && (
                   <FrameComponents
                     setContextMenuPosition={setContextMenuPosition}
                     setShowContextMenu={setShowContextMenu}
