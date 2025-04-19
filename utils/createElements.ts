@@ -137,6 +137,7 @@ export function createElements(
         styles: {
           ...baseElement.styles,
           height: "300px",
+          width: "100%",
         },
         elements: [],
         settings: {

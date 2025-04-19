@@ -5,6 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+
 /**
  * Generate a subdomain for a project using the API
  * @param projectName The name of the project

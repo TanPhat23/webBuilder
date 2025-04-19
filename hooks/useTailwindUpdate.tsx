@@ -7,7 +7,7 @@ interface TailwindUpdate {
   (className: string, element: EditorElement): void;
 }
 
-export default function useTailwindUpdate() : TailwindUpdate {
+export default function useTailwindUpdate(): TailwindUpdate {
   const { updateElementOptimistically } = useEditorStore();
 
   const updateTailwind = (className: string, element: EditorElement) => {
@@ -20,6 +20,7 @@ export default function useTailwindUpdate() : TailwindUpdate {
 
     startTransition(() => {
       updateElementOptimistically(id, newElement);
+
     });
   };
 

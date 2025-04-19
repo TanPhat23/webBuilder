@@ -20,9 +20,16 @@ export default async function PreviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const elements = await GetAllPublic(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/public/${slug}`
-  );
+
+  let elements : EditorElement[] = [];
+  try {
+    const result = await GetAllPublic(
+      `${process.env.NEXT_PUBLIC_API_URL}/elements/public/${slug}`
+    );
+    elements = Array.isArray(result) ? result : [];
+  } catch (error) {
+    console.error("Error fetching elements:", error);
+  }
 
   const renderFrameElement = (element: FrameElement) => {
     return (
@@ -74,9 +81,22 @@ export default async function PreviewPage({
     );
   };
 
+  if (elements.length === 0) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold mb-2">No content found</h1>
+          <p className="text-gray-500">
+            This preview doesn't have any elements to display.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen">
-      {elements?.map((element: EditorElement) => {
+      {elements.map((element: EditorElement) => {
         switch (element.type as ElementTypes) {
           case "Frame":
             return renderFrameElement(element as FrameElement);
