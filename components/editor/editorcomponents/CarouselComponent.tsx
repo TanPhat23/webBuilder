@@ -82,7 +82,7 @@ const CarouselComponent: React.FC<Props> = ({
       element,
       projectId,
       updateElement,
-      imgSrc
+      imgSrc.ufsUrl
     );
   };
 
@@ -182,12 +182,14 @@ const CarouselComponent: React.FC<Props> = ({
       onDrop={handleDrop}
       className="h-full carousel-container mx-10"
       onDragOver={(e) => e.preventDefault()}
-
     >
       <Slider key={`slider-${element.id}`} {...carouselSettings}>
         {optimisticElements.map((childElement, index) => (
           <div key={childElement.id} className="h-full relative px-2 pb-8">
-            <div className="relative h-full w-full flex items-center justify-center aspect-video rounded-lg overflow-hidden ">
+            <div
+              className="flex items-center justify-center overflow-hidden"
+              style={{ height: childElement.styles?.height }}
+            >
               {renderElement(childElement, index)}
             </div>
 

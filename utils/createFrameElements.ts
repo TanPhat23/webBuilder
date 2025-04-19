@@ -167,7 +167,7 @@ const createElements = async (
         ...baseElement,
         styles: {
           ...baseElement.styles,
-          height: "100%",
+          height: "300px",
         },
         src: src,
         projectId: projectId,
@@ -195,7 +195,7 @@ const createElements = async (
     try {
       await Create(newElement);
     } catch (error) {
-      // Rollback on error
+      // Rollback on error  
       updateElement(parentElement.id, {
         elements: parentElement.elements.filter(
           (element) => element.id !== newElement.id
