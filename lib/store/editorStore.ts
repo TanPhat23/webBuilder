@@ -8,11 +8,11 @@ import {
 } from "../interface";
 import { EditorElement } from "../type";
 import { v4 as uuidv4 } from "uuid";
+import { BatchCreate, Delete, Update } from "@/app/api/element/route";
 
 // Type for containers that can hold child elements
 type ContainerElement = FrameElement | CarouselElement | ListElement;
 
-// Helper type guard to check if an element is a container
 const isContainerElement = (
   element: EditorElement
 ): element is ContainerElement => {
@@ -340,7 +340,7 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          // await BatchCreate(elementsToCreate);
+          await BatchCreate(elementsToCreate);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);
@@ -369,8 +369,8 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          // const updatedElement = { ...currentElement, ...completeUpdates };
-          // await Update(updatedElement);
+          const updatedElement = { ...currentElement, ...completeUpdates };
+          await Update(updatedElement);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to update element:", error);
@@ -399,7 +399,7 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          // await Delete(id);
+          await Delete(id);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to delete element:", error);

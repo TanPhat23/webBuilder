@@ -34,11 +34,11 @@ const CarouselComponent: React.FC<Props> = ({
 
   const [optimisticElements] = useOptimistic(
     element.elements,
-    (state, newElements: EditorElement[]) => newElements
+    (newElements: EditorElement[]) => newElements
   );
 
-  const carouselSettings = useMemo<Settings>(() => {
-    const defaults = {
+  const carouselSettings = useMemo<Settings>(
+    () => ({
       dots: true,
       infinite: true,
       arrows: true,
@@ -48,10 +48,6 @@ const CarouselComponent: React.FC<Props> = ({
       slidesToShow: 1,
       slidesToScroll: 1,
       pauseOnHover: true,
-    };
-
-    return {
-      ...defaults,
       ...element.settings,
       responsive: [
         {
@@ -69,8 +65,9 @@ const CarouselComponent: React.FC<Props> = ({
           },
         },
       ],
-    };
-  }, [element.settings]);
+    }),
+    [element.settings]
+  );
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -85,11 +82,11 @@ const CarouselComponent: React.FC<Props> = ({
       element,
       projectId,
       updateElement,
-      imgSrc
+      imgSrc.ufsUrl
     );
   };
 
-  const handleSwap = async (fromIndex: number, toIndex: number) => {
+  const handleSwap = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= optimisticElements.length) return;
 
     const newElements = [...optimisticElements];
@@ -126,7 +123,7 @@ const CarouselComponent: React.FC<Props> = ({
         handleDoubleClick(e, element),
       className: cn(
         element.tailwindStyles,
-        element.isSelected && "border-black border-2 border-solid"
+        element.isSelected && "ring-2 ring-black"
       ),
       style: element.styles,
     };
@@ -150,7 +147,7 @@ const CarouselComponent: React.FC<Props> = ({
             {...commonProps}
             src={element.src}
             alt={`Carousel Image ${index}`}
-            className={cn(commonProps.className, "slick-slide")}
+            className={cn(commonProps.className, "object-cover")}
             loading="lazy"
           />
         );
@@ -183,38 +180,38 @@ const CarouselComponent: React.FC<Props> = ({
     <div
       id={element.id}
       onDrop={handleDrop}
-      className="slider-container h-full mx-10"
+      className="h-full carousel-container mx-10"
       onDragOver={(e) => e.preventDefault()}
     >
-      <Slider
-        key={`slider-${element.id}-${JSON.stringify(carouselSettings)}`}
-        {...carouselSettings}
-      >
+      <Slider key={`slider-${element.id}`} {...carouselSettings}>
         {optimisticElements.map((childElement, index) => (
-          <div key={childElement.id} className="h-full group relative">
-            <div className="relative h-full w-full flex items-center justify-center aspect-[4/1] rounded-lg overflow-hidden">
+          <div key={childElement.id} className="h-full relative px-2 pb-8">
+            <div
+              className="flex items-center justify-center overflow-hidden"
+              style={{ height: childElement.styles?.height }}
+            >
               {renderElement(childElement, index)}
             </div>
 
-            <div className="flex gap-2 justify-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute bottom-0 left-0 right-0 z-10 bg-white/30 py-1">
+            <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => handleSwap(index, index - 1)}
                 disabled={index === 0}
-                className="gap-1 "
+                className="gap-1 hover:bg-gray-100"
               >
                 <ArrowLeftCircle className="h-4 w-4" />
-                <span>Move Left</span>
+                <span className="hidden sm:inline">Move Left</span>
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={() => handleSwap(index, index + 1)}
                 disabled={index === optimisticElements.length - 1}
-                className="gap-1 "
+                className="gap-1 hover:bg-gray-100"
               >
-                <span>Move Right</span>
+                <span className="hidden sm:inline">Move Right</span>
                 <ArrowRightCircle className="h-4 w-4" />
               </Button>
             </div>

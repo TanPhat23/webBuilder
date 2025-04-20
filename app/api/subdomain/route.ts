@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     const project = await prisma.projects.findFirst({
       where: {
         Id: projectId,
-        OwnerId: userId, // Ensure the user owns the project
+        OwnerId: userId,
       },
       select: {
         Id: true,

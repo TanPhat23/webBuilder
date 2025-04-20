@@ -1,25 +1,35 @@
-"use client";
-import React from "react";
-import useSWR from "swr";
-import { useParams } from "next/navigation";
-import { GetAll } from "@/app/api/element/route";
 import { EditorElement, ElementTypes } from "@/lib/type";
 import { FrameElement } from "@/lib/interface";
+import React from "react";
+import { GetAllPublic } from "@/app/api/element/route";
+export const revalidate = 60;
+export const dynamicParams = true;
 
-function PreviewPage() {
-  const params = useParams();
-  const {
-    data: elements,
-    error,
-    isLoading,
-  } = useSWR<EditorElement[]>(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/${params.slug}`,
-    GetAll
-  );
-  // if (error) console.log(error);
+export async function generateStaticParams() {
+  try {
+    return [];
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
+}
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading data</div>;
+export default async function PreviewPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
+  let elements : EditorElement[] = [];
+  try {
+    const result = await GetAllPublic(
+      `${process.env.NEXT_PUBLIC_API_URL}/elements/public/${slug}`
+    );
+    elements = Array.isArray(result) ? result : [];
+  } catch (error) {
+    console.error("Error fetching elements:", error);
+  }
 
   const renderFrameElement = (element: FrameElement) => {
     return (
@@ -63,22 +73,37 @@ function PreviewPage() {
               );
             case "Frame":
               return renderFrameElement(childElement as FrameElement);
+            default:
+              return null;
           }
         })}
       </div>
     );
   };
 
+  if (elements.length === 0) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold mb-2">No content found</h1>
+          <p className="text-gray-500">
+            This preview doesn't have any elements to display.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen">
-      {elements?.map((element: EditorElement) => {
+      {elements.map((element: EditorElement) => {
         switch (element.type as ElementTypes) {
           case "Frame":
             return renderFrameElement(element as FrameElement);
+          default:
+            return null;
         }
       })}
     </div>
   );
 }
-
-export default PreviewPage;

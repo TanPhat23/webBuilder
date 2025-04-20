@@ -206,7 +206,7 @@ const FrameComponents = (props: EditorComponentProps) => {
   return (
     <motion.div
       id={element.id}
-      // style={{ ...element.styles }}
+      style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragStart={(e, info) => handleDragStart(e, element, info)}
       onDragOver={(e) => e.preventDefault()}

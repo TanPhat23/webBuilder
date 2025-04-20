@@ -8,25 +8,35 @@ datasource db {
 }
 
 model Elements {
-  Id             String     @id(map: "PK_Elements")
-  Type           String     @db.VarChar(8)
-  Content        String?
-  IsSelected     Boolean
-  Styles         String
-  X              Float
-  Y              Float
-  Src            String?
-  Href           String?
-  ParentId       String?
-  ProjectId      String
-  Order          Int        @default(0)
-  Name           String?
-  Elements       Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
-  other_Elements Elements[] @relation("ElementsToElements")
-  Projects       Projects   @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Projects_ProjectId")
+  Id                                          String     @id(map: "PK_Elements")
+  Type                                        String     @db.VarChar(8)
+  Content                                     String?
+  IsSelected                                  Boolean
+  Styles                                      String
+  X                                           Int
+  Y                                           Int
+  Src                                         String?
+  Href                                        String?
+  ParentId                                    String?
+  ProjectId                                   String
+  Order                                       Int        @default(0)
+  Name                                        String?
+  ButtonType                                  String?
+  ElementId                                   String?
+  InputSettings                               String?
+  Options                                     String?
+  SelectSettings                              String?
+  Settings                                    String?
+  TailwindStyles                              String?
+  Elements_Elements_ElementIdToElements       Elements?  @relation("Elements_ElementIdToElements", fields: [ElementId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ElementId")
+  other_Elements_Elements_ElementIdToElements Elements[] @relation("Elements_ElementIdToElements")
+  Elements                                    Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
+  other_Elements                              Elements[] @relation("ElementsToElements")
+  Projects                                    Projects   @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Projects_ProjectId")
 
   @@index([ParentId], map: "IX_Elements_ParentId")
   @@index([ProjectId], map: "IX_Elements_ProjectId")
+  @@index([ElementId], map: "IX_Elements_ElementId")
 }
 
 model Projects {
@@ -34,8 +44,8 @@ model Projects {
   Name        String
   Description String?
   OwnerId     String
-  subdomain   String?    @unique
   published   Boolean    @default(false)
+  subdomain   String?
   Elements    Elements[]
   Users       Users      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
 
@@ -45,9 +55,9 @@ model Projects {
 model Users {
   Id        String     @id(map: "PK_Users")
   Email     String
-  FirstName String?
-  LastName  String?
-  ImageUrl  String?
+  FirstName String
+  LastName  String
+  ImageUrl  String
   CreatedAt DateTime   @db.Timestamptz(6)
   UpdatedAt DateTime   @db.Timestamptz(6)
   Images    Images[]

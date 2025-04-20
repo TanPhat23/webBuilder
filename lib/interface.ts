@@ -87,7 +87,7 @@ export interface ChartElement extends Element {
       fill?: boolean;
     }>;
   };
-  chartOptions?: Record<string, any>;
+  chartOptions?: Record<string, <T>(data: T) => T>;
 }
 
 export interface DataTableElement extends Element {

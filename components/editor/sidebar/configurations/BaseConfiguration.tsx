@@ -8,6 +8,7 @@ import TextColorInput from "./inputs/TextColorInput";
 import BackGroundColorInput from "./inputs/BackGroundColorInput";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { EditorElement } from "@/lib/type";
+import { twMerge } from "tailwind-merge";
 
 type Props = {
   selectedElement: EditorElement;
@@ -36,6 +37,7 @@ const BaseConfiguration: React.FC<Props> = ({
         styles: {
           ...selectedElement.styles,
           fontSize: newFontSize,
+          transition: "font-size 0.2s ease",
         },
       });
     });

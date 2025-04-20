@@ -80,7 +80,7 @@ export function createElements(
           minHeight: "100px",
           width: "100%",
           display: "flex",
-          backgroundColor: "white"
+          backgroundColor: "white",
         },
         elements: [],
         projectId: projectId,
@@ -136,8 +136,8 @@ export function createElements(
         x: 0,
         styles: {
           ...baseElement.styles,
-          width: "100%",
           height: "300px",
+          width: "100%",
         },
         elements: [],
         settings: {
