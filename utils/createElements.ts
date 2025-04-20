@@ -152,6 +152,34 @@ export function createElements(
       };
       break;
     }
+    case "Form": {
+      newElement = {
+        type: "Form",
+        ...baseElement,
+        x: 0,
+        styles: {
+          ...baseElement.styles,
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          gap: "12px",
+          minHeight: "180px",
+          width: "100%",
+          backgroundColor: "#f9fafb",
+          borderRadius: "8px",
+          border: "1px solid #e5e7eb",
+        },
+        tailwindStyles: "flex flex-col p-4 gap-3 min-h-[180px] w-full bg-gray-50 rounded-lg border border-gray-200",
+        elements: [],
+        formSettings: {
+          method: "post",
+          autoComplete: "on",
+          noValidate: false
+        },
+        projectId: projectId,
+      };
+      break;
+    }
     default: {
       newElement = {
         type: name,
