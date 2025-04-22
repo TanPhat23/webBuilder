@@ -81,6 +81,15 @@ const ButtonComponent = ({
           )}
       </motion.div>
     );
+  } else if ((element as ButtonElement).buttonType === "submit") {
+    return (
+      <motion.button 
+        key={element.id} 
+        {...commonProps} 
+        {...contentProps}
+        type="submit"
+      />
+    );
   } else {
     return (
       <motion.button key={element.id} {...commonProps} {...contentProps} />

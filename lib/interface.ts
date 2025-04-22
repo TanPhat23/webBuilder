@@ -104,3 +104,8 @@ export interface DataTableElement extends Element {
     hoverEffect?: boolean;
   };
 }
+
+export interface FormElement extends Element {
+  elements: EditorElement[];
+  formSettings?: Partial<HTMLFormElement>
+}

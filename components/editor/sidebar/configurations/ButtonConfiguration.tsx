@@ -10,6 +10,7 @@ import React, { startTransition, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Label } from "@/components/ui/label";
 import { ButtonElement } from "@/lib/interface";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   selectedElement: EditorElement;
@@ -20,11 +21,19 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const [buttonType, setButtonType] = useState<string>(
     selectedElement.type || "single"
   );
+  const [backgroundColor, setBackgroundColor] = useState<string>(
+    (selectedElement as ButtonElement).styles?.backgroundColor || "#ffffff"
+  );
+  const [textColor, setTextColor] = useState<string>(
+    (selectedElement as ButtonElement).styles?.color || "#374151"
+  );
 
   useEffect(() => {
     if (selectedElement) {
       const buttonElement = selectedElement as ButtonElement;
       setButtonType(buttonElement.buttonType || "single");
+      setBackgroundColor(buttonElement.styles?.backgroundColor || "#ffffff");
+      setTextColor(buttonElement.styles?.color || "#374151");
     }
   }, [selectedElement]);
 
@@ -137,11 +146,39 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
       } else {
         updateElementOptimistically(selectedElement.id, {
           type: "Button",
-          buttonType: "single",
+          buttonType: value,
           element: undefined,
         });
-        setButtonType("single");
+        setButtonType(value);
       }
+    });
+  };
+
+  const handleBackgroundColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setBackgroundColor(newColor);
+    
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...(selectedElement as ButtonElement).styles,
+          backgroundColor: newColor,
+        },
+      });
+    });
+  };
+
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setTextColor(newColor);
+    
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...(selectedElement as ButtonElement).styles,
+          color: newColor,
+        },
+      });
     });
   };
 
@@ -158,6 +195,10 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 <>
                   <span>Dropdown</span>
                 </>
+              ) : buttonType === "submit" ? (
+                <>
+                  <span>Submit</span>
+                </>
               ) : (
                 <>
                   <span>Standard</span>
@@ -167,14 +208,65 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="single">Standard Button</SelectItem>
+            <SelectItem value="submit">Submit Button</SelectItem>
             <SelectItem value="multi">Dropdown Button</SelectItem>
           </SelectContent>
         </Select>
         <p className="text-xs text-muted-foreground mt-1.5">
           {buttonType === "multi"
             ? "Dropdown menu with multiple selectable options"
+            : buttonType === "submit"
+            ? "Form submit button that triggers form submission"
             : "Standard clickable button with single action"}
         </p>
+      </div>
+
+      <div>
+        <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+          Background Color
+        </Label>
+        <div className="flex items-center gap-2">
+          <div 
+            className="w-6 h-6 border rounded" 
+            style={{ backgroundColor: backgroundColor }}
+          ></div>
+          <Input
+            type="text"
+            value={backgroundColor}
+            onChange={handleBackgroundColorChange}
+            className="flex-1"
+          />
+          <Input
+            type="color"
+            value={backgroundColor}
+            onChange={handleBackgroundColorChange}
+            className="w-10 h-10 p-1 cursor-pointer"
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+          Text Color
+        </Label>
+        <div className="flex items-center gap-2">
+          <div 
+            className="w-6 h-6 border rounded" 
+            style={{ backgroundColor: textColor }}
+          ></div>
+          <Input
+            type="text"
+            value={textColor}
+            onChange={handleTextColorChange}
+            className="flex-1"
+          />
+          <Input
+            type="color"
+            value={textColor}
+            onChange={handleTextColorChange}
+            className="w-10 h-10 p-1 cursor-pointer"
+          />
+        </div>
       </div>
     </div>
   );
