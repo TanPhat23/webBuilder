@@ -49,7 +49,7 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
         },
-        tailwindStyles: "h-10 text-black",
+        tailwindStyles: "h-10 px-2 py-4 text-black",
         projectId: projectId,
       };
       break;

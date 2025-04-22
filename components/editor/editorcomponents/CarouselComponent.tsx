@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useMemo, startTransition } from "react";
+import React, { useOptimistic, useMemo, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
@@ -31,42 +31,16 @@ const CarouselComponent: React.FC<Props> = ({
   const { uploadImages } = useImageStore();
   const { updateElement } = useEditorStore();
   const { setSelectedElement } = useElementSelectionStore();
-
+  const [settings, setSettings] = React.useState<Settings>(
+    (element as CarouselElement).carouselSettings || {}
+  );
+  React.useEffect(() => {
+    setSettings((element as CarouselElement).carouselSettings || {});
+  }, [element.carouselSettings]);
+  
   const [optimisticElements] = useOptimistic(
     element.elements,
     (newElements: EditorElement[]) => newElements
-  );
-
-  const carouselSettings = useMemo<Settings>(
-    () => ({
-      dots: true,
-      infinite: true,
-      arrows: true,
-      speed: 500,
-      autoplay: false,
-      autoplaySpeed: 3000,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      pauseOnHover: true,
-      ...element.settings,
-      responsive: [
-        {
-          breakpoint: 1024,
-          settings: {
-            slidesToShow: 2,
-            slidesToScroll: 1,
-          },
-        },
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1,
-          },
-        },
-      ],
-    }),
-    [element.settings]
   );
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -183,12 +157,12 @@ const CarouselComponent: React.FC<Props> = ({
       className="h-full carousel-container mx-10"
       onDragOver={(e) => e.preventDefault()}
     >
-      <Slider key={`slider-${element.id}`} {...carouselSettings}>
+      <Slider key={`slider-${element.id}`} {...settings}>
         {optimisticElements.map((childElement, index) => (
           <div key={childElement.id} className="h-full relative px-2 pb-8">
             <div
               className="flex items-center justify-center overflow-hidden"
-              style={{ height: childElement.styles?.height }}
+              style={{ height: element.styles?.height }}
             >
               {renderElement(childElement, index)}
             </div>
