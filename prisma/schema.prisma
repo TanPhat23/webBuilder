@@ -26,7 +26,7 @@ model Elements {
   InputSettings                               String?
   Options                                     String?
   SelectSettings                              String?
-  Settings                                    String?
+  CarouselSettings                            String?
   TailwindStyles                              String?
   Elements_Elements_ElementIdToElements       Elements?  @relation("Elements_ElementIdToElements", fields: [ElementId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ElementId")
   other_Elements_Elements_ElementIdToElements Elements[] @relation("Elements_ElementIdToElements")

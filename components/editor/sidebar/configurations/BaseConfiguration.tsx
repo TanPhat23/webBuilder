@@ -8,7 +8,6 @@ import TextColorInput from "./inputs/TextColorInput";
 import BackGroundColorInput from "./inputs/BackGroundColorInput";
 import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { EditorElement } from "@/lib/type";
-import { twMerge } from "tailwind-merge";
 
 type Props = {
   selectedElement: EditorElement;

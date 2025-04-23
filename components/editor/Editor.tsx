@@ -286,7 +286,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     document.addEventListener("mouseup", handleResizeEnd);
   };
 
-  const handleResize = (e: MouseEvent) => {
+  const handleResize = React.useCallback((e: MouseEvent) => {
     const resizingElementFromRef = resizingElement.current;
     if (!resizingElementFromRef) return;
     const elementId = resizingElementFromRef.id;
@@ -324,7 +324,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         height: `${newHeight}px`,
       },
     });
-  };
+  },[elements, updateElement]);
 
   const handleResizeEnd = () => {
     const element = elements.find(
