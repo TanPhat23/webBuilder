@@ -87,7 +87,7 @@ export default async function PreviewPage({
         <div className="text-center p-8">
           <h1 className="text-2xl font-bold mb-2">No content found</h1>
           <p className="text-gray-500">
-            This preview doesn't have any elements to display.
+            This preview doesn&apos;t have any elements to display.
           </p>
         </div>
       </div>

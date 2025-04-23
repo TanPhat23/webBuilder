@@ -69,6 +69,10 @@ const DataTableHolder = React.lazy(
   () =>
     import("@/components/editor/sidebar/sidebarcomponentholders/DataTableHolder")
 );
+const FormHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/FormHolder")
+);
 
 // Constants
 export const BASIC_COMPONENTS: DraggableComponent[] = [
@@ -107,7 +111,6 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     label: "List Item",
     type: "listItem",
   },
-
   {
     component: <ImageHolder />,
     label: "Image",
@@ -123,7 +126,11 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     label: "Select",
     type: "select",
   },
-
+  {
+    component: <FormHolder />,
+    label: "Form",
+    type: "form",
+  },
 ];
 
 export const ADVANCED_COMPONENTS: DraggableComponent[] = [
@@ -195,4 +202,9 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     label: "Widget Components",
     prefix: "Widget",
   },
+  {
+    id: "formComponents",
+    label: "Form Components",
+    prefix: "Form",
+  }
 ];

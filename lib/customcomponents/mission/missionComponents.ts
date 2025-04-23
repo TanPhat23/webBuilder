@@ -1,3 +1,4 @@
+import { FrameElement } from "@/lib/interface";
 import { CustomComponent } from "../styleconstants";
 import { v4 as uuidv4 } from "uuid";
 
@@ -90,7 +91,7 @@ export const missionComponent1: CustomComponent = {
 };
 
 // Update the component elements based on layout
-missionComponent1.component.elements = [
+(missionComponent1.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "TextContent",
@@ -817,7 +818,7 @@ export const missionComponentLeft: CustomComponent = {
   component: createMissionLayout("left"),
 };
 
-missionComponentLeft.component.elements = [
+(missionComponentLeft.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "ImageContainer",
@@ -1110,7 +1111,7 @@ missionComponentLeft.component.elements = [
 export const missionComponentCentered: CustomComponent = {
   component: createMissionLayout("center"),
 };
-missionComponentCentered.component.elements = [
+(missionComponentCentered.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "HeaderContent",

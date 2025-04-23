@@ -9,6 +9,7 @@ import { missionComponent1, missionComponent2, missionComponentCompact, missionC
 import { barChartComponent, pieChartComponent, lineChartComponent } from "./chart/chartComponents";
 import { simpleDataTableComponent, complexDataTableComponent } from "./data/dataTableComponents";
 import { clockWidgetComponent, digitalClockWidgetComponent } from "./widgets/widgetComponents";
+import { formComponent1, formComponent2 } from "./form/formComponents";
 
 export interface CustomComponent {
   component: Partial<EditorElement>;
@@ -53,4 +54,6 @@ export const customComponents: CustomComponent[] = [
   complexDataTableComponent,
   clockWidgetComponent,
   digitalClockWidgetComponent,
+  formComponent1,
+  formComponent2,
 ];

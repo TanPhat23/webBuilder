@@ -1,21 +1,19 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { FrameElement, EditorComponentProps } from "@/lib/interface";
-import ButtonComponent from "./ButtonComponent";
-import { EditorElement } from "@/lib/type";
-import ListItemComponent from "./ListItemComponent";
+import { ButtonElement, EditorComponentProps, FormElement } from "@/lib/interface";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
+import { EditorElement } from "@/lib/type";
+import FrameComponents from "./FrameComponents";
+import ButtonComponent from "./ButtonComponent";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
 import ChartComponent from "./ChartComponent";
 import DataTableComponent from "./DataTableComponent";
-import FormComponent from "./FormComponent";
+import ListItemComponent from "./ListItemComponent";
 
-const FrameComponents = (props: EditorComponentProps) => {
-  const { projectId, element, setShowContextMenu, setContextMenuPosition } =
-    props;
-  const dragConstraint = useRef<HTMLDivElement>(null);
+const FormComponent = (props: EditorComponentProps) => {
+  const { projectId, element, setShowContextMenu, setContextMenuPosition } = props;
 
   const {
     handleKeyDown,
@@ -31,60 +29,43 @@ const FrameComponents = (props: EditorComponentProps) => {
     draggingElement,
   } = useEditorElementHandlers(props);
 
+  const formElement = element as FormElement;
+  const formSettings = formElement.formSettings || {};
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = Object.fromEntries(formData.entries());
+    
+    if (formSettings.action && !element.isSelected) {
+      return true;
+    } else {
+      alert(JSON.stringify(data, null, 2));
+      return false;
+    }
+  };
+
   const renderElement = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(
       element,
-      dragConstraint as React.RefObject<HTMLDivElement>
     );
     const contentProps = getContentProps(element);
 
     switch (element.type) {
       case "Frame":
         return (
-          <motion.div
+          <FrameComponents
             key={element.id}
-            {...commonProps}
-            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
-              handleDrop(e, element)
-            }
-            onDragStart={(e, info) => handleDragStart(e, element, info)}
-            onDrag={(e, info) => handleDragOver(e, element, info)}
-            onMouseEnter={() => console.log("mouse enter", element.id)}
-            onDragEnd={(e, info) => handleDragEnd(e, info)}
-          >
-            {(element as FrameElement).elements?.map((childElement) => (
-              <React.Fragment key={childElement.id}>
-                {renderElement(childElement)}
-              </React.Fragment>
-            ))}
-          </motion.div>
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
         );
-
+        
       case "Form":
         return (
           <FormComponent
-            key={element.id}
-            element={element}
-            setContextMenuPosition={setContextMenuPosition}
-            setShowContextMenu={setShowContextMenu}
-            projectId={projectId}
-          />
-        );
-
-      case "Chart":
-        return (
-          <ChartComponent
-            key={element.id}
-            element={element}
-            setContextMenuPosition={setContextMenuPosition}
-            setShowContextMenu={setShowContextMenu}
-            projectId={projectId}
-          />
-        );
-
-      case "DataTable":
-        return (
-          <DataTableComponent
             key={element.id}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
@@ -146,6 +127,7 @@ const FrameComponents = (props: EditorComponentProps) => {
       case "Input":
         return (
           <InputComponent
+            key={element.id}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
@@ -196,6 +178,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             />
           );
         }
+        
       default:
         return (
           <motion.div
@@ -215,27 +198,49 @@ const FrameComponents = (props: EditorComponentProps) => {
   };
 
   return (
-    <motion.div
+    <motion.form
       id={element.id}
       style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
-      onDragStart={(e, info) => handleDragStart(e, element, info)}
       onDragOver={(e) => e.preventDefault()}
-      onDragEnd={(e, info) => handleDragEnd(e, info)}
-      onContextMenu={(e) => handleContextMenu(e, element)}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
+      onContextMenu={(e) => handleContextMenu(e, element)}
+      onSubmit={handleSubmit}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
       })}
-      ref={dragConstraint}
+      action={formSettings.action}
+      method={formSettings.method}
+      encType={formSettings.encType}
+      target={formSettings.target}
+      name={formSettings.name}
+      acceptCharset={formSettings.acceptCharset}
+      autoComplete={formSettings.autocomplete}
+      noValidate={formSettings.noValidate}
     >
-      {(element as FrameElement).elements?.map((childElement) => (
+      {formElement.elements?.map((childElement) => (
         <React.Fragment key={childElement.id}>
           {renderElement(childElement)}
         </React.Fragment>
       ))}
-    </motion.div>
+      {!hasSubmitButton(formElement) && (
+        <motion.button
+          type="submit"
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+          whileHover={{ scale: 1.05 }}
+        >
+          Submit
+        </motion.button>
+      )}
+    </motion.form>
   );
 };
 
-export default FrameComponents;
+const hasSubmitButton = (formElement: FormElement) => {
+  return formElement.elements?.some(
+    el => el.type === 'Button' && 
+    (el as ButtonElement).buttonType === 'submit'
+  );
+};
+
+export default FormComponent;

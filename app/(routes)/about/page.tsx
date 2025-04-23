@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Users, Zap, Globe, Star } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   const teamMembers = [
@@ -132,7 +133,9 @@ export default function AboutPage() {
             </ul>
           </div>
           <div className="rounded-xl overflow-hidden shadow-xl order-1 md:order-2 transform hover:scale-105 transition-transform duration-300">
-            <img
+            <Image
+              width={600}
+              height={400}
               src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
               alt="Đội ngũ DeWeb đang làm việc"
               className="w-full h-auto object-cover"

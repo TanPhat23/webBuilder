@@ -14,7 +14,7 @@ const DeviceSwitcher: React.FC<DeviceSwitcherProps> = ({
   onChange,
 }) => {
   return (
-    <div className="flex items-center gap-2 bg-white rounded-md shadow-sm p-1 ">
+    <div className="flex items-center gap-2 rounded-md  p-1 ">
       <button
         onClick={() => onChange("PHONE")}
         className={`p-2 rounded-md ${

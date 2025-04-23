@@ -11,6 +11,7 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
+import FormConfiguration from "./FormConfiguration";
 
 // Define Google Font interface
 interface GoogleFont {
@@ -111,6 +112,8 @@ const Configuration = () => {
         return <ButtonConfiguration selectedElement={selectedElement} />;
       case "Select":
         return <SelectConfiguration selectedElement={selectedElement} />;
+      case "Form":
+        return <FormConfiguration selectedElement={selectedElement} />;
       default:
         return (
           <BaseConfiguration

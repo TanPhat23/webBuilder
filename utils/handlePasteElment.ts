@@ -16,9 +16,9 @@ export default function handlePasteElement(
   const newElement = {
     ...parsedElement,
     id: `${parsedElement.type}-${uuidv4()}`,
-    x: parsedElement.x + 20,
-    y: parsedElement.y + 20,
-  };
+    x: parsedElement.x,
+    y: parsedElement.y,
+  };  
   if (
     selectedElement &&
     selectedElement.id !== parsedElement.id &&

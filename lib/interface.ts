@@ -55,7 +55,7 @@ export interface FrameElement extends Element {
   elements: EditorElement[];
 }
 export interface CarouselElement extends Element {
-  settings: SlickSettings;
+  carouselSettings: SlickSettings;
   elements: CarouselElementChild[];
 }
 export interface ButtonElement extends Element {
@@ -103,4 +103,9 @@ export interface DataTableElement extends Element {
     bordered?: boolean;
     hoverEffect?: boolean;
   };
+}
+
+export interface FormElement extends Element {
+  elements: EditorElement[];
+  formSettings?: Partial<HTMLFormElement>
 }
