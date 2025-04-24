@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/editor(.*)",
   "/preview(.*)",
+  "/settings(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -21,8 +22,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (hostname.includes(".localhost")) {
     isSubdomain = true;
     subdomain = hostname.split(".localhost")[0];
-  }
-  else if (
+  } else if (
     hostname !== mainDomain &&
     !hostname.includes("vercel.app") &&
     hostname.includes(".")
@@ -33,7 +33,6 @@ export default clerkMiddleware(async (auth, req) => {
       subdomain = parts[0];
     }
   }
-
 
   if (isSubdomain) {
     if (path === "/" || path === "") {

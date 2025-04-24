@@ -1,4 +1,3 @@
-
 import { EditorElement, TextAlign } from "@/lib/type";
 import React, { startTransition } from "react";
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
@@ -10,7 +9,10 @@ type Props = {
 };
 
 const alignType = {
-  left: { type: "left", icon: <AlignLeft /> },
+  left: {
+    type: "left",
+    icon: <AlignLeft className="text-secondary-foreground " />,
+  },
   center: { type: "center", icon: <AlignCenter /> },
   right: { type: "right", icon: <AlignRight /> },
   justify: { type: "justify", icon: <AlignJustify /> },
@@ -20,8 +22,7 @@ const TextAlignButton = ({ selectedElement }: Props) => {
   const alignmentKeys = Object.keys(alignType) as (keyof typeof alignType)[];
   const [currentAlignmentKey, setCurrentAlignmentKey] =
     React.useState<keyof typeof alignType>("left");
-  const { updateElementOptimistically } =
-      useOptimisticElement();
+  const { updateElementOptimistically } = useOptimisticElement();
   const handleAlign = () => {
     if (!selectedElement) return;
 
@@ -41,7 +42,6 @@ const TextAlignButton = ({ selectedElement }: Props) => {
         },
       });
     });
-    
   };
 
   React.useEffect(() => {
@@ -56,10 +56,7 @@ const TextAlignButton = ({ selectedElement }: Props) => {
     }
   }, [selectedElement, alignmentKeys]);
   return (
-    <Button
-      className="bg-white text-black hover:bg-gray-100 h-8 w-8"
-      onClick={handleAlign}
-    >
+    <Button className=" h-8 w-8 " variant="outline" onClick={handleAlign}>
       <div className="flex items-center gap-2">
         {alignType[currentAlignmentKey].icon}
       </div>

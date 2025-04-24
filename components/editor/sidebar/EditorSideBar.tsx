@@ -7,16 +7,19 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Settings } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
 import { ModeToggle } from "@/components/ModeToggle";
+import Link from "next/link";
 
 export function EditorSideBar2() {
   return (
@@ -54,7 +57,20 @@ export function EditorSideBar2() {
         </Collapsible>
       </SidebarContent>
       <SidebarFooter>
-        <ModeToggle />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={"/settings/preferences"} className="flex items-center gap-2">
+                    <Settings className="w-5 h-5  " />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
   );

@@ -18,14 +18,18 @@ export default function EditorPage({
   const loadElementsFromDB = useEditorStore(
     (state) => state.loadElementsFromDB
   );
-  const { startTour, setStartTour } = useElementSelectionStore();
+  const { startTour, needHelp, setStartTour } = useElementSelectionStore();
 
   const { data: elements } = useSWR<EditorElement[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
     GetAll
   );
 
-  const handleEndTour = () => setStartTour(false);
+  const handleEndTour = () => {
+    setStartTour(false);
+    // Make sure any other tour-related state is properly reset
+    useElementSelectionStore.getState().setNeedHelp(true);
+  };
 
   React.useEffect(() => {
     if (elements) {
@@ -33,17 +37,17 @@ export default function EditorPage({
     }
   }, [elements, loadElementsFromDB]);
 
-
   return (
     <>
       <Editor projectId={slug} />
-      <div className="absolute top-2 right-2 z-50">
-        <MessageCircleQuestion
-          onClick={() => setStartTour(true)}
-          size={24}
-          className="text-gray-700 hover:text-blue-500 cursor-pointer transition-colors"
-        />
-      </div>
+      {needHelp && (
+        <div className="absolute top-2 right-2 z-50">
+          <MessageCircleQuestion
+            onClick={() => setStartTour(true)}
+            className="w-4 cursor-pointer text-purple-500"
+          />
+        </div>
+      )}
       {startTour && (
         <EditorJoyRide
           onTourEnd={handleEndTour}

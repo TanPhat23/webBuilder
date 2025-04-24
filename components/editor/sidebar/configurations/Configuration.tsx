@@ -12,6 +12,7 @@ import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
+import CanvasColorSelector from "./CanvasColorSelector";
 
 // Define Google Font interface
 interface GoogleFont {
@@ -127,6 +128,7 @@ const Configuration = () => {
   return (
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
+        {!selectedElement && <CanvasColorSelector />}
         <div className="flex flex-row gap-1 mr-4">
           <div className="flex flex-col gap-1">
             <Input

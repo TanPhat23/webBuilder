@@ -82,8 +82,6 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
       });
     });
 
-    console.log(selectedElement.styles);
-
     setActiveStyles((prev) => ({
       ...prev,
       [type]: !prev[type],
@@ -100,7 +98,7 @@ const TextStyleButtons = ({ selectedElement }: Props) => {
           className={`h-8 w-8 ${
             activeStyles[style.type]
               ? "bg-blue-400 text-white hover:bg-blue-500"
-              : "bg-white text-black hover:bg-gray-100"
+              : " hover:bg-primary-foreground"
           }`}
           onClick={() => handleTextStyle(style.type, style.style)}
         >
