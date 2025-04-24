@@ -354,7 +354,7 @@ export const sidebarRightComponent3: CustomComponent = {
           flexDirection: "column",
           boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
         },
-        tailwindStyles: "w-full p-3 bg-white rounded-md mb-3 flex flex-col shadow-sm text-sm md:text-xs sm:text-[10px]",
+        tailwindStyles: "w-full p-3 bg-white rounded-md mb-3 flex flex-col shadow-xs text-sm md:text-xs sm:text-[10px]",
         elements: [
           {
             type: "Text",

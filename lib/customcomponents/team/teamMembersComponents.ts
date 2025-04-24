@@ -165,7 +165,7 @@ const createAboutCardHorizontal = (
           objectFit: "cover",
           flexShrink: "0",
         },
-        tailwindStyles: "w-32 h-32 rounded-lg object-cover flex-shrink-0",
+        tailwindStyles: "w-32 h-32 rounded-lg object-cover shrink-0",
         href: "",
         src: imageSrc,
         parentId: "",

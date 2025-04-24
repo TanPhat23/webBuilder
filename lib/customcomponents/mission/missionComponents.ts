@@ -563,7 +563,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -628,7 +628,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -693,7 +693,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -758,7 +758,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -1326,7 +1326,7 @@ export const missionComponentCompact: CustomComponent = {
               borderRadius: "8px",
               flexShrink: "0",
             },
-            tailwindStyles: "w-44 h-44 object-cover rounded-lg flex-shrink-0",
+            tailwindStyles: "w-44 h-44 object-cover rounded-lg shrink-0",
             href: "",
             src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
             parentId: "",
@@ -1681,7 +1681,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #f3f4f6",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-sm border border-gray-100",
+              "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-xs border border-gray-100",
             elements: [
               {
                 type: "Text",
@@ -1876,7 +1876,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #e5e7eb",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-sm border border-gray-200",
+              "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-xs border border-gray-200",
             elements: [
               {
                 type: "Text",
@@ -2071,7 +2071,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #dbeafe",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-sm border border-blue-100",
+              "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-xs border border-blue-100",
             elements: [
               {
                 type: "Text",

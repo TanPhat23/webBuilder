@@ -81,7 +81,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <div className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
+      <div className="relative bg-linear-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         </div>
@@ -89,7 +89,7 @@ export default function AboutPage() {
         <Container className="py-24 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl">
-              Về <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">DeWeb</span>
+              Về <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">DeWeb</span>
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
               DeWeb giúp bạn xây dựng giao diện web một cách đơn giản, nhanh chóng và hiệu quả. Chúng tôi tạo ra công cụ hỗ trợ lập trình viên ở mọi cấp độ.
@@ -212,7 +212,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="text-center max-w-3xl mx-auto bg-gradient-to-r from-purple-100 to-blue-100 p-12 rounded-2xl">
+        <section className="text-center max-w-3xl mx-auto bg-linear-to-r from-purple-100 to-blue-100 p-12 rounded-2xl">
           <h2 className="text-3xl font-bold mb-4">Sẵn sàng để bắt đầu với DeWeb?</h2>
           <p className="text-lg mb-8 text-gray-700">
             Hãy tham gia cùng hàng ngàn người dùng đang xây dựng web một cách dễ dàng với công cụ của chúng tôi.

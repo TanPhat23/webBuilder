@@ -29,7 +29,7 @@ const DataTableHolder = () => {
         borderRadius: "8px",
         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
       },
-      tailwindStyles: "w-full max-w-5xl p-4 bg-white rounded-lg shadow",
+      tailwindStyles: "w-full max-w-5xl p-4 bg-white rounded-lg shadow-sm",
       headers: ["Name", "Email", "Role", "Status"],
       rows: [
         ["John Doe", "john@example.com", "Developer", "Active"],
@@ -57,7 +57,7 @@ const DataTableHolder = () => {
       draggable
       onDragStart={handleDragStart}
       onClick={handleClick}
-      className="bg-white p-4 border border-gray-200 rounded-md shadow-sm hover:shadow-md cursor-grab flex items-center justify-center select-none"
+      className="bg-white p-4 border border-gray-200 rounded-md shadow-xs hover:shadow-md cursor-grab flex items-center justify-center select-none"
     >
       <div className="text-center">
         <div className="mb-2 text-gray-600 flex justify-center">

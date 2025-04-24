@@ -785,7 +785,7 @@ export const complexDataTableComponent: CustomComponent = {
                   width: "100%",
                   fontSize: "14px",
                 },
-                tailwindStyles: "border-none outline-none w-full text-sm",
+                tailwindStyles: "border-none outline-hidden w-full text-sm",
                 href: "",
                 src: "",
                 parentId: "",
@@ -1008,7 +1008,7 @@ export const complexDataTableComponent: CustomComponent = {
                       alignItems: "center",
                       justifyContent: "center",
                     },
-                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0",
+                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center shrink-0",
                     elements: [
                       {
                         type: "Text",
@@ -1209,7 +1209,7 @@ export const complexDataTableComponent: CustomComponent = {
                       alignItems: "center",
                       justifyContent: "center",
                     },
-                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0",
+                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center shrink-0",
                     elements: [
                       {
                         type: "Text",
@@ -1409,7 +1409,7 @@ export const complexDataTableComponent: CustomComponent = {
                       alignItems: "center",
                       justifyContent: "center",
                     },
-                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0",
+                    tailwindStyles: "w-9 h-9 rounded-md bg-gray-100 flex items-center justify-center shrink-0",
                     elements: [
                       {
                         type: "Text",
