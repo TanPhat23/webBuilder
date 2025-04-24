@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ButtonElement, EditorComponentProps, FormElement } from "@/lib/interface";
@@ -8,8 +8,6 @@ import FrameComponents from "./FrameComponents";
 import ButtonComponent from "./ButtonComponent";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
-import ChartComponent from "./ChartComponent";
-import DataTableComponent from "./DataTableComponent";
 import ListItemComponent from "./ListItemComponent";
 
 const FormComponent = (props: EditorComponentProps) => {
