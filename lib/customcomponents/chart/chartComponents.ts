@@ -966,7 +966,7 @@ export const lineChartComponent: CustomComponent = {
                   borderTop: "3px solid #4f46e5",
                   borderRadius: "2px",
                 },
-                tailwindStyles: "absolute w-full h-full top-0 left-0 bg-gradient-to-b from-transparent from-60% to-indigo-600/10 border-t-2 border-indigo-600 rounded",
+                tailwindStyles: "absolute w-full h-full top-0 left-0 bg-linear-to-b from-transparent from-60% to-indigo-600/10 border-t-2 border-indigo-600 rounded",
                 elements: [
                   // Data points
                   {

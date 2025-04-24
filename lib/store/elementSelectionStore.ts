@@ -2,12 +2,22 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { EditorElement } from "../type";
 
+export interface ElementSelectionProps {
+  selectedElementId: string | undefined;
+  selectedElement: EditorElement | undefined;
+  multiSelectedElementIds: string[];
+  startTour: boolean;
+  needHelp: boolean;
+}
+
 interface ElementSelectionState {
   selectedElementId: string | undefined;
   selectedElement: EditorElement | undefined;
   multiSelectedElementIds: string[];
   startTour: boolean;
+  needHelp: boolean;
   setStartTour: (value: boolean) => void;
+  setNeedHelp: (value: boolean) => void;
   setSelectedElement: (element: EditorElement | undefined) => void;
   setSelectedElementId: (id: string | undefined) => void;
   addMultiSelectedElement: (id: string) => void;
@@ -22,9 +32,14 @@ export const useElementSelectionStore = create<ElementSelectionState>()(
       selectedElement: undefined,
       multiSelectedElementIds: [],
       startTour: false,
+      needHelp: true,
 
       setStartTour: (value) => {
         set({ startTour: value });
+      },
+
+      setNeedHelp: (value) => {
+        set({ needHelp: value });
       },
 
       setSelectedElement: (element) => {

@@ -123,7 +123,7 @@ const InputConfiguration: React.FC<Props> = ({ selectedElement }) => {
           <div className="flex flex-col space-y-4 py-2">
             {/* Required */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="required" className="flex-grow">
+              <Label htmlFor="required" className="grow">
                 Required
               </Label>
               <Switch
@@ -256,7 +256,7 @@ const InputConfiguration: React.FC<Props> = ({ selectedElement }) => {
 
             {/* Disabled */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="disabled" className="flex-grow">
+              <Label htmlFor="disabled" className="grow">
                 Disabled
               </Label>
               <Switch
@@ -270,7 +270,7 @@ const InputConfiguration: React.FC<Props> = ({ selectedElement }) => {
 
             {/* Read Only */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="readonly" className="flex-grow">
+              <Label htmlFor="readonly" className="grow">
                 Read Only
               </Label>
               <Switch

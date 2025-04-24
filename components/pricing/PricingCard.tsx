@@ -51,11 +51,11 @@ const PricingCard: React.FC<PricingCardProps> = ({
         </div>
         <CardDescription className="mt-2">{description}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
+      <CardContent className="grow">
         <ul className="space-y-3">
           {features.map((feature, index) => (
             <li key={index} className="flex items-center">
-              <Check className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+              <Check className="h-4 w-4 text-primary mr-2 shrink-0" />
               <span>{feature}</span>
             </li>
           ))}

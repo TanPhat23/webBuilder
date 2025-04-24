@@ -52,7 +52,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         <h3 className="text-xl font-bold mt-2">{name}</h3>
         <CardDescription className="text-center font-medium text-primary/70">{role}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow text-center px-6">
+      <CardContent className="grow text-center px-6">
         <p className="text-muted-foreground">{description}</p>
       </CardContent>
       {socialLinks && (

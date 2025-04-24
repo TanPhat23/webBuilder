@@ -70,7 +70,7 @@ const Navbar = () => {
           </NavigationMenuList>
           <Button
             variant="ghost"
-            className="md:hidden text-black text-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50"
+            className="md:hidden text-black text-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-50"
             onClick={toggleMenu}
           >
             <Menu size={32} />
