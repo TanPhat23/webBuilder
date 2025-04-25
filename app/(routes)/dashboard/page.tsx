@@ -38,7 +38,7 @@ export default function Page() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -71,13 +71,14 @@ export default function Page() {
                 {projects?.map((project) => (
                   <li
                     key={project.id}
-                    className="bg-white rounded-lg shadow-md"
+                    className="rounded-lg shadow-md bg-foreground"
                   >
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold">{project.name}</h3>
+                      <h3 className="text-lg font-semibold text-primary-foreground">{project.name}</h3>
                       <p className="text-sm">{project.description}</p>
                       <div className="flex gap-2 mt-4">
                         <Button
+                          className="w-full border-primary-foreground border-2"
                           onClick={() => router.push(`/editor/${project.id}`)}
                         >
                           Edit

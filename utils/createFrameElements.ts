@@ -1,12 +1,8 @@
 import { EditorElement } from "@/lib/type";
-import {
-  ButtonElement,
-  FrameElement,
-  CarouselElement,
-  ListElement,
-} from "@/lib/interface";
+import { FrameElement, CarouselElement, ListElement, FormElement } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Create } from "@/app/api/element/route";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -25,7 +21,7 @@ export const listItemStyles: CSSProperties = {
 
 const createElements = async (
   name: string,
-  parentElement: FrameElement | CarouselElement | ListElement,
+  parentElement: FrameElement | CarouselElement | ListElement | FormElement,
   projectId: string,
   updateElement?: (id: string, updates: Partial<EditorElement>) => void,
   src?: string
@@ -53,7 +49,7 @@ const createElements = async (
         styles: {
           ...baseElement.styles,
         },
-        tailwindStyles: "h-10 text-black",
+        tailwindStyles: "h-10 px-2 py-4 text-black",
         projectId: projectId,
       };
       break;
@@ -71,6 +67,33 @@ const createElements = async (
           flexDirection: "column",
         },
         elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "Form": {
+      newElement = {
+        type: "Form",
+        ...baseElement,
+        styles: {
+          ...baseElement.styles,
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          gap: "12px",
+          minHeight: "180px",
+          width: "100%",
+          backgroundColor: "#f9fafb",
+          borderRadius: "8px",
+          border: "1px solid #e5e7eb",
+        },
+        tailwindStyles: "flex flex-col p-4 gap-3 min-h-[180px] w-full bg-gray-50 rounded-lg border border-gray-200",
+        elements: [],
+        formSettings: {
+          method: "post",
+          autoComplete: "on",
+          noValidate: false
+        },
         projectId: projectId,
       };
       break;
@@ -152,38 +175,13 @@ const createElements = async (
           height: "100%",
           width: "100%",
         },
-        elements: [
-          {
-            type: "Text",
-            ...baseElement,
-            id: `Text-${uuidv4}`,
-            content: "Text 1",
-            styles: {
-              ...baseElement.styles,
-              display: "flex",
-              fontSize: "16px",
-            },
-          },
-          {
-            type: "Text",
-            ...baseElement,
-            id: `Option2-${uuidv4}`,
-            content: "Text 2",
-            styles: {
-              ...baseElement.styles,
-              display: "flex",
-              fontSize: "16px",
-            },
-          },
-        ],
+
         options: [
           {
             value: "Option 1",
-            label: "Option 1",
           },
           {
             value: "Option 2",
-            label: "Option 2",
           },
         ],
         projectId: projectId,
@@ -196,8 +194,7 @@ const createElements = async (
         ...baseElement,
         styles: {
           ...baseElement.styles,
-          height: "100%",
-          width: "100%",
+          height: "300px",
         },
         src: src,
         projectId: projectId,
@@ -217,16 +214,15 @@ const createElements = async (
   const parentElementCopy = { ...parentElement };
   parentElementCopy.elements.push(newElement);
 
-  // Use the Zustand store if available
   if (updateElement) {
     updateElement(parentElement.id, {
       elements: parentElementCopy.elements,
     });
 
     try {
-      // await Create(newElement);
+      await Create(newElement);
     } catch (error) {
-      // Rollback on error
+      // Rollback on error  
       updateElement(parentElement.id, {
         elements: parentElement.elements.filter(
           (element) => element.id !== newElement.id

@@ -10,6 +10,10 @@ import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
+import SelectConfiguration from "./SelectConfiguration";
+import FormConfiguration from "./FormConfiguration";
+import CanvasColorSelector from "./CanvasColorSelector";
+import { Button } from "@/components/ui/button";
 
 // Define Google Font interface
 interface GoogleFont {
@@ -26,7 +30,8 @@ interface GoogleFont {
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
   const { selectedElement } = useElementSelectionStore();
-  const { updateElementOptimistically } = useEditorStore();
+  const { elements, deleteElementOptimistically, updateElementOptimistically } =
+    useEditorStore();
 
   const [localWidth, setLocalWidth] = useState(
     selectedElement?.styles?.width || ""
@@ -108,6 +113,10 @@ const Configuration = () => {
         return <InputConfiguration selectedElement={selectedElement} />;
       case "Button":
         return <ButtonConfiguration selectedElement={selectedElement} />;
+      case "Select":
+        return <SelectConfiguration selectedElement={selectedElement} />;
+      case "Form":
+        return <FormConfiguration selectedElement={selectedElement} />;
       default:
         return (
           <BaseConfiguration
@@ -121,29 +130,50 @@ const Configuration = () => {
   return (
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
-        <div className="flex flex-row gap-1 mr-4">
-          <div className="flex flex-col gap-1">
-            <Input
-              className="w-full text-xs p-1"
-              value={localWidth}
-              onChange={handleWidthChange}
-            />
-            <label className="text-xs">Width</label>
+        {!selectedElement ? (
+          <>
+            <CanvasColorSelector />
+            <Button
+              className="w-full text-xs p-1 h-8"
+              variant="destructive"
+              onClick={() => {
+                elements.forEach((element) => {
+                  startTransition(() => {
+                    deleteElementOptimistically(element.id);
+                  });
+                });
+              }}
+            >
+              Reset to default
+            </Button>
+          </>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-1 mr-4">
+              <div className="flex flex-col gap-1">
+                <Input
+                  className="w-full text-xs p-1"
+                  value={localWidth}
+                  onChange={handleWidthChange}
+                />
+                <label className="text-xs">Width</label>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Input
+                  className="w-full text-xs p-1"
+                  value={localHeight}
+                  onChange={handleHeightChange}
+                />
+                <label className="text-xs">Height</label>
+              </div>
+            </div>
+            {renderConfiguration()}
+            <div className="flex flex-row gap-1 mr-4">
+              <BorderRadiusInput selectedElement={selectedElement} />
+              <BorderWeightPopover selectedElement={selectedElement} />
+            </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <Input
-              className="w-full text-xs p-1"
-              value={localHeight}
-              onChange={handleHeightChange}
-            />
-            <label className="text-xs">Height</label>
-          </div>
-        </div>
-        {renderConfiguration()}
-        <div className="flex flex-row gap-1 mr-4">
-          <BorderRadiusInput selectedElement={selectedElement} />
-          <BorderWeightPopover selectedElement={selectedElement} />
-        </div>
+        )}
       </div>
     </div>
   );

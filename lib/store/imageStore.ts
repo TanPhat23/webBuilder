@@ -1,10 +1,11 @@
+import { UploadedFileData } from "uploadthing/types";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface ImageUploadState {
-  uploadImages: string[];
+  uploadImages: UploadedFileData[];
 
-  addImage: (image: string) => void;
+  addImage: (image: UploadedFileData) => void;
   removeImage: (image: string) => void;
 }
 
@@ -23,7 +24,7 @@ export const useImageStore = create<ImageUploadState>()(
       removeImage: (imageToRemove) => {
         set((state) => ({
           uploadImages: state.uploadImages.filter(
-            (image) => image !== imageToRemove
+            (image) => image.ufsUrl !== imageToRemove
           ),
         }));
       },

@@ -8,6 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { twMerge } from "tailwind-merge";
 
 type Props = {
   selectedElement: EditorElement | undefined;
@@ -20,13 +21,14 @@ const FrameBackgroundColorPicker = ({ selectedElement }: Props) => {
 
   const handleBackgroundColorChange = (value: string) => {
     if (!selectedElement) return;
-
+    const tailwindStyle = `bg-[${value}]`;
     startTransition(() => {
       updateElementOptimistically(selectedElement.id, {
         styles: {
           ...selectedElement.styles,
           backgroundColor: value,
         },
+        tailwindStyles: twMerge(selectedElement.tailwindStyles, tailwindStyle),
       });
     });
   };

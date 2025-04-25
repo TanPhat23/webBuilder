@@ -20,8 +20,8 @@ type Props = {
 const CarouselConfiguration: React.FC<Props> = () => {
   const router = useRouter();
   const { selectedElement } = useElementSelectionStore();
-  const settings = (selectedElement as CarouselElement).settings || {};
-  const { updateElement } = useEditorStore();
+  const settings = (selectedElement as CarouselElement).carouselSettings || {};
+  const { updateElementOptimistically } = useEditorStore();
 
   const handleChange = <T,>(property: string, value: T) => {
     const updatedSettings = {
@@ -34,12 +34,13 @@ const CarouselConfiguration: React.FC<Props> = () => {
     }
 
     if (selectedElement) {
-      updateElement(selectedElement?.id, {
-        ...selectedElement,
-        settings: updatedSettings,
+      React.startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          carouselSettings: updatedSettings,
+        });
+        router.refresh();
       });
     }
-    router.refresh();
   };
 
   return (

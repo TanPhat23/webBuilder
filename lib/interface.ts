@@ -55,7 +55,7 @@ export interface FrameElement extends Element {
   elements: EditorElement[];
 }
 export interface CarouselElement extends Element {
-  settings: SlickSettings;
+  carouselSettings: SlickSettings;
   elements: CarouselElementChild[];
 }
 export interface ButtonElement extends Element {
@@ -69,6 +69,43 @@ export interface ListElement extends Element {
   elements: EditorElement[];
 }
 export interface SelectElement extends Element {
-  elements: EditorElement[];
   options: Array<Partial<HTMLOptionElement>>;
+  selectSettings?: Partial<HTMLSelectElement>;
+}
+
+export interface ChartElement extends Element {
+  type: "Chart";
+  chartType: "bar" | "line" | "pie" | "doughnut" | "radar" | "polarArea";
+  chartData: {
+    labels: string[];
+    datasets: Array<{
+      label: string;
+      data: number[];
+      backgroundColor?: string | string[];
+      borderColor?: string | string[];
+      borderWidth?: number;
+      fill?: boolean;
+    }>;
+  };
+  chartOptions?: Record<string, <T>(data: T) => T>;
+}
+
+export interface DataTableElement extends Element {
+  type: "DataTable";
+  headers: string[];
+  rows: Array<Array<string | number>>;
+  tableSettings?: {
+    sortable?: boolean;
+    searchable?: boolean;
+    pagination?: boolean;
+    rowsPerPage?: number;
+    striped?: boolean;
+    bordered?: boolean;
+    hoverEffect?: boolean;
+  };
+}
+
+export interface FormElement extends Element {
+  elements: EditorElement[];
+  formSettings?: Partial<HTMLFormElement>
 }

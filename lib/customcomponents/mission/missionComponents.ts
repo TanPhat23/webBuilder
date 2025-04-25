@@ -1,3 +1,4 @@
+import { FrameElement } from "@/lib/interface";
 import { CustomComponent } from "../styleconstants";
 import { v4 as uuidv4 } from "uuid";
 
@@ -90,7 +91,7 @@ export const missionComponent1: CustomComponent = {
 };
 
 // Update the component elements based on layout
-missionComponent1.component.elements = [
+(missionComponent1.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "TextContent",
@@ -562,7 +563,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -627,7 +628,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -692,7 +693,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -757,7 +758,7 @@ export const missionComponent2: CustomComponent = {
                           fontSize: "14px",
                         },
                         tailwindStyles:
-                          "flex-shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
+                          "shrink-0 h-6 w-6 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold",
                         href: "",
                         src: "",
                         parentId: "",
@@ -813,13 +814,11 @@ export const missionComponent2: CustomComponent = {
   },
 };
 
-// Create left-aligned variant
 export const missionComponentLeft: CustomComponent = {
   component: createMissionLayout("left"),
 };
 
-// Add the content to the left-aligned variant
-missionComponentLeft.component.elements = [
+(missionComponentLeft.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "ImageContainer",
@@ -1109,13 +1108,10 @@ missionComponentLeft.component.elements = [
   },
 ];
 
-// Create centered variant
 export const missionComponentCentered: CustomComponent = {
   component: createMissionLayout("center"),
 };
-
-// Add the content to the centered variant
-missionComponentCentered.component.elements = [
+(missionComponentCentered.component as FrameElement).elements = [
   {
     type: "Frame",
     name: "HeaderContent",
@@ -1330,7 +1326,7 @@ export const missionComponentCompact: CustomComponent = {
               borderRadius: "8px",
               flexShrink: "0",
             },
-            tailwindStyles: "w-44 h-44 object-cover rounded-lg flex-shrink-0",
+            tailwindStyles: "w-44 h-44 object-cover rounded-lg shrink-0",
             href: "",
             src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
             parentId: "",
@@ -1685,7 +1681,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #f3f4f6",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-sm border border-gray-100",
+              "flex flex-col min-w-[300px] bg-white rounded-lg p-5 shadow-xs border border-gray-100",
             elements: [
               {
                 type: "Text",
@@ -1880,7 +1876,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #e5e7eb",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-sm border border-gray-200",
+              "flex flex-col min-w-[300px] bg-gray-100 rounded-lg p-5 shadow-xs border border-gray-200",
             elements: [
               {
                 type: "Text",
@@ -2075,7 +2071,7 @@ export const missionComponentSlider: CustomComponent = {
               border: "1px solid #dbeafe",
             },
             tailwindStyles:
-              "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-sm border border-blue-100",
+              "flex flex-col min-w-[300px] bg-blue-50 rounded-lg p-5 shadow-xs border border-blue-100",
             elements: [
               {
                 type: "Text",
@@ -2265,7 +2261,6 @@ export const missionComponentSlider: CustomComponent = {
   },
 };
 
-// New component with alternating sections
 export const missionComponentAlternating: CustomComponent = {
   component: {
     type: "Frame",

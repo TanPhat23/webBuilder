@@ -1,11 +1,14 @@
 import {
   ButtonElement,
   CarouselElement,
+  ChartElement,
+  DataTableElement,
   Element,
   FrameElement,
   InputElement,
   ListElement,
   SelectElement,
+  FormElement,
 } from "./interface";
 
 export type CarouselElementChild = Element | ButtonElement | FrameElement;
@@ -17,7 +20,10 @@ export type EditorElement =
   | CarouselElement
   | ListElement
   | InputElement
-  | SelectElement;
+  | SelectElement
+  | ChartElement
+  | DataTableElement
+  | FormElement;
 
 /** this is DEPRECIATED use The
  * @file editorStore.tsx to mange your state
@@ -40,9 +46,27 @@ export type EditorAction =
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
-export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";
+export type ElementTypes =
+  | "Text"
+  | "Link"
+  | "Button"
+  | "Frame"
+  | "List"
+  | "Carousel"
+  | "ListItem"
+  | "Input"
+  | "Select"
+  | "Chart"
+  | "DataTable"
+  | "Image"
+  | "Form";
 
-export type ContainerElement = FrameElement | CarouselElement | ListElement | SelectElement;
+export type ContainerElement =
+  | FrameElement
+  | CarouselElement
+  | ListElement
+  | SelectElement
+  | FormElement;
 export interface appProjectTypes {
   id?: string;
   name: string;

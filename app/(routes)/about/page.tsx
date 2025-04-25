@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Users, Zap, Globe, Star } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   const teamMembers = [
@@ -80,7 +81,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <div className="relative bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
+      <div className="relative bg-linear-to-br from-blue-900 via-purple-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         </div>
@@ -88,7 +89,7 @@ export default function AboutPage() {
         <Container className="py-24 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl">
-              Về <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">DeWeb</span>
+              Về <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">DeWeb</span>
             </h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
               DeWeb giúp bạn xây dựng giao diện web một cách đơn giản, nhanh chóng và hiệu quả. Chúng tôi tạo ra công cụ hỗ trợ lập trình viên ở mọi cấp độ.
@@ -132,7 +133,9 @@ export default function AboutPage() {
             </ul>
           </div>
           <div className="rounded-xl overflow-hidden shadow-xl order-1 md:order-2 transform hover:scale-105 transition-transform duration-300">
-            <img
+            <Image
+              width={600}
+              height={400}
               src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
               alt="Đội ngũ DeWeb đang làm việc"
               className="w-full h-auto object-cover"
@@ -209,7 +212,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="text-center max-w-3xl mx-auto bg-gradient-to-r from-purple-100 to-blue-100 p-12 rounded-2xl">
+        <section className="text-center max-w-3xl mx-auto bg-linear-to-r from-purple-100 to-blue-100 p-12 rounded-2xl">
           <h2 className="text-3xl font-bold mb-4">Sẵn sàng để bắt đầu với DeWeb?</h2>
           <p className="text-lg mb-8 text-gray-700">
             Hãy tham gia cùng hàng ngàn người dùng đang xây dựng web một cách dễ dàng với công cụ của chúng tôi.

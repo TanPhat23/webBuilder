@@ -61,7 +61,18 @@ const SelectHolder = React.lazy(
   () =>
     import("@/components/editor/sidebar/sidebarcomponentholders/SelectHolder")
 );
-
+const ChartHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/ChartHolder")
+);
+const DataTableHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/DataTableHolder")
+);
+const FormHolder = React.lazy(
+  () =>
+    import("@/components/editor/sidebar/sidebarcomponentholders/FormHolder")
+);
 
 // Constants
 export const BASIC_COMPONENTS: DraggableComponent[] = [
@@ -100,7 +111,6 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     label: "List Item",
     type: "listItem",
   },
-
   {
     component: <ImageHolder />,
     label: "Image",
@@ -116,7 +126,11 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
     label: "Select",
     type: "select",
   },
-
+  {
+    component: <FormHolder />,
+    label: "Form",
+    type: "form",
+  },
 ];
 
 export const ADVANCED_COMPONENTS: DraggableComponent[] = [
@@ -129,6 +143,16 @@ export const ADVANCED_COMPONENTS: DraggableComponent[] = [
     component: <ButtonMultiHolder />,
     label: "Button Multi",
     type: "buttonMulti",
+  },
+  {
+    component: <ChartHolder />,
+    label: "Chart",
+    type: "chart",
+  },
+  {
+    component: <DataTableHolder />,
+    label: "Data Table",
+    type: "dataTable",
   },
 ];
 
@@ -163,4 +187,24 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     label: "Mission Components",
     prefix: "MissionComponent",
   },
+  {
+    id: "chartComponents",
+    label: "Chart Components",
+    prefix: "Chart",
+  },
+  {
+    id: "dataComponents",
+    label: "Data Table Components",
+    prefix: "DataTable",
+  },
+  {
+    id: "widgetComponents",
+    label: "Widget Components",
+    prefix: "Widget",
+  },
+  {
+    id: "formComponents",
+    label: "Form Components",
+    prefix: "Form",
+  }
 ];

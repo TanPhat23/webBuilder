@@ -80,7 +80,7 @@ export function createElements(
           minHeight: "100px",
           width: "100%",
           display: "flex",
-          backgroundColor: "white"
+          backgroundColor: "white",
         },
         elements: [],
         projectId: projectId,
@@ -136,17 +136,64 @@ export function createElements(
         x: 0,
         styles: {
           ...baseElement.styles,
-          width: "100%",
           height: "300px",
+          width: "100%",
         },
-        elements: [],
-        settings: {
+        carouselSettings: {
           dots: true,
           infinite: true,
+          arrows: true,
           speed: 500,
+          autoplay: false,
+          autoplaySpeed: 3000,
           slidesToShow: 1,
           slidesToScroll: 1,
-          autoplay: false,
+          pauseOnHover: true,
+          responsive: [
+            {
+              breakpoint: 1024,
+              settings: {
+                slidesToShow: 2,
+                slidesToScroll: 1,
+              },
+            },
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+              },
+            },
+          ],
+        },
+        elements: [],
+        projectId: projectId,
+      };
+      break;
+    }
+    case "Form": {
+      newElement = {
+        type: "Form",
+        ...baseElement,
+        x: 0,
+        styles: {
+          ...baseElement.styles,
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          gap: "12px",
+          minHeight: "180px",
+          width: "100%",
+          backgroundColor: "#f9fafb",
+          borderRadius: "8px",
+          border: "1px solid #e5e7eb",
+        },
+        tailwindStyles: "flex flex-col p-4 gap-3 min-h-[180px] w-full bg-gray-50 rounded-lg border border-gray-200",
+        elements: [],
+        formSettings: {
+          method: "post",
+          autoComplete: "on",
+          noValidate: false
         },
         projectId: projectId,
       };

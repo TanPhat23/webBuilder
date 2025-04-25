@@ -8,6 +8,9 @@ import ListItemComponent from "./ListItemComponent";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
+import ChartComponent from "./ChartComponent";
+import DataTableComponent from "./DataTableComponent";
+import FormComponent from "./FormComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
@@ -57,6 +60,39 @@ const FrameComponents = (props: EditorComponentProps) => {
           </motion.div>
         );
 
+      case "Form":
+        return (
+          <FormComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
+      case "Chart":
+        return (
+          <ChartComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
+      case "DataTable":
+        return (
+          <DataTableComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
       case "Button":
         return (
           <ButtonComponent
@@ -69,6 +105,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             setShowContextMenu={setShowContextMenu}
           />
         );
+
       case "ListItem":
         return (
           <ListItemComponent
@@ -88,6 +125,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }}
           />
         );
+
       case "Select":
         return (
           <SelectComponent
@@ -97,15 +135,14 @@ const FrameComponents = (props: EditorComponentProps) => {
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
             parentHandlers={{
-              handleDrop,
               handleDoubleClick,
               handleContextMenu,
-              getContentProps,
               getCommonProps,
               draggingElement,
             }}
           />
         );
+
       case "Input":
         return (
           <InputComponent
@@ -116,6 +153,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             commonProps={commonProps}
           />
         );
+
       case "Link":
         return (
           <motion.a
@@ -128,6 +166,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             }
           />
         );
+
       case "Image":
         if (element.src) {
           return (
@@ -178,7 +217,7 @@ const FrameComponents = (props: EditorComponentProps) => {
   return (
     <motion.div
       id={element.id}
-      // style={{ ...element.styles }}
+      style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragStart={(e, info) => handleDragStart(e, element, info)}
       onDragOver={(e) => e.preventDefault()}

@@ -22,7 +22,7 @@ export const sidebarLeftComponent: CustomComponent = {
       transition: "all 0.3s ease",
     },
     tailwindStyles:
-      "flex flex-col justify-between h-full bg-white shadow-sm border-r border-gray-100 w-full md:w-64 sm:w-20 p-4 sm:p-2 md:p-6 transition-all duration-300",
+      "flex flex-col justify-between h-full bg-white shadow-xs border-r border-gray-100 w-full md:w-64 sm:w-20 p-4 sm:p-2 md:p-6 transition-all duration-300",
     elements: [
       // Top section with logo and navigation
       {

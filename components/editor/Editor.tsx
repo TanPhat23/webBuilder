@@ -16,9 +16,12 @@ import { useEditorStore } from "@/lib/store/editorStore";
 import OptimisticFeedback from "./OptimisticFeedback";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import FrameComponents from "./editorcomponents/FrameComponents";
+import WidgetComponent from "./editorcomponents/WidgetComponent";
 import { CarouselElement } from "@/lib/interface";
 import ListItemComponent from "./editorcomponents/ListItemComponent";
 import handlePasteElement from "@/utils/handlePasteElment";
+import FormComponent from "./editorcomponents/FormComponent";
+import { useCanvasStore } from "@/lib/store/canvasStore";
 
 type Props = {
   projectId: string;
@@ -37,6 +40,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     redo,
   } = useEditorStore();
 
+  const { backgroundColor } = useCanvasStore();
   const { setSelectedElement, selectedElement } = useElementSelectionStore();
 
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
@@ -74,10 +78,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         loadedFonts.add(fontFamily);
       }
     });
-    
   }, [elements]);
-
- 
 
   const handleCopy = (element: EditorElement) => {
     const elementToSerialize = { ...element };
@@ -132,40 +133,40 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       console.error("Error pasting element:", error);
     }
   };
-   useEffect(() => {
-     const handleKeyDown = (e: KeyboardEvent) => {
-       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
-         e.preventDefault();
-         undo();
-       } else if (
-         (e.ctrlKey || e.metaKey) &&
-         (e.key === "y" || (e.shiftKey && e.key === "z"))
-       ) {
-         e.preventDefault();
-         redo();
-       } else if ((e.ctrlKey || e.metaKey) && e.key === "c") {
-         e.preventDefault();
-         if (selectedElement) {
-           handleCopy(selectedElement);
-         }
-       } else if ((e.ctrlKey || e.metaKey) && e.key === "v") {
-         e.preventDefault();
-         handlePaste();
-       } else if ((e.ctrlKey || e.metaKey) && e.key === "x") {
-         e.preventDefault();
-         if (selectedElement) {
-           handleCut(selectedElement);
-         }
-       }
-     };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        undo();
+      } else if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "y" || (e.shiftKey && e.key === "z"))
+      ) {
+        e.preventDefault();
+        redo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        e.preventDefault();
+        if (selectedElement) {
+          handleCopy(selectedElement);
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+        e.preventDefault();
+        handlePaste();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "x") {
+        e.preventDefault();
+        if (selectedElement) {
+          handleCut(selectedElement);
+        }
+      }
+    };
 
-     document.addEventListener("keydown", handleKeyDown);
-     return () => {
-       document.removeEventListener("keydown", handleKeyDown);
-     };
-   }, [undo, redo, selectedElement, handleCopy, handleCut, handlePaste]);
-  
-   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [undo, redo, selectedElement, handleCopy, handleCut, handlePaste]);
+
+  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     setShowContextMenu(true);
     setContextMenuPosition({ x: e.clientX, y: e.clientY });
@@ -258,19 +259,22 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     setSelectedElement(undefined);
   };
 
-  const handleZoom = React.useCallback((event: WheelEvent) => {
-    if (event.ctrlKey || event.metaKey) {
-      event.preventDefault();
-      event.stopPropagation();
-      const delta = event.deltaY > 0 ? -0.1 : 0.1;
-      const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
-      const rect = (event.target as HTMLElement).getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      setLockedTransformOrigin(`${x}px ${y}px`);
-      setZoom(newZoom);
-    }
-  },[zoom]);
+  const handleZoom = React.useCallback(
+    (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault();
+        event.stopPropagation();
+        const delta = event.deltaY > 0 ? -0.1 : 0.1;
+        const newZoom = Math.min(Math.max(zoom + delta, 0.1), 3);
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        setLockedTransformOrigin(`${x}px ${y}px`);
+        setZoom(newZoom);
+      }
+    },
+    [zoom]
+  );
 
   const handleResizeStart = (
     direction: "nw" | "ne" | "sw" | "se",
@@ -284,45 +288,48 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     document.addEventListener("mouseup", handleResizeEnd);
   };
 
-  const handleResize = (e: MouseEvent) => {
-    const resizingElementFromRef = resizingElement.current;
-    if (!resizingElementFromRef) return;
-    const elementId = resizingElementFromRef.id;
-    if (!elementId) return;
-    const targetElement = elements.find((el) => el.id === elementId);
-    if (!targetElement) return;
-    const styles = window.getComputedStyle(resizingElementFromRef);
-    const width = parseInt(styles.width, 10);
-    const height = parseInt(styles.height, 10);
-    const dX = e.movementX;
-    const dY = e.movementY;
-    let newWidth, newHeight;
-    switch (resizeDirection.current) {
-      case "nw":
-        newWidth = width - dX;
-        newHeight = height - dY;
-        break;
-      case "ne":
-        newWidth = width + dX;
-        newHeight = height - dY;
-        break;
-      case "sw":
-        newWidth = width - dX;
-        newHeight = height + dY;
-        break;
-      case "se":
-        newWidth = width + dX;
-        newHeight = height + dY;
-        break;
-    }
-    updateElement(elementId, {
-      styles: {
-        ...targetElement.styles,
-        width: `${newWidth}px`,
-        height: `${newHeight}px`,
-      },
-    });
-  };
+  const handleResize = React.useCallback(
+    (e: MouseEvent) => {
+      const resizingElementFromRef = resizingElement.current;
+      if (!resizingElementFromRef) return;
+      const elementId = resizingElementFromRef.id;
+      if (!elementId) return;
+      const targetElement = elements.find((el) => el.id === elementId);
+      if (!targetElement) return;
+      const styles = window.getComputedStyle(resizingElementFromRef);
+      const width = parseInt(styles.width, 10);
+      const height = parseInt(styles.height, 10);
+      const dX = e.movementX;
+      const dY = e.movementY;
+      let newWidth, newHeight;
+      switch (resizeDirection.current) {
+        case "nw":
+          newWidth = width - dX;
+          newHeight = height - dY;
+          break;
+        case "ne":
+          newWidth = width + dX;
+          newHeight = height - dY;
+          break;
+        case "sw":
+          newWidth = width - dX;
+          newHeight = height + dY;
+          break;
+        case "se":
+          newWidth = width + dX;
+          newHeight = height + dY;
+          break;
+      }
+      updateElement(elementId, {
+        styles: {
+          ...targetElement.styles,
+          width: `${newWidth}px`,
+          height: `${newHeight}px`,
+        },
+      });
+    },
+    [elements, updateElement]
+  );
 
   const handleResizeEnd = () => {
     const element = elements.find(
@@ -405,6 +412,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: lockedTransformOrigin,
+              backgroundColor: backgroundColor,
             }}
             id="canvas"
             onContextMenu={(e) => {
@@ -417,7 +425,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             onDrop={onDrop}
             onDragOver={(e) => e.preventDefault()}
             tabIndex={0}
-            className="w-full h-full bg-slate-300 relative overflow-auto"
+            className="w-full h-full relative overflow-auto"
           >
             {elements.map((element) => (
               <motion.div
@@ -471,13 +479,23 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     ref={editableRef}
                   />
                 )}
-                {element.type === "Frame" && (
-                  <FrameComponents
+                {element.type === "Frame" &&
+                element.name?.includes("Widget") ? (
+                  <WidgetComponent
                     setContextMenuPosition={setContextMenuPosition}
                     setShowContextMenu={setShowContextMenu}
                     element={element}
                     projectId={projectId}
                   />
+                ) : (
+                  element.type === "Frame" && (
+                    <FrameComponents
+                      setContextMenuPosition={setContextMenuPosition}
+                      setShowContextMenu={setShowContextMenu}
+                      element={element}
+                      projectId={projectId}
+                    />
+                  )
                 )}
                 {element.type === "Carousel" && (
                   <CarouselComponent
@@ -492,6 +510,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     element={element}
                     setContextMenuPosition={setContextMenuPosition}
                     setShowContextMenu={setShowContextMenu}
+                    projectId={projectId}
+                  />
+                )}
+                {element.type === "Form" && (
+                  <FormComponent
+                    setContextMenuPosition={setContextMenuPosition}
+                    setShowContextMenu={setShowContextMenu}
+                    element={element}
                     projectId={projectId}
                   />
                 )}

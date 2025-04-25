@@ -6,6 +6,10 @@ import { sidebarLeftComponent, sidebarLeftComponent2, sidebarLeftComponent3, sid
 import { sidebarRightComponent, sidebarRightComponent2, sidebarRightComponent3, sidebarRightComponent4 } from "./sidebar/sidebarRightComponents";
 import { aboutCarouselHorizontal, aboutCarouselVertical, aboutDynamicHorizontal, aboutDynamicVertical, teamMembersComponent1, teamMembersComponent2, teamMembersComponent3 } from "./team/teamMembersComponents";
 import { missionComponent1, missionComponent2, missionComponentCompact, missionComponentSlider } from "./mission/missionComponents";
+import { barChartComponent, pieChartComponent, lineChartComponent } from "./chart/chartComponents";
+import { simpleDataTableComponent, complexDataTableComponent } from "./data/dataTableComponents";
+import { clockWidgetComponent, digitalClockWidgetComponent } from "./widgets/widgetComponents";
+import { formComponent1, formComponent2 } from "./form/formComponents";
 
 export interface CustomComponent {
   component: Partial<EditorElement>;
@@ -43,4 +47,13 @@ export const customComponents: CustomComponent[] = [
   missionComponent2,
   missionComponentCompact,
   missionComponentSlider,
+  barChartComponent,
+  pieChartComponent,
+  lineChartComponent,
+  simpleDataTableComponent,
+  complexDataTableComponent,
+  clockWidgetComponent,
+  digitalClockWidgetComponent,
+  formComponent1,
+  formComponent2,
 ];

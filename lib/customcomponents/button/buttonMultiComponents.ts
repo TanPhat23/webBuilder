@@ -10,7 +10,7 @@ export const buttonMultiComponent: CustomComponent = {
     isSelected: false,
     x: 0,
     tailwindStyles:
-      "flex items-center justify-between px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 shadow-md transition-all duration-200",
+      "flex items-center justify-between px-4 py-2 rounded-md bg-linear-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 shadow-md transition-all duration-200",
     y: 0,
     id: uuidv4(),
     styles: {

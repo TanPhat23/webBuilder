@@ -271,7 +271,7 @@ export function useEditorElementHandlers({
     if (imgSrc) {
       startTransition(() => {
         updateElementOptimistically(element.id, {
-          src: imgSrc,
+          src: imgSrc.ufsUrl,
         });
       });
     }

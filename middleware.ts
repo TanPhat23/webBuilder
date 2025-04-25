@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
   "/editor(.*)",
   "/preview(.*)",
+  "/settings(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -12,21 +13,16 @@ export default clerkMiddleware(async (auth, req) => {
   const hostname = req.headers.get("host") || "";
   const path = url.pathname;
 
-  // Define your main app domain
   const mainDomain = process.env.NEXT_PUBLIC_APP_DOMAIN || "localhost";
   const mainPort = process.env.PORT || "3000";
 
-  // Check if it's a custom project subdomain
   let isSubdomain = false;
   let subdomain: string | null = null;
 
-  // Handle localhost subdomains (e.g., "projectid.localhost:3000")
   if (hostname.includes(".localhost")) {
     isSubdomain = true;
     subdomain = hostname.split(".localhost")[0];
-  }
-  // Handle production subdomains (e.g., "projectid.yourdomain.com")
-  else if (
+  } else if (
     hostname !== mainDomain &&
     !hostname.includes("vercel.app") &&
     hostname.includes(".")
@@ -37,10 +33,6 @@ export default clerkMiddleware(async (auth, req) => {
       subdomain = parts[0];
     }
   }
-
-  console.log(
-    `Debug: Hostname: ${hostname}, isSubdomain: ${isSubdomain}, subdomain: ${subdomain}, path: ${path}`
-  );
 
   if (isSubdomain) {
     if (path === "/" || path === "") {

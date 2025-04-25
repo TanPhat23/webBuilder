@@ -80,7 +80,7 @@ export const CompactNav = {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-52 rounded-lg"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-52 rounded-lg"
               align="start"
               side={isMobile ? "bottom" : "right"}
               sideOffset={4}
@@ -249,7 +249,7 @@ export const CompactNav = {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-48 rounded-lg"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-48 rounded-lg"
               side={isMobile ? "bottom" : "right"}
               align="end"
               sideOffset={4}

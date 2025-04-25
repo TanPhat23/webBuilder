@@ -27,14 +27,11 @@ const borderStyles = [
   "hidden",
 ];
 
-
 const BorderWeightPopover = ({ selectedElement }: Props) => {
-
   const [borderWeight, setBorderWeight] = React.useState<number>(0);
   const [borderStyle, setBorderStyle] = React.useState<string>("solid");
   const [borderColor, setBorderColor] = React.useState<string>("black");
-  const { updateElementOptimistically } =
-    useOptimisticElement();
+  const { updateElementOptimistically } = useOptimisticElement();
   const updateBorder = (weight: number, style: string, color: string) => {
     const newBorder = `${weight}px ${style} ${color}`;
     if (selectedElement) {
@@ -81,7 +78,7 @@ const BorderWeightPopover = ({ selectedElement }: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild className="w-auto h-8">
-        <Button className="bg-white text-black hover:bg-slate-200 text-xs border border-gray-300">
+        <Button className=" text-xs" variant={"outline"}>
           Border Properties
         </Button>
       </PopoverTrigger>

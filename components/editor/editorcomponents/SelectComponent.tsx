@@ -1,16 +1,13 @@
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
-import { EditorComponentProps } from "@/lib/interface";
+import { EditorComponentProps, SelectElement } from "@/lib/interface";
+import { useEditorStore } from "@/lib/store/editorStore";
 import { EditorElement } from "@/lib/type";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { startTransition } from "react";
 
 type Props = EditorComponentProps & {
   parentHandlers?: {
-    handleDrop: (
-      e: React.DragEvent<HTMLElement>,
-      element: EditorElement
-    ) => void;
     handleDoubleClick: (
       e: React.MouseEvent<HTMLElement>,
       element: EditorElement
@@ -20,9 +17,6 @@ type Props = EditorComponentProps & {
       element: EditorElement
     ) => void;
 
-    getContentProps: (element: EditorElement) => {
-      dangerouslySetInnerHTML: { __html: string };
-    };
     getCommonProps: (
       element: EditorElement
     ) => React.HTMLAttributes<HTMLElement>;
@@ -37,8 +31,6 @@ const SelectComponent = ({
   setShowContextMenu,
   parentHandlers,
 }: Props) => {
-  const [clicked, setClicked] = React.useState(false);
-
   const hookHandlers = useEditorElementHandlers({
     element,
     projectId,
@@ -46,36 +38,67 @@ const SelectComponent = ({
     setShowContextMenu,
   });
 
-  const { handleDoubleClick, handleContextMenu, handleDrop, getCommonProps } =
+  const { handleDoubleClick, handleContextMenu } =
     parentHandlers || hookHandlers;
 
-  const renderOptions = (element: EditorElement): React.ReactNode => {
-    const commonProps = getCommonProps(element);
-    switch (element.type) {
-      default:
-        return (
-          <motion.option {...commonProps}>{element.content}</motion.option>
-        );
+  const selectElement = element as SelectElement;
+  const selectSettings = selectElement.selectSettings || {};
+  const options = selectElement.options || [];
+  const { updateElementOptimistically } = useEditorStore();
+
+  const handleDrop = (e: React.DragEvent<HTMLSelectElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const data = e.dataTransfer.getData("text/plain");
+    if (data === "Text") {
+      startTransition(() => {
+        updateElementOptimistically(element.id, {
+          options: [
+            ...options,
+            {
+              value: `option-${options.length + 1}`,
+              text: `Option ${options.length + 1}`,
+            },
+          ],
+        });
+      });
+    } else {
+      return;
     }
   };
 
   return (
     <motion.select
       style={{ ...element.styles }}
-      onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
-      tabIndex={0}
-      drag={!element.isSelected}
-      dragMomentum={false}
-      dragSnapToOrigin={true}
-      dragElastic={0.1}
+      tabIndex={1}
+      onDrop={handleDrop}
+      onClick={(e) => e.stopPropagation()}
+      onDrag={(e) => e.preventDefault()}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
       onContextMenu={(e) => handleContextMenu(e, element)}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
       })}
+      multiple={selectSettings.multiple}
+      disabled={selectSettings.disabled}
+      size={selectSettings.size}
+      defaultValue={options
+        .filter((option) => option.selected)
+        .map((option) => option.value || "")}
     >
-      {renderOptions(element)}
+      {options &&
+        options.length > 0 &&
+        options.map((option, index) => (
+ 
+          <option
+            key={`option-${index}`}
+            value={option.value || ""}
+            disabled={option.disabled || false}
+          >
+            {option.text || option.value || `Option ${index + 1}`}
+          </option>
+        ))}
     </motion.select>
   );
 };
