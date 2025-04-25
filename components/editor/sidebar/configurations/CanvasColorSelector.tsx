@@ -27,7 +27,7 @@ const CanvasColorSelector = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 p-2 border rounded-md mb-4">
+    <div className="flex flex-col gap-2 p-2 mb-4">
       <Label className="text-sm font-medium">Canvas Background</Label>
       <div className="flex gap-2 items-center">
         <Input

@@ -13,7 +13,7 @@ const FormHolder = () => {
     <div
       draggable
       onDragStart={(e) => onDragStart(e, "Form")}
-      className="flex flex-row justify-between items-center w-full  rounded-md hover:bg-gray-100 cursor-grab active:cursor-grabbing transition-colors"
+      className="flex flex-row justify-between items-center w-full  rounded-md  cursor-grab active:cursor-grabbing transition-colors"
     >
       <div className="font-medium">Form</div>
       <FileText className="text-blue-500" />

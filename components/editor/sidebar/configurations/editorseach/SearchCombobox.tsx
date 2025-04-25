@@ -15,8 +15,11 @@ import {
   CollapsibleContent,
 } from "@/components/ui/collapsible";
 import { customComponents } from "@/lib/customcomponents/styleconstants";
-import { ADVANCED_COMPONENTS, BASIC_COMPONENTS, COMPONENT_CATEGORIES } from "@/lib/constants/componentsconstants";
-
+import {
+  ADVANCED_COMPONENTS,
+  BASIC_COMPONENTS,
+  COMPONENT_CATEGORIES,
+} from "@/lib/constants/componentsconstants";
 
 const handleDragStart = (
   e: React.DragEvent<HTMLDivElement>,
@@ -60,7 +63,6 @@ export const SearchCombobox: React.FC = () => {
     <Command className="rounded-lg border shadow-md">
       <CommandInput placeholder="Search components..." />
       <CommandList>
-        {/* Basic Components Section */}
         <CommandGroup heading="Basic Components">
           {BASIC_COMPONENTS.map((component) => (
             <CommandItem
@@ -86,7 +88,7 @@ export const SearchCombobox: React.FC = () => {
               className="cursor-grab active:cursor-grabbing"
             >
               <div
-                draggable
+              draggable
                 onDragStart={(e) => handleDragStart(e, component.type)}
                 className="w-full"
               >
@@ -104,7 +106,7 @@ export const SearchCombobox: React.FC = () => {
             open={openSections[category.id]}
             onOpenChange={() => toggleSection(category.id)}
           >
-            <CollapsibleTrigger className="w-full px-4 py-2 text-left hover:bg-gray-100 flex justify-between items-center">
+            <CollapsibleTrigger className="w-full px-4 py-2 text-left  flex justify-between items-center">
               <span className="font-medium">{category.label}</span>
               <ChevronDown
                 className={`h-4 w-4 transition-transform ${
@@ -136,7 +138,6 @@ export const SearchCombobox: React.FC = () => {
             </CollapsibleContent>
           </Collapsible>
         ))}
-        {/* Component Categories */}
       </CommandList>
     </Command>
   );

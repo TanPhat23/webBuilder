@@ -1,4 +1,3 @@
-// components/CarouselSlider.tsx
 "use client";
 
 import Slider, { Settings } from "react-slick";
