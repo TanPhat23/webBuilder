@@ -8,7 +8,7 @@ import {
   SelectElement,
 } from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/app/api/element/route";
+import { GetAllPublic } from "@/app/data/element/elementDAL";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 

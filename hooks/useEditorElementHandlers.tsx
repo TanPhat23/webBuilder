@@ -41,11 +41,7 @@ export interface ElementHandlers {
     element: EditorElement,
     info?: PanInfo
   ) => void;
-  handleDragOver: (
-    e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
-    element: EditorElement,
-    info?: PanInfo
-  ) => void;
+
   handleDragEnd: (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
     info?: PanInfo
@@ -88,24 +84,37 @@ export function useEditorElementHandlers({
   );
 
   const swapElements = () => {
-    if (!hoveredElement || !draggingElement || !element) return;
-    const frameElements = [...(element as FrameElement).elements];
-    const draggedIndex = frameElements.findIndex(
-      (el) => el.id === draggingElement.id
-    );
-    const hoveredIndex = frameElements.findIndex(
-      (el) => el.id === hoveredElement.id
-    );
-    if (draggedIndex === -1 || hoveredIndex === -1) return;
+    if (!draggingElement || !hoveredElement) return;
 
-    [frameElements[draggedIndex], frameElements[hoveredIndex]] = [
-      frameElements[hoveredIndex],
-      frameElements[draggedIndex],
-    ];
+    const draggingParentId = draggingElement.parentId;
+    const hoveredParentId = hoveredElement.parentId;
 
-    updateElement(element.id, {
-      elements: frameElements,
-    });
+    if (draggingParentId === hoveredParentId) {
+      const {
+        id: draggingId,
+        type: draggingType,
+        ...draggingProps
+      } = draggingElement;
+      const {
+        id: hoveredId,
+        type: hoveredType,
+        ...hoveredProps
+      } = hoveredElement;
+
+      // Swap everything except ID and type
+      startTransition(() => {
+        updateElement(draggingId, {
+          ...hoveredProps,
+          id: draggingId,
+        });
+
+        // Update hovered element to have dragging element's properties
+        updateElement(hoveredId, {
+          ...draggingProps,
+          id: hoveredId,
+        });
+      });
+    }
 
     setDraggingElement(null);
     setHoveredElement(null);
@@ -141,6 +150,16 @@ export function useEditorElementHandlers({
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(element);
       console.log("hovering", element.id, "while dragging", draggingElement.id);
+    }
+  };
+
+  // Adding custom mouse enter handler for better hover detection
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    if (draggingElement && draggingElement.id !== element.id) {
+      setHoveredElement(element);
     }
   };
 
@@ -312,8 +331,12 @@ export function useEditorElementHandlers({
     // These are for standard HTML elements (non-Framer Motion)
     onDragStart: (e: React.DragEvent<HTMLElement>) =>
       handleDragStart(e, element),
-    onDragOver: (e: React.DragEvent<HTMLElement>) => handleDragOver(e, element),
     onDragEnd: (e: React.DragEvent<HTMLElement>) => handleDragEnd(e),
+    onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+      if (draggingElement?.id !== element.id) {
+        setHoveredElement(element);
+      }
+    },
     style: { ...element.styles },
   });
 
@@ -325,7 +348,6 @@ export function useEditorElementHandlers({
     handleDrop,
     handleImageDrop,
     handleDragStart,
-    handleDragOver,
     handleDragEnd,
     swapElements,
     getContentProps,
