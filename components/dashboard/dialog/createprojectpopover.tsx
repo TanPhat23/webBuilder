@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Create } from "@/app/api/project/route";
+import { Create } from "@/app/data/project/projectDAL";
 import { appProjectTypes } from "@/lib/type";
 import { useRouter } from "next/navigation";
 
