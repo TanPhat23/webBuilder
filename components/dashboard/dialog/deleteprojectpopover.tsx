@@ -1,4 +1,4 @@
-import { Delete, GetAll } from "@/app/api/project/route";
+import { Delete, GetAll } from "@/app/data/project/projectDAL";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -11,8 +11,6 @@ import { appProjectTypes } from "@/lib/type";
 import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import useSWR from "swr";
-
-
 
 const DeleteProjectDialog = () => {
   const [selectedProject, setSelectedProject] = React.useState<string>("");
