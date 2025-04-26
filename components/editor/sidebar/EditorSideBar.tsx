@@ -20,6 +20,7 @@ import ImageUpload from "./ImageUpload";
 import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
 import { ModeToggle } from "@/components/ModeToggle";
 import Link from "next/link";
+import Chat from "@/components/ChatModel";
 
 export function EditorSideBar2() {
   return (
@@ -55,6 +56,21 @@ export function EditorSideBar2() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
+        <Collapsible className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="imageupload-component">
+                Image uploads
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <Chat/>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>
@@ -62,7 +78,10 @@ export function EditorSideBar2() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={"/settings/preferences"} className="flex items-center gap-2">
+                  <Link
+                    href={"/settings/preferences"}
+                    className="flex items-center gap-2"
+                  >
                     <Settings className="w-5 h-5  " />
                     <span>Settings</span>
                   </Link>
