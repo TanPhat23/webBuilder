@@ -9,12 +9,12 @@ export const footerComponent: CustomComponent = {
     content: "",
     isSelected: false,
     x: 0,
-    y: 590,
+    y: 450,
     styles: {
-      position: "absolute",
-      bottom: "0",
-      height: "auto",
+      position: "relative",
       width: "100%",
+      marginTop: "auto",
+      height: "auto",
       backgroundColor: "#f8f9fa",
       display: "grid",
       gridTemplateColumns: "repeat(4, 1fr)",
@@ -22,7 +22,7 @@ export const footerComponent: CustomComponent = {
       padding: "40px",
     },
     tailwindStyles:
-      "absolute bottom-0 w-full bg-[#f8f9fa] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 py-6 px-4 sm:py-8 sm:px-6 md:py-10 md:px-8",
+      "w-full mt-auto bg-[#f8f9fa] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 py-6 px-4 sm:py-8 sm:px-6 md:py-10 md:px-8",
     elements: [
       {
         type: "Frame",
@@ -341,12 +341,12 @@ export const footerComponent2: CustomComponent = {
     content: "",
     isSelected: false,
     x: 0,
-    y: 590,
+    y: 500,
     styles: {
-      position: "absolute",
-      bottom: "0",
-      height: "auto",
+      position: "relative",
       width: "100%",
+      marginTop: "auto",
+      height: "auto",
       backgroundColor: "#f8f9fa",
       display: "grid",
       gridTemplateColumns: "repeat(4, 1fr)",
@@ -354,7 +354,7 @@ export const footerComponent2: CustomComponent = {
       padding: "20px",
     },
     tailwindStyles:
-      "absolute bottom-0 w-full bg-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 py-5 px-4 sm:px-6",
+      "w-full mt-auto bg-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 py-5 px-4 sm:px-6",
     elements: [
       {
         type: "Frame",
@@ -870,10 +870,6 @@ export const footerComponent2: CustomComponent = {
         ],
       },
     ],
-    href: "",
-    src: "",
-    parentId: "",
-    projectId: "",
   },
 };
 
@@ -885,12 +881,12 @@ export const footerComponent3: CustomComponent = {
     content: "",
     isSelected: false,
     x: 0,
-    y: 590,
+    y: 450,
     styles: {
-      position: "absolute",
-      bottom: "0",
-      height: "auto",
+      position: "relative",
       width: "100%",
+      marginTop: "auto",
+      height: "auto",
       backgroundColor: "#1a202c",
       display: "flex",
       flexDirection: "column",
@@ -899,7 +895,7 @@ export const footerComponent3: CustomComponent = {
       padding: "20px 0",
     },
     tailwindStyles:
-      "absolute bottom-0 w-full bg-[#1a202c] flex flex-col items-center justify-center py-5 gap-5",
+      "w-full mt-auto bg-[#1a202c] flex flex-col items-center justify-center py-5 gap-5",
     elements: [
       {
         type: "Frame",
@@ -1253,20 +1249,20 @@ export const footerComponent4: CustomComponent = {
     content: "",
     isSelected: false,
     x: 0,
-    y: 590,
+    y: 500,
     styles: {
-      position: "absolute",
-      bottom: "0",
-      height: "auto",
+      position: "relative",
       width: "100%",
+      marginTop: "auto",
+      height: "auto",
       backgroundColor: "#fbeee6",
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-      padding: "20px 0",
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: "20px",
+      padding: "20px",
     },
     tailwindStyles:
-      "absolute bottom-0 w-full bg-[#fbeee6] grid grid-cols-1 md:grid-cols-4 gap-5 py-5 px-4 hidden md:grid",
+      "w-full mt-auto bg-[#fbeee6] grid grid-cols-1 md:grid-cols-4 gap-5 py-5 px-4",
     elements: [
       {
         type: "Frame",

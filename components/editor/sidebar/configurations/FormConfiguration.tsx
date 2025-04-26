@@ -170,7 +170,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
           <div className="flex flex-col space-y-4 py-2">
             {/* Auto Complete */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="autocomplete" className="flex-grow">
+              <Label htmlFor="autocomplete" className="grow">
                 Auto Complete
               </Label>
               <Switch
@@ -187,7 +187,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
 
             {/* No Validate */}
             <div className="flex items-center justify-between">
-              <Label htmlFor="novalidate" className="flex-grow">
+              <Label htmlFor="novalidate" className="grow">
                 Disable Validation
               </Label>
               <Switch

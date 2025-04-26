@@ -24,7 +24,7 @@ export type EditorElement =
   | ChartElement
   | DataTableElement
   | FormElement;
-  
+
 /** this is DEPRECIATED use The
  * @file editorStore.tsx to mange your state
  * @deprecated
@@ -46,9 +46,27 @@ export type EditorAction =
 
 export type TextAlign = "left" | "center" | "right" | "justify";
 
-export type ElementTypes = "Text" | "Link" | "Button" | "Frame" | "List";
+export type ElementTypes =
+  | "Text"
+  | "Link"
+  | "Button"
+  | "Frame"
+  | "List"
+  | "Carousel"
+  | "ListItem"
+  | "Input"
+  | "Select"
+  | "Chart"
+  | "DataTable"
+  | "Image"
+  | "Form";
 
-export type ContainerElement = FrameElement | CarouselElement | ListElement | SelectElement | FormElement;
+export type ContainerElement =
+  | FrameElement
+  | CarouselElement
+  | ListElement
+  | SelectElement
+  | FormElement;
 export interface appProjectTypes {
   id?: string;
   name: string;

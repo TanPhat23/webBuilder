@@ -119,7 +119,7 @@ const SelectConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor={`option-selected-${index}`}
-                    className="flex-grow"
+                    className="grow"
                   >
                     Selected by Default
                   </Label>
@@ -135,7 +135,7 @@ const SelectConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor={`option-disabled-${index}`}
-                    className="flex-grow"
+                    className="grow"
                   >
                     Disabled
                   </Label>
@@ -165,7 +165,7 @@ const SelectConfiguration: React.FC<Props> = ({ selectedElement }) => {
         <AccordionContent>
           <div className="flex flex-col space-y-4 py-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="multiple" className="flex-grow">
+              <Label htmlFor="multiple" className="grow">
                 Multiple Selection
               </Label>
               <Switch
@@ -183,7 +183,7 @@ const SelectConfiguration: React.FC<Props> = ({ selectedElement }) => {
             </div>
 
             <div className="flex items-center justify-between">
-              <Label htmlFor="disabled" className="flex-grow">
+              <Label htmlFor="disabled" className="grow">
                 Disabled
               </Label>
               <Switch

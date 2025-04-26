@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Create } from "@/app/api/project/route";
+import { Create } from "@/app/data/project/projectDAL";
 import { appProjectTypes } from "@/lib/type";
 import { useRouter } from "next/navigation";
 
@@ -47,7 +47,7 @@ const CreatePojectDialog = () => {
   }
   return (
     <Dialog>
-      <DialogTrigger className="flex w-full items-center gap-2 rounded-md bg-sidebar-primary px-3 py-2 text-sidebar-primary-foreground hover:bg-sidebar-primary/90 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+      <DialogTrigger className="flex w-full items-center gap-2 rounded-md bg-sidebar-primary px-3 py-2 text-sidebar-primary-foreground hover:bg-sidebar-primary/90 transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring">
         Create Project
       </DialogTrigger>
       <DialogContent>

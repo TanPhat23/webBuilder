@@ -1,7 +1,17 @@
 import { EditorElement, ElementTypes } from "@/lib/type";
-import { FrameElement } from "@/lib/interface";
+import {
+  ButtonElement,
+  CarouselElement,
+  FrameElement,
+  InputElement,
+  ListElement,
+  SelectElement,
+} from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/app/api/element/route";
+import { GetAllPublic } from "@/app/data/element/elementDAL";
+import { cn } from "@/lib/utils";
+import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
+
 export const revalidate = 60;
 export const dynamicParams = true;
 
@@ -21,7 +31,7 @@ export default async function PreviewPage({
 }) {
   const { slug } = await params;
 
-  let elements : EditorElement[] = [];
+  let elements: EditorElement[] = [];
   try {
     const result = await GetAllPublic(
       `${process.env.NEXT_PUBLIC_API_URL}/elements/public/${slug}`
@@ -38,47 +48,177 @@ export default async function PreviewPage({
         style={{
           ...element.styles,
         }}
+        className={element.tailwindStyles}
       >
-        {element.elements.map((childElement) => {
-          switch (childElement.type as ElementTypes) {
-            case "Text":
-              return (
-                <p
-                  key={childElement.id}
-                  style={{
-                    ...childElement.styles,
-                  }}
-                >
-                  {childElement.content}
-                </p>
-              );
-            case "Link":
-              return (
-                <a
-                  key={childElement.id}
-                  href={childElement.href}
-                  style={{ ...childElement.styles }}
-                >
-                  {childElement.content}
-                </a>
-              );
-            case "Button":
-              return (
-                <button
-                  key={childElement.id}
-                  style={{ ...childElement.styles }}
-                >
-                  {childElement.content}
-                </button>
-              );
-            case "Frame":
-              return renderFrameElement(childElement as FrameElement);
-            default:
-              return null;
-          }
-        })}
+        {element.elements.map((childElement) => renderElement(childElement))}
       </div>
     );
+  };
+
+  const renderListElement = (element: ListElement) => {
+    return (
+      <ul
+        key={element.id}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+      >
+        {element.elements.map((childElement) => (
+          <li key={childElement.id}>{renderElement(childElement)}</li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderCarouselElement = (element: CarouselElement) => {
+    const renderedChildren = element.elements.map((childElement) =>
+      renderElement(childElement)
+    );
+
+    return (
+      <DynamicCarousel
+        key={element.id}
+        settings={element.carouselSettings}
+        style={element.styles}
+      >
+        {renderedChildren}
+      </DynamicCarousel>
+    );
+  };
+
+  const renderButtonElement = (element: ButtonElement) => {
+    // If it's a multi-button with a dropdown
+    if (element.buttonType === "multi" && element.element) {
+      return (
+        <div key={element.id} style={{ position: "relative" }}>
+          <button
+            style={{
+              ...element.styles,
+            }}
+            className={element.tailwindStyles}
+          >
+            {element.content}
+          </button>
+        </div>
+      );
+    }
+
+    // Standard button
+    return (
+      <button
+        key={element.id}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+      >
+        {element.content}
+      </button>
+    );
+  };
+
+  const renderInputElement = (element: InputElement) => {
+    const { inputSettings = {} } = element;
+
+    return (
+      <input
+        key={element.id}
+        type={inputSettings.type || "text"}
+        placeholder={inputSettings.placeholder || ""}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+        readOnly={inputSettings.readOnly}
+        disabled={inputSettings.disabled}
+      />
+    );
+  };
+
+  const renderSelectElement = (element: SelectElement) => {
+    const { options = [], selectSettings = {} } = element;
+
+    return (
+      <select
+        key={element.id}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+        multiple={selectSettings.multiple}
+        disabled={selectSettings.disabled}
+        size={selectSettings.size}
+      >
+        {options.map((option, index) => (
+          <option
+            key={`option-${index}`}
+            value={option.value || ""}
+            disabled={option.disabled}
+            selected={option.selected}
+          >
+            {option.text || option.value || `Option ${index + 1}`}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  const renderElement = (element: EditorElement) => {
+    switch (element.type as ElementTypes) {
+      case "Text":
+        return (
+          <p
+            key={element.id}
+            style={{
+              ...element.styles,
+            }}
+            className={element.tailwindStyles}
+          >
+            {element.content}
+          </p>
+        );
+      case "Link":
+        return (
+          <a
+            key={element.id}
+            href={element.href}
+            style={{ ...element.styles }}
+            className={element.tailwindStyles}
+          >
+            {element.content}
+          </a>
+        );
+      case "Image":
+        return (
+          <img
+            key={element.id}
+            src={element.src}
+            alt={element.content || "Image"}
+            style={{
+              ...element.styles,
+              maxWidth: "100%",
+              height: "auto",
+            }}
+            className={cn(element.tailwindStyles, "object-cover ")}
+            loading="lazy"
+          />
+        );
+      case "Button":
+        return renderButtonElement(element as ButtonElement);
+      case "Frame":
+        return renderFrameElement(element as FrameElement);
+      case "Carousel":
+        return renderCarouselElement(element as CarouselElement);
+      case "ListItem":
+        return renderListElement(element as ListElement);
+      case "Input":
+        return renderInputElement(element as InputElement);
+      case "Select":
+        return renderSelectElement(element as SelectElement);
+      default:
+        return null;
+    }
   };
 
   if (elements.length === 0) {
@@ -95,15 +235,8 @@ export default async function PreviewPage({
   }
 
   return (
-    <div className="w-screen h-screen">
-      {elements.map((element: EditorElement) => {
-        switch (element.type as ElementTypes) {
-          case "Frame":
-            return renderFrameElement(element as FrameElement);
-          default:
-            return null;
-        }
-      })}
+    <div className="w-screen h-screen bg-white">
+      {elements.map((element: EditorElement) => renderElement(element))}
     </div>
   );
 }

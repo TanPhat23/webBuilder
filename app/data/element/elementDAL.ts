@@ -1,4 +1,4 @@
-"use server";
+"use server"
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 

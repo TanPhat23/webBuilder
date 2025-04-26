@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ButtonElement, EditorComponentProps, FormElement } from "@/lib/interface";
@@ -8,8 +8,6 @@ import FrameComponents from "./FrameComponents";
 import ButtonComponent from "./ButtonComponent";
 import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
-import ChartComponent from "./ChartComponent";
-import DataTableComponent from "./DataTableComponent";
 import ListItemComponent from "./ListItemComponent";
 
 const FormComponent = (props: EditorComponentProps) => {
@@ -22,7 +20,6 @@ const FormComponent = (props: EditorComponentProps) => {
     handleContextMenu,
     handleImageDrop,
     handleDragStart,
-    handleDragOver,
     handleDragEnd,
     getContentProps,
     getCommonProps,
@@ -168,7 +165,6 @@ const FormComponent = (props: EditorComponentProps) => {
               key={element.id}
               {...commonProps}
               onDragStart={(e, info) => handleDragStart(e, element, info)}
-              onDrag={(e, info) => handleDragOver(e, element, info)}
               onDragEnd={(e, info) => handleDragEnd(e, info)}
               onDrop={(e: React.DragEvent<HTMLDivElement>) =>
                 handleImageDrop(e, element)
@@ -190,7 +186,6 @@ const FormComponent = (props: EditorComponentProps) => {
               handleDrop(e, element)
             }
             onDragStart={(e, info) => handleDragStart(e, element, info)}
-            onDrag={(e, info) => handleDragOver(e, element, info)}
             onDragEnd={(e, info) => handleDragEnd(e, info)}
           />
         );
