@@ -1,23 +1,25 @@
-import { IdCard } from "lucide-react";
+import { Square } from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const CardHolder = () => {
   const onDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     elementType: string
   ) => {
-    e.dataTransfer.setData("advancedType", elementType);
+    e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Card")}
-      className="flex flex-row justify-between items-center w-full  rounded-md cursor-grab active:cursor-grabbing transition-colors"
-    >
-      <div className="font-medium">Card</div>
-      <IdCard className="text-indigo-600"  />
-    </div>
+    <ComponentTooltip type="Card">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Card")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Card</div>
+        <Square />
+      </div>
+    </ComponentTooltip>
   );
 };
 

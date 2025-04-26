@@ -1,8 +1,6 @@
 import { List } from "lucide-react";
-
 import React from "react";
-
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const ListItemHolder = () => {
   const onDragStart = (
@@ -12,14 +10,16 @@ const ListItemHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "ListItem")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>ListItem</div>
-      <List />
-    </div>
+    <ComponentTooltip type="ListItem">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "ListItem")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>ListItem</div>
+        <List />
+      </div>
+    </ComponentTooltip>
   );
 };
 
