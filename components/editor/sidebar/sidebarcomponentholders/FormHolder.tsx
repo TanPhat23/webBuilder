@@ -1,5 +1,6 @@
+import { ClipboardPen } from "lucide-react";
 import React from "react";
-import { FileText } from "lucide-react";
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const FormHolder = () => {
   const onDragStart = (
@@ -8,16 +9,17 @@ const FormHolder = () => {
   ) => {
     e.dataTransfer.setData("elementType", elementType);
   };
-  
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Form")}
-      className="flex flex-row justify-between items-center w-full  rounded-md  cursor-grab active:cursor-grabbing transition-colors"
-    >
-      <div className="font-medium">Form</div>
-      <FileText className="text-blue-500" />
-    </div>
+    <ComponentTooltip type="Form">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Form")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Form</div>
+        <ClipboardPen />
+      </div>
+    </ComponentTooltip>
   );
 };
 

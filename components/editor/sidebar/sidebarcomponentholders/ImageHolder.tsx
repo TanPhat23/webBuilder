@@ -1,6 +1,6 @@
 import { Image } from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const ImageHolder = () => {
   const onDragStart = (
@@ -10,14 +10,16 @@ const ImageHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "ImageHolder")}
-      className="flex flex-row justify-between items-center w-full  rounded-md  cursor-grab active:cursor-grabbing transition-colors"
-    >
-      <div className="font-medium">ImageHolder</div>
-      <Image />
-    </div>
+    <ComponentTooltip type="Image">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Image")}
+        className="flex flex-row justify-between items-center w-full rounded-md cursor-grab active:cursor-grabbing transition-colors"
+      >
+        <div className="font-medium">Image</div>
+        <Image />
+      </div>
+    </ComponentTooltip>
   );
 };
 

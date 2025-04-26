@@ -1,5 +1,6 @@
 import { MousePointerClick } from "lucide-react";
 import React from "react";
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const ButtonHolder = () => {
   const onDragStart = (
@@ -9,14 +10,16 @@ const ButtonHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Button")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>Button</div>
-      <MousePointerClick />
-    </div>
+    <ComponentTooltip type="Button">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Button")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Button</div>
+        <MousePointerClick />
+      </div>
+    </ComponentTooltip>
   );
 };
 
