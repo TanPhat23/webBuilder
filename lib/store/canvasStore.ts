@@ -16,7 +16,7 @@ export interface CanvasStyles {
   boxShadow?: string;
   backdropFilter?: string;
   transition?: string;
-  [key: string]: any; // Allow any string key to accommodate other CSS properties
+  [key: string]: any;
 }
 
 interface CanvasState {
@@ -27,7 +27,7 @@ interface CanvasState {
 const defaultStyles: CanvasStyles = {
   backgroundColor: "#ffffff",
   width: "100%",
-  height: "auto",
+  height: "100%",
   gridEnabled: false,
   gridSize: 8,
   snapToGrid: false,
