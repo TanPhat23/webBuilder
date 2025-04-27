@@ -1,6 +1,6 @@
-import { LinkIcon } from "lucide-react";
+import { Link } from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const LinkHolder = () => {
   const onDragStart = (
@@ -10,14 +10,16 @@ const LinkHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Link")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>Link</div>
-      <LinkIcon />
-    </div>
+    <ComponentTooltip type="Link">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Link")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Link</div>
+        <Link />
+      </div>
+    </ComponentTooltip>
   );
 };
 

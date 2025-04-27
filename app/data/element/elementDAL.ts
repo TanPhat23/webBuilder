@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
@@ -126,6 +126,7 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
       },
+      next: { revalidate: 5 },
     });
 
     const data: EditorElement[] = await response.json();
@@ -141,11 +142,12 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
 
 export const GetAllPublic = async (url: string): Promise<EditorElement[]> => {
   try {
-    const response = await fetch(url , {
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
+      next: { revalidate: 5 },
     });
 
     const data: EditorElement[] = await response.json();
