@@ -8,6 +8,7 @@ export interface ElementSelectionProps {
   multiSelectedElementIds: string[];
   startTour: boolean;
   needHelp: boolean;
+  onBoarding: boolean;
 }
 
 interface ElementSelectionState {

@@ -10,7 +10,6 @@ import { EditorElement } from "../type";
 import { v4 as uuidv4 } from "uuid";
 import { BatchCreate, Delete, Update } from "@/app/data/element/elementDAL";
 
-// Type for containers that can hold child elements
 type ContainerElement = FrameElement | CarouselElement | ListElement;
 
 const isContainerElement = (
