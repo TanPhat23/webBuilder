@@ -66,7 +66,8 @@ export interface InputElement extends Element {
   inputSettings: Partial<HTMLInputElement>;
 }
 export interface ListElement extends Element {
-  elements: EditorElement[];
+  elements?: EditorElement[];
+  bulletStyle?: 'disc' | 'circle' | 'square' | 'decimal' | 'roman' | 'alpha' | 'none';
 }
 export interface SelectElement extends Element {
   options: Array<Partial<HTMLOptionElement>>;
