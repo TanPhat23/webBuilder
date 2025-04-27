@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ListElement, EditorComponentProps } from "@/lib/interface";
@@ -46,13 +46,7 @@ const ListItemComponent = (props: ListItemProps) => {
   const [showBulletConfig, setShowBulletConfig] = useState(false);
   const listElement = element as ListElement;
 
-  const [currentBulletStyle, setCurrentBulletStyle] = useState<string>(
-    listElement.bulletStyle || "disc"
-  );
-
-  useEffect(() => {
-    setCurrentBulletStyle(listElement.bulletStyle || "disc");
-  }, [listElement.bulletStyle]);
+  const bulletStyle = listElement.bulletStyle || "disc";
 
   const hookHandlers = useEditorElementHandlers(props);
 
@@ -142,7 +136,7 @@ const ListItemComponent = (props: ListItemProps) => {
   };
 
   const getListStyleType = () => {
-    switch (currentBulletStyle) {
+    switch (bulletStyle) {
       case "disc":
         return "disc";
       case "circle":
@@ -163,14 +157,12 @@ const ListItemComponent = (props: ListItemProps) => {
   };
 
   const changeBulletStyle = (
-    bulletStyle: "disc" | "circle" | "square" | "decimal" | "roman" | "alpha" | "none"
+    newBulletStyle: "disc" | "circle" | "square" | "decimal" | "roman" | "alpha" | "none"
   ) => {
-    setCurrentBulletStyle(bulletStyle);
-
     const event = new CustomEvent("updateElement", {
       detail: {
         id: element.id,
-        changes: { bulletStyle },
+        changes: { bulletStyle: newBulletStyle },
       },
     });
     document.dispatchEvent(event);
@@ -178,7 +170,7 @@ const ListItemComponent = (props: ListItemProps) => {
   };
 
   const getBulletStyleLabel = () => {
-    switch (currentBulletStyle) {
+    switch (bulletStyle) {
       case "disc":
         return "• Disc";
       case "circle":
@@ -218,7 +210,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "disc" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "disc" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("disc")}
               >
@@ -226,7 +218,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "circle" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "circle" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("circle")}
               >
@@ -234,7 +226,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "square" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "square" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("square")}
               >
@@ -242,7 +234,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "decimal" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "decimal" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("decimal")}
               >
@@ -250,7 +242,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "roman" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "roman" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("roman")}
               >
@@ -258,7 +250,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "alpha" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "alpha" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("alpha")}
               >
@@ -266,7 +258,7 @@ const ListItemComponent = (props: ListItemProps) => {
               </div>
               <div
                 className={`px-2 py-1 hover:bg-gray-100 cursor-pointer ${
-                  currentBulletStyle === "none" ? "bg-blue-50 text-blue-600" : ""
+                  bulletStyle === "none" ? "bg-blue-50 text-blue-600" : ""
                 }`}
                 onClick={() => changeBulletStyle("none")}
               >
