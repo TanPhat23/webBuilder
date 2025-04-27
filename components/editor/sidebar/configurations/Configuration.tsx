@@ -12,7 +12,7 @@ import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
-import CanvasColorSelector from "./CanvasColorSelector";
+import CanvasConfiguration from "./CanvasConfiguration";
 import { Button } from "@/components/ui/button";
 
 // Define Google Font interface
@@ -131,22 +131,7 @@ const Configuration = () => {
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
         {!selectedElement ? (
-          <>
-            <CanvasColorSelector />
-            <Button
-              className="w-full text-xs p-1 h-8"
-              variant="destructive"
-              onClick={() => {
-                elements.forEach((element) => {
-                  startTransition(() => {
-                    deleteElementOptimistically(element.id);
-                  });
-                });
-              }}
-            >
-              Reset to default
-            </Button>
-          </>
+            <CanvasConfiguration />
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-1 mr-4">

@@ -28,7 +28,6 @@ const FrameComponents = (props: EditorComponentProps) => {
     getContentProps,
     getCommonProps,
     draggingElement,
-    setHoveredElement,
   } = useEditorElementHandlers(props);
 
   const renderElement = (element: EditorElement): React.ReactNode => {

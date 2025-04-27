@@ -56,21 +56,6 @@ export function EditorSideBar2() {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-        <Collapsible className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="imageupload-component">
-                Image uploads
-                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <Chat/>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroup>

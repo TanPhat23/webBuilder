@@ -40,7 +40,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     redo,
   } = useEditorStore();
 
-  const { backgroundColor } = useCanvasStore();
+  const { styles } = useCanvasStore();
   const { setSelectedElement, selectedElement } = useElementSelectionStore();
 
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
@@ -390,11 +390,25 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   }, [handleZoom]);
 
   return (
-    <div className="flex flex-col h-full w-full canva-component">
+    <div
+      className="flex flex-col h-full w-full canva-component"
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        width: styles?.width,
+        height: styles?.height,
+        maxWidth: styles?.maxWidth,
+        overflow: styles?.overflow,
+        borderRadius: styles?.borderRadius,
+        border: styles?.border,
+        boxShadow: styles?.boxShadow,
+        backdropFilter: styles?.backdropFilter,
+        transition: styles?.transition,
+      }}
+    >
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
         <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
       </div>
-      <div className="flex-1 overflow-hidden bg-gray-200 flex justify-center">
+      <div className="flex-1 overflow-auto bg-gray-200 flex justify-center">
         <div
           style={{
             width: DEVICE_SIZES[deviceView].width,
@@ -412,7 +426,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: lockedTransformOrigin,
-              backgroundColor: backgroundColor,
+              backgroundColor: styles?.backgroundColor,
+              minHeight: "100%",
+              height: "auto",
             }}
             id="canvas"
             onContextMenu={(e) => {

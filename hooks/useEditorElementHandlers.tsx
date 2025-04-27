@@ -132,28 +132,7 @@ export function useEditorElementHandlers({
     setDraggingElement(element);
   };
 
-  const handleDragOver = (
-    e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
-    element: EditorElement,
-    info?: PanInfo
-  ) => {
-    // Handle DOM events
-    if ("preventDefault" in e) {
-      e.preventDefault();
-      e.stopPropagation();
 
-      if ("dataTransfer" in e && e.dataTransfer) {
-        e.dataTransfer.dropEffect = "move";
-      }
-    }
-
-    if (draggingElement && draggingElement.id !== element.id) {
-      setHoveredElement(element);
-      console.log("hovering", element.id, "while dragging", draggingElement.id);
-    }
-  };
-
-  // Adding custom mouse enter handler for better hover detection
   const handleMouseEnter = (
     e: React.MouseEvent<HTMLElement>,
     element: EditorElement
@@ -161,6 +140,8 @@ export function useEditorElementHandlers({
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(element);
     }
+    console.log(    "hovering", element.id);
+    
   };
 
   const handleDragEnd = (
@@ -337,6 +318,7 @@ export function useEditorElementHandlers({
         setHoveredElement(element);
       }
     },
+    
     style: { ...element.styles },
   });
 

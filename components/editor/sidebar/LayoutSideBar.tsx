@@ -20,7 +20,18 @@ import { useParams } from "next/navigation";
 import Configuration from "./configurations/Configuration";
 import { Button } from "@/components/ui/button";
 import { getProjectSubdomainUrl } from "@/lib/subdomain";
-
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import Chat from "@/components/ChatModel";
 
 function LayoutSideBar() {
   const params = useParams();
@@ -65,6 +76,34 @@ function LayoutSideBar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="secondary" className="w-full">
+                  Export code
+                </Button>
+              </DrawerTrigger>
+              <DrawerPortal>
+                <DrawerContent className="h-full">
+                  <DrawerHeader>
+                    <DrawerTitle>Generate Code</DrawerTitle>
+                    <DrawerDescription>
+                      Generate code from your project elements in different
+                      formats
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <div className="px-4 py-2 flex-1 overflow-hidden">
+                    <Chat />
+                  </div>
+                  <DrawerFooter>
+                    <DrawerClose asChild>
+                      <Button variant="outline">Close</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </DrawerContent>
+              </DrawerPortal>
+            </Drawer>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <Button
               onClick={() => {

@@ -126,7 +126,7 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
       },
-      next: { revalidate: 5 },
+      // next: { revalidate: 5 },
     });
 
     const data: EditorElement[] = await response.json();

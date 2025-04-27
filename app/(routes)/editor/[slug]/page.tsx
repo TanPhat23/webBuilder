@@ -1,7 +1,7 @@
 import { GetAll } from "@/app/data/element/elementDAL";
 import EditorPageClient from "./EditorPageClient";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default async function Page({
   params,

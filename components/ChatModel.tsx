@@ -2,44 +2,213 @@
 
 import { useChat } from "@ai-sdk/react";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+// Use dynamic imports for the syntax highlighter to avoid compilation issues
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
+import { Copy, Loader2, Send } from "lucide-react";
+import { toast } from "sonner";
+
+const SyntaxHighlighter = dynamic(
+  () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+  { ssr: false }
+);
 
 export default function Chat() {
   const params = useParams();
   const projectId = params.slug as string;
+  const [format, setFormat] = useState("react");
+  const [includeStyles, setIncludeStyles] = useState(true);
+  const [includeInteractivity, setIncludeInteractivity] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    api: "/api/chat",
-    body: {
-      projectId: projectId,
-    },
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: "/api/chat",
+      body: {
+        projectId: projectId,
+        format: format,
+        includeStyles: includeStyles,
+        includeInteractivity: includeInteractivity,
+      },
+    });
+
+  const copyMessages = () => {
+    try {
+      if (messages.length === 0) {
+        toast.info("No messages to copy");
+        return;
+      }
+
+      // Extract all text content from messages
+      const textContent = messages
+        .map((message) =>
+          message.parts
+            .filter((part) => part.type === "text")
+            .map((part) => part.text)
+            .join("\n")
+        )
+        .join("\n\n");
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(textContent);
+      toast.success("Chat content copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy messages:", error);
+      toast.error("Failed to copy content");
+    }
+  };
 
   return (
-    <div className="flex flex-col py-24 mx-auto">
-      {messages.map((message) => (
-        <div key={message.id} className="whitespace-pre-wrap">
-          {message.role === "user" ? "User: " : "AI: "}
-          {message.parts.map((part, i) => {
-            switch (part.type) {
-              case "text":
-                return <ReactMarkdown key={i}>{part.text}</ReactMarkdown>;
-              default:
-                return null;
-            }
-          })}
-        </div>
-      ))}
+    <div className="flex flex-col h-full max-w-3xl mx-auto">
+      <Button className="w-10 flex" onClick={copyMessages}>
+        <Copy className="w-full" />
+      </Button>
+      <div className="flex-1 overflow-y-auto py-4  space-y-4 mb-16">
+        {messages.map((message) => (
+          <div key={message.id}>
+            {message.parts.map((part, i) => {
+              switch (part.type) {
+                case "text":
+                  return (
+                    <ReactMarkdown
+                      key={i}
+                      components={{
+                        code({ className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          const isInline = !match;
 
-      <form onSubmit={handleSubmit}>
-        <Input
-          className="fixed bottom-0 w-[300px] p-2 mb-16 border bg-secondary rounded shadow-xl"
-          value={input}
-          placeholder="Say something..."
-          onChange={handleInputChange}
-        />
-      </form>
+                          return isInline ? (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <div className="syntax-highlight-wrapper">
+                              <SyntaxHighlighter
+                                style={{
+                                  'pre[class*="language-"]': {
+                                    background: "#1E1E1E",
+                                    color: "#D4D4D4",
+                                    padding: "1em",
+                                    borderRadius: "0.3em",
+                                    overflow: "auto",
+                                  },
+                                  'code[class*="language-"]': {
+                                    color: "#D4D4D4",
+                                  },
+                                }}
+                                language={match?.[1] || "javascript"}
+                                PreTag="div"
+                              >
+                                {String(children).replace(/\n$/, "")}
+                              </SyntaxHighlighter>
+                            </div>
+                          );
+                        },
+                      }}
+                    >
+                      {part.text}
+                    </ReactMarkdown>
+                  );
+                default:
+                  return null;
+              }
+            })}
+          </div>
+        ))}
+
+        {isLoading && (
+          <div className="flex items-center justify-center p-4">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        )}
+
+        {messages.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+            <p>Ask about your project elements or request generated code</p>
+          </div>
+        )}
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2">
+        <div className="max-w-3xl mx-auto space-y-2">
+          <div className="flex gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Label htmlFor="format" className="text-xs">
+                Format:
+              </Label>
+              <Select defaultValue={format} onValueChange={setFormat}>
+                <SelectTrigger id="format" className="h-8 w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="react">React</SelectItem>
+                  <SelectItem value="html">HTML</SelectItem>
+                  <SelectItem value="vue">Vue</SelectItem>
+                  <SelectItem value="angular">Angular</SelectItem>
+                  {/* <SelectItem value="code">Code</SelectItem> */}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                id="includeStyles"
+                checked={includeStyles}
+                onCheckedChange={setIncludeStyles}
+              />
+              <Label htmlFor="includeStyles" className="text-xs">
+                Include Styles
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                id="includeInteractivity"
+                checked={includeInteractivity}
+                onCheckedChange={setIncludeInteractivity}
+              />
+              <Label htmlFor="includeInteractivity" className="text-xs">
+                Include Interactivity
+              </Label>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Input
+              className="flex-1"
+              value={input}
+              placeholder="Ask about your elements or request generated code..."
+              onChange={handleInputChange}
+              disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              size="icon"
+              disabled={isLoading || !input.trim()}
+              onClick={() => handleSubmit()}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
