@@ -16,7 +16,7 @@ export interface CanvasStyles {
   boxShadow?: string;
   backdropFilter?: string;
   transition?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface CanvasState {

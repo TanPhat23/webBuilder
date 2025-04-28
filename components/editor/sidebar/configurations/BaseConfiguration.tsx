@@ -77,26 +77,6 @@ const BaseConfiguration: React.FC<Props> = ({
     });
   };
 
-  const handleSwitchChange = (property: string, value: boolean) => {
-    if (!selectedElement) return;
-
-    let styleValue = value;
-    // Handle specific cases
-    if (property === "textDecoration") {
-      styleValue == value ? "underline" : "none";
-    } else if (property === "fontStyle") {
-      styleValue == value ? "italic" : "normal";
-    }
-
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: styleValue,
-        },
-      });
-    });
-  };
 
   const handleSelectChange = (property: string, value: string) => {
     if (!selectedElement) return;
@@ -389,7 +369,7 @@ const BaseConfiguration: React.FC<Props> = ({
                 <Input
                   type="color"
                   id="borderColor"
-                  className="w-10 h-10 p-1"
+                  className="w-8 h-8 p-1"
                   value={selectedElement?.styles?.borderColor || "#000000"}
                   onChange={(e) =>
                     handleSelectChange("borderColor", e.target.value)
