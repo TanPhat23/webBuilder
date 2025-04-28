@@ -197,6 +197,8 @@ export default async function PreviewPage({
             alt={element.content || "Image"}
             style={{
               ...element.styles,
+              maxWidth: "100%",
+              height: "auto",
             }}
             className={cn(element.tailwindStyles, "object-cover ")}
             loading="lazy"

@@ -13,6 +13,7 @@ import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
 import CanvasConfiguration from "./CanvasConfiguration";
+import { Button } from "@/components/ui/button";
 
 // Define Google Font interface
 interface GoogleFont {
@@ -29,7 +30,8 @@ interface GoogleFont {
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
   const { selectedElement } = useElementSelectionStore();
-  const { updateElementOptimistically } = useEditorStore();
+  const { elements, deleteElementOptimistically, updateElementOptimistically } =
+    useEditorStore();
 
   const [localWidth, setLocalWidth] = useState(
     selectedElement?.styles?.width || ""
@@ -110,15 +112,7 @@ const Configuration = () => {
       case "Input":
         return <InputConfiguration selectedElement={selectedElement} />;
       case "Button":
-        return (
-          <>
-            <ButtonConfiguration selectedElement={selectedElement} />
-            <BaseConfiguration
-              selectedElement={selectedElement}
-              fontFamilies={fontFamilies}
-            />
-          </>
-        );
+        return <ButtonConfiguration selectedElement={selectedElement} />;
       case "Select":
         return <SelectConfiguration selectedElement={selectedElement} />;
       case "Form":
@@ -137,7 +131,7 @@ const Configuration = () => {
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
         {!selectedElement ? (
-          <CanvasConfiguration />
+            <CanvasConfiguration />
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-1 mr-4">

@@ -58,7 +58,10 @@ const ListItemComponent = (props: ListItemProps) => {
   const renderElement = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(element);
     const contentProps = getContentProps(element);
-
+    const {elements, updateElement} = useEditorStore()
+    updateElement(element.id, {
+      
+    })
     switch (element.type) {
       case "Frame":
         return (

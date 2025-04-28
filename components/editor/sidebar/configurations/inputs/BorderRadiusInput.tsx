@@ -29,7 +29,7 @@ const BorderRadiusInput = ({ selectedElement }: Props) => {
   useEffect(() => {
     if (selectedElement)
       setBorderRadius(selectedElement?.styles?.borderRadius || "0");
-  }, [selectedElement]);
+  }, []);
   return (
     <Input value={borderRadius} onChange={handleInput} onBlur={handleBlur} />
   );

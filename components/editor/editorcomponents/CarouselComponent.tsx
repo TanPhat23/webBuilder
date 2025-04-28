@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useOptimistic, startTransition } from "react";
+import React, { useOptimistic, useMemo, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
@@ -36,7 +36,7 @@ const CarouselComponent: React.FC<Props> = ({
   );
   React.useEffect(() => {
     setSettings((element as CarouselElement).carouselSettings || {});
-  }, [element.carouselSettings, element]);
+  }, [element.carouselSettings]);
   
   const [optimisticElements] = useOptimistic(
     element.elements,

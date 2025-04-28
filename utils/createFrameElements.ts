@@ -218,7 +218,10 @@ const createElements = async (
   }
 
   const parentElementCopy = { ...parentElement };
-
+  // Make sure elements is defined and accessible
+  if (!parentElementCopy.elements) {
+    parentElementCopy.elements = [];
+  }
   parentElementCopy.elements.push(newElement);
 
   if (updateElement) {

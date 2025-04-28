@@ -18,7 +18,9 @@ import {
 import { ChevronDown, Settings } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
+import { ModeToggle } from "@/components/ModeToggle";
 import Link from "next/link";
+import Chat from "@/components/ChatModel";
 
 export function EditorSideBar2() {
   return (
