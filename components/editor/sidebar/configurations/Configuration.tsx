@@ -12,8 +12,7 @@ import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
-import CanvasColorSelector from "./CanvasColorSelector";
-import { Button } from "@/components/ui/button";
+import CanvasConfiguration from "./CanvasConfiguration";
 
 // Define Google Font interface
 interface GoogleFont {
@@ -30,8 +29,7 @@ interface GoogleFont {
 const Configuration = () => {
   const [fontFamilies, setFontFamilies] = useState<string[]>([]);
   const { selectedElement } = useElementSelectionStore();
-  const { elements, deleteElementOptimistically, updateElementOptimistically } =
-    useEditorStore();
+  const { updateElementOptimistically } = useEditorStore();
 
   const [localWidth, setLocalWidth] = useState(
     selectedElement?.styles?.width || ""
@@ -112,7 +110,15 @@ const Configuration = () => {
       case "Input":
         return <InputConfiguration selectedElement={selectedElement} />;
       case "Button":
-        return <ButtonConfiguration selectedElement={selectedElement} />;
+        return (
+          <>
+            <ButtonConfiguration selectedElement={selectedElement} />
+            <BaseConfiguration
+              selectedElement={selectedElement}
+              fontFamilies={fontFamilies}
+            />
+          </>
+        );
       case "Select":
         return <SelectConfiguration selectedElement={selectedElement} />;
       case "Form":
@@ -131,22 +137,7 @@ const Configuration = () => {
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
         {!selectedElement ? (
-          <>
-            <CanvasColorSelector />
-            <Button
-              className="w-full text-xs p-1 h-8"
-              variant="destructive"
-              onClick={() => {
-                elements.forEach((element) => {
-                  startTransition(() => {
-                    deleteElementOptimistically(element.id);
-                  });
-                });
-              }}
-            >
-              Reset to default
-            </Button>
-          </>
+          <CanvasConfiguration />
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-1 mr-4">

@@ -4,7 +4,7 @@ import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { EditorElement } from "@/lib/type";
 import { createElements } from "@/utils/createElements";
-import { motion, PanInfo } from "framer-motion";
+import { AnimatePresence, motion, PanInfo } from "framer-motion";
 import ResizeHandle from "./ResizeHandle";
 import DeviceSwitcher from "./DeviceSwitcher";
 import { DEVICE_SIZES } from "@/lib/constants/constants";
@@ -22,6 +22,7 @@ import ListItemComponent from "./editorcomponents/ListItemComponent";
 import handlePasteElement from "@/utils/handlePasteElment";
 import FormComponent from "./editorcomponents/FormComponent";
 import { useCanvasStore } from "@/lib/store/canvasStore";
+import { ArrowUp } from "lucide-react";
 
 type Props = {
   projectId: string;
@@ -40,7 +41,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     redo,
   } = useEditorStore();
 
-  const { backgroundColor } = useCanvasStore();
+  const { styles } = useCanvasStore();
   const { setSelectedElement, selectedElement } = useElementSelectionStore();
 
   const [deviceView, setDeviceView] = useState<"PHONE" | "TABLET" | "DESKTOP">(
@@ -68,6 +69,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   const seRef = useRef<HTMLDivElement>(null);
   const editableRef = useRef<HTMLDivElement>(null);
   const draggingConstraintRef = useRef<HTMLDivElement>(null);
+
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fontsToLoad = new Set<string>();
@@ -389,12 +393,50 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     };
   }, [handleZoom]);
 
+  useEffect(() => {
+    const editorElement = editorContainerRef.current;
+    if (!editorElement) return;
+
+    const handleScroll = () => {
+      const scrollTop = editorElement.scrollTop;
+      setShowScrollToTop(scrollTop > 500);
+    };
+
+    editorElement.addEventListener('scroll', handleScroll);
+    return () => {
+      editorElement.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    if (editorContainerRef.current) {
+      editorContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full w-full canva-component">
+    <div
+      className="flex flex-col h-full w-full canva-component"
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        width: styles?.width,
+        height: styles?.height,
+        maxWidth: styles?.maxWidth,
+        overflow: styles?.overflow,
+        borderRadius: styles?.borderRadius,
+        border: styles?.border,
+        boxShadow: styles?.boxShadow,
+        backdropFilter: styles?.backdropFilter,
+        transition: styles?.transition,
+      }}
+    >
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
         <DeviceSwitcher currentDevice={deviceView} onChange={setDeviceView} />
       </div>
-      <div className="flex-1 overflow-hidden bg-gray-200 flex justify-center">
+      <div className="flex-1 overflow-auto bg-gray-200 flex justify-center">
         <div
           style={{
             width: DEVICE_SIZES[deviceView].width,
@@ -412,7 +454,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             style={{
               transform: `scale(${zoom})`,
               transformOrigin: lockedTransformOrigin,
-              backgroundColor: backgroundColor,
+              backgroundColor: styles?.backgroundColor,
+              minHeight: "100%",
+              height: "auto",
             }}
             id="canvas"
             onContextMenu={(e) => {
@@ -426,6 +470,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
             onDragOver={(e) => e.preventDefault()}
             tabIndex={0}
             className="w-full h-full relative overflow-auto"
+            ref={editorContainerRef}
           >
             {elements.map((element) => (
               <motion.div
@@ -587,6 +632,23 @@ const Editor: React.FC<Props> = ({ projectId }) => {
           </motion.div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showScrollToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-72 z-50 flex items-center justify-center w-12 h-12 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp size={20} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <OptimisticFeedback />
     </div>
   );

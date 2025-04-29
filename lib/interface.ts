@@ -107,5 +107,5 @@ export interface DataTableElement extends Element {
 
 export interface FormElement extends Element {
   elements: EditorElement[];
-  formSettings?: Partial<HTMLFormElement>
+  formSettings?: Partial<HTMLFormElement>;
 }

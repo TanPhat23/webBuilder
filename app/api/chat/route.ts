@@ -70,8 +70,9 @@ export async function POST(req: Request) {
   - tailwindStyles: Tailwind CSS classes
   - x/y: Position coordinates
   - elements: Array of child elements (for container elements)
+  - Convert styles as React.CSSProperties to Tailwind CSS classes use arbitrary values if possible.
+  - If no tailwindStyles are provided, convert the styles as React.CSSProperties to Tailwind.
   - Other properties specific to element types (src for images, href for links, etc.)
-  - Convert styles to Tailwind CSS classes if possible.
   - Remove any styles that is the same as the tailwindStyles.
   Here are the elements to convert to code:
   ${JSON.stringify(userElements, null, 2)}

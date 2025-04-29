@@ -18,9 +18,7 @@ import {
 import { ChevronDown, Settings } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
-import { ModeToggle } from "@/components/ModeToggle";
 import Link from "next/link";
-import Chat from "@/components/ChatModel";
 
 export function EditorSideBar2() {
   return (
@@ -52,21 +50,6 @@ export function EditorSideBar2() {
             <CollapsibleContent>
               <SidebarGroupContent>
                 <ImageUpload />
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </SidebarGroup>
-        </Collapsible>
-        <Collapsible className="group/collapsible">
-          <SidebarGroup>
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="imageupload-component">
-                Image uploads
-                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <Chat/>
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>

@@ -218,6 +218,7 @@ const createElements = async (
   }
 
   const parentElementCopy = { ...parentElement };
+
   parentElementCopy.elements.push(newElement);
 
   if (updateElement) {
