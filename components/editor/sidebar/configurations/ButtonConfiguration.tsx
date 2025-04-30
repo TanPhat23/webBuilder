@@ -19,10 +19,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
-import TextAlignButton from "./buttons/TextAlignButton";
-import TextStyleButtons from "./buttons/TextStyleButtons";
-import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
-import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
+import Typography from "./accorditionitem/Typography";
+import * as CSS from "csstype";
 
 type Props = {
   selectedElement: EditorElement;
@@ -58,7 +56,6 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
 
     startTransition(() => {
       if (value === "multi") {
-        // Convert to multi-button (dropdown)
         updateElementOptimistically(selectedElement.id, {
           type: "Button",
           buttonType: "multi",
@@ -170,10 +167,12 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
     });
   };
 
-  const handleBackgroundColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBackgroundColorChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newColor = e.target.value;
     setBackgroundColor(newColor);
-    
+
     startTransition(() => {
       updateElementOptimistically(selectedElement.id, {
         styles: {
@@ -187,7 +186,7 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
     setTextColor(newColor);
-    
+
     startTransition(() => {
       updateElementOptimistically(selectedElement.id, {
         styles: {
@@ -259,9 +258,42 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
   return (
     <Accordion
       type="multiple"
-      defaultValue={["basic", "typography", "appearance", "border"]}
+      defaultValue={["typography", "basic", "appearance", "border"]}
       className="w-full"
     >
+      <Typography
+        fontFamilies={[
+          "Arial",
+          "Roboto",
+          "Open Sans",
+          "Helvetica",
+          "Times New Roman",
+        ]}
+        localFontSize={localFontSize as CSS.Property.FontSize}
+        selectedElement={selectedElement}
+        handleFontChange={handleFontChange}
+        handleNumberInput={handleNumberInput}
+        handleSelectChange={handleSelectChange}
+        handleSwitchChange={(property, value) => {
+          let styleValue = "";
+          if (property === "textDecoration") {
+            styleValue = value ? "underline" : "none";
+          } else if (property === "fontStyle") {
+            styleValue = value ? "italic" : "normal";
+          } else if (property === "fontWeight") {
+            styleValue = value ? "bold" : "normal";
+          }
+
+          startTransition(() => {
+            updateElementOptimistically(selectedElement.id, {
+              styles: {
+                ...selectedElement.styles,
+                [property]: styleValue,
+              },
+            });
+          });
+        }}
+      />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings
@@ -308,102 +340,6 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="typography">
-        <AccordionTrigger className="text-sm font-medium">
-          Typography
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-4">
-            <div className="flex flex-row gap-1 flex-wrap">
-              <div className="flex flex-col">
-                <div className="flex flex-row gap-1">
-                  <Input
-                    className="w-full max-w-[100px] text-xs p-1"
-                    value={localFontSize}
-                    onChange={handleFontChange}
-                  />
-                  <FontSizeComboBox selectedElement={selectedElement} />
-                </div>
-                <label className="text-xs">Font size</label>
-              </div>
-              <div className="flex flex-col gap-1 flex-1">
-                <FontFamilyComboBox
-                  selectedElement={selectedElement}
-                  fontFamilies={['Arial', 'Helvetica', 'Times New Roman', 'Roboto', 'Open Sans', 'Lato']}
-                />
-                <label className="text-xs">Font Family</label>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-1 mr-4">
-              <TextAlignButton selectedElement={selectedElement} />
-              <TextStyleButtons selectedElement={selectedElement} />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex flex-row items-center gap-2">
-                <Label htmlFor="letterSpacing" className="w-1/3">
-                  Letter Spacing
-                </Label>
-                <Input
-                  id="letterSpacing"
-                  className="flex-1"
-                  value={selectedElement?.styles?.letterSpacing || ""}
-                  onChange={(e) =>
-                    handleNumberInput("letterSpacing", e.target.value)
-                  }
-                  placeholder="e.g., 1px"
-                />
-              </div>
-
-              <div className="flex flex-row items-center gap-2">
-                <Label htmlFor="lineHeight" className="w-1/3">
-                  Line Height
-                </Label>
-                <Input
-                  id="lineHeight"
-                  className="flex-1"
-                  value={selectedElement?.styles?.lineHeight || ""}
-                  onChange={(e) =>
-                    handleNumberInput("lineHeight", e.target.value)
-                  }
-                  placeholder="e.g., 1.5"
-                />
-              </div>
-
-              <div className="flex flex-row items-center gap-2">
-                <Label htmlFor="fontWeight" className="w-1/3">
-                  Font Weight
-                </Label>
-                <Select
-                  value={
-                    (selectedElement?.styles?.fontWeight as string) || "normal"
-                  }
-                  onValueChange={(value) =>
-                    handleSelectChange("fontWeight", value)
-                  }
-                >
-                  <SelectTrigger id="fontWeight" className="flex-1">
-                    <SelectValue placeholder="Select weight" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="normal">Normal (400)</SelectItem>
-                    <SelectItem value="bold">Bold (700)</SelectItem>
-                    <SelectItem value="lighter">Lighter (300)</SelectItem>
-                    <SelectItem value="bolder">Bolder (800)</SelectItem>
-                    <SelectItem value="100">Thin (100)</SelectItem>
-                    <SelectItem value="300">Light (300)</SelectItem>
-                    <SelectItem value="500">Medium (500)</SelectItem>
-                    <SelectItem value="600">Semi-bold (600)</SelectItem>
-                    <SelectItem value="900">Extra-bold (900)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
       <AccordionItem value="appearance">
         <AccordionTrigger className="text-sm font-medium">
           Appearance
@@ -415,8 +351,8 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 Background Color
               </Label>
               <div className="flex items-center gap-2">
-                <div 
-                  className="w-6 h-6 border rounded" 
+                <div
+                  className="w-6 h-6 border rounded"
                   style={{ backgroundColor: backgroundColor }}
                 ></div>
                 <Input
@@ -439,8 +375,8 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 Text Color
               </Label>
               <div className="flex items-center gap-2">
-                <div 
-                  className="w-6 h-6 border rounded" 
+                <div
+                  className="w-6 h-6 border rounded"
                   style={{ backgroundColor: textColor }}
                 ></div>
                 <Input
@@ -470,7 +406,6 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 id="opacity"
                 className="mt-2"
                 defaultValue={[
-
                   ((selectedElement?.styles?.opacity as number) || 1) * 100,
                 ]}
                 max={100}
