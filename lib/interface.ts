@@ -50,7 +50,6 @@ export interface Element {
   parentId?: string;
   projectId?: string;
 }
-
 export interface FrameElement extends Element {
   elements: EditorElement[];
 }

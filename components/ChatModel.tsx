@@ -5,9 +5,8 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-// Use dynamic imports for the syntax highlighter to avoid compilation issues
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Select,
   SelectContent,
@@ -19,6 +18,7 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { Copy, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useEditorStore } from "@/lib/store/editorStore";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -27,21 +27,57 @@ const SyntaxHighlighter = dynamic(
 
 export default function Chat() {
   const params = useParams();
+  const { elements } = useEditorStore();
   const projectId = params.slug as string;
   const [format, setFormat] = useState("react");
   const [includeStyles, setIncludeStyles] = useState(true);
   const [includeInteractivity, setIncludeInteractivity] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [errorCount, setErrorCount] = useState(0);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      api: "/api/chat",
-      body: {
-        projectId: projectId,
-        format: format,
-        includeStyles: includeStyles,
-        includeInteractivity: includeInteractivity,
-      },
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error,
+    reload,
+  } = useChat({
+    api: "/api/chat",
+    body: {
+      elements: elements,
+      projectId: projectId,
+      format: format,
+      includeStyles: includeStyles,
+      includeInteractivity: includeInteractivity,
+    },
+    onError: (error) => {
+      console.error("Chat error:", error);
+      if (
+        (errorCount < 3 && error.message.includes("network")) ||
+        error.message.includes("timeout")
+      ) {
+        // Auto-retry on network errors
+        setErrorCount((prev) => prev + 1);
+        setTimeout(() => {
+          reload();
+        }, 1000);
+      } else {
+        toast.error(`Error: ${error.message}`);
+      }
+    },
+    onFinish: () => {
+      setErrorCount(0);
+    },
+  });
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const copyMessages = () => {
     try {
@@ -71,10 +107,28 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto">
-      <Button className="w-10 flex" onClick={copyMessages}>
-        <Copy className="w-full" />
-      </Button>
-      <div className="flex-1 overflow-y-auto py-4  space-y-4 mb-16">
+      <div className="flex justify-between items-center">
+        <Button className="w-10 flex" onClick={copyMessages}>
+          <Copy className="w-full" />
+        </Button>
+        {errorCount > 0 && (
+          <span className="text-amber-500 text-xs">
+            Retrying... ({errorCount}/3)
+          </span>
+        )}
+        {error && errorCount >= 3 && (
+          <Button
+            size="sm"
+            onClick={() => {
+              setErrorCount(0);
+              reload();
+            }}
+          >
+            Retry
+          </Button>
+        )}
+      </div>
+      <div className="flex-1 overflow-y-auto py-4 space-y-4 mb-16">
         {messages.map((message) => (
           <div key={message.id}>
             {message.parts.map((part, i) => {
@@ -138,6 +192,7 @@ export default function Chat() {
             <p>Ask about your project elements or request generated code</p>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2">

@@ -1,10 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { streamText, tool } from "ai";
 import { google } from "@ai-sdk/google";
-import { GetAll } from "@/app/data/element/elementDAL";
 import { z } from "zod";
 
-// Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -14,8 +12,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
+  console.log("Received request body:", JSON.stringify(body.elements, null, 2));
 
-  // Validate the request body with zod
   const schema = z.object({
     projectId: z.string(),
     format: z
@@ -36,17 +34,8 @@ export async function POST(req: Request) {
     });
   }
 
-  const {
-    projectId,
-    format,
-    includeStyles,
-    includeInteractivity,
-    customPrompt,
-  } = result.data;
-
-  const userElements = await GetAll(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/${projectId}`
-  );
+  const { format, includeStyles, includeInteractivity, customPrompt } =
+    result.data;
 
   let promptPrefix = "";
   if (customPrompt) {
@@ -70,18 +59,18 @@ export async function POST(req: Request) {
   - tailwindStyles: Tailwind CSS classes
   - x/y: Position coordinates
   - elements: Array of child elements (for container elements)
-  - Convert styles as React.CSSProperties to Tailwind CSS classes use arbitrary values if possible.
-  - If no tailwindStyles are provided, convert the styles as React.CSSProperties to Tailwind.
+  - Override tailwindStyles with styles (React.CSSProperties) if both are present Using arbitrary values
   - Other properties specific to element types (src for images, href for links, etc.)
-  - Remove any styles that is the same as the tailwindStyles.
   Here are the elements to convert to code:
-  ${JSON.stringify(userElements, null, 2)}
+  ${JSON.stringify(body.elements, null, 2)}
   
   Respond with ONLY the generated code with no explanations or additional text. Return valid, complete ${format} code that can be directly used.`;
 
   const aiResponse = streamText({
-    model: google("gemini-2.0-flash-001"),
+    model: google("gemini-1.5-pro"),
     prompt,
+    temperature: 0.2,
+    maxRetries: 3,
     tools: {
       getCode: tool({
         description: "Get code from the AI",
@@ -90,7 +79,17 @@ export async function POST(req: Request) {
         }),
         execute: async ({ code }) => {
           return code;
-        }
+        },
+      }),
+      convertToTailwind: tool({
+        description:
+          "Convert React CSS properties to Tailwind CSS classes using arbitrary values (ex: text-[14px]) and override existing tailwindStyles",
+        parameters: z.object({
+          tailwindStyles: z.string(),
+        }),
+        execute: async ({ tailwindStyles }) => {
+          return tailwindStyles;
+        },
       }),
     },
   });

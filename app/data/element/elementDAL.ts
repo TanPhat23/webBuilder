@@ -1,6 +1,7 @@
 "use server";
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/elements`;
 
@@ -76,7 +77,7 @@ export const Update = async (data: EditorElement) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token.jwt}`,
       },
-      body: JSON.stringify({ ...data }),
+      body: JSON.stringify(data),
     });
     if (!response.ok) {
       const errorData = await response.json();
@@ -116,10 +117,10 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");
-
+    
     const client = await clerkClient();
     const token = await client.sessions.getToken(sessionId, "usertemp");
-
+    
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -128,7 +129,7 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
       },
       // next: { revalidate: 5 },
     });
-
+    
     const data: EditorElement[] = await response.json();
     return data;
   } catch (error: Error | unknown) {
