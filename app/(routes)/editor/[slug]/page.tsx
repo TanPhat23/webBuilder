@@ -1,60 +1,17 @@
-"use client";
-import { GetAll } from "@/app/api/element/route";
-import Editor from "@/components/editor/Editor";
-import EditorJoyRide from "@/components/editor/EditorJoyRide";
-import { useEditorStore } from "@/lib/store/editorStore";
-import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
-import { EditorElement } from "@/lib/type";
-import { MessageCircleQuestion } from "lucide-react";
-import React from "react";
-import useSWR from "swr";
+import { GetAll } from "@/app/data/element/elementDAL";
+import EditorPageClient from "./EditorPageClient";
 
-export default function EditorPage({
+// export const dynamic = "force-dynamic";
+
+export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = React.use(params);
-  const loadElementsFromDB = useEditorStore(
-    (state) => state.loadElementsFromDB
-  );
-  const { startTour, needHelp, setStartTour } = useElementSelectionStore();
-
-  const { data: elements } = useSWR<EditorElement[]>(
-    `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`,
-    GetAll
+  const { slug } = await params;
+  const elements = await GetAll(
+    `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`
   );
 
-  const handleEndTour = () => {
-    setStartTour(false);
-    // Make sure any other tour-related state is properly reset
-    useElementSelectionStore.getState().setNeedHelp(true);
-  };
-
-  React.useEffect(() => {
-    if (elements) {
-      loadElementsFromDB(elements);
-    }
-  }, [elements, loadElementsFromDB]);
-
-  return (
-    <>
-      <Editor projectId={slug} />
-      {needHelp && (
-        <div className="absolute top-2 right-2 z-50">
-          <MessageCircleQuestion
-            onClick={() => setStartTour(true)}
-            className="w-4 cursor-pointer text-purple-500"
-          />
-        </div>
-      )}
-      {startTour && (
-        <EditorJoyRide
-          onTourEnd={handleEndTour}
-          start={startTour}
-          setStartTour={setStartTour}
-        />
-      )}
-    </>
-  );
+  return <EditorPageClient slug={slug} initialElements={elements} />;
 }

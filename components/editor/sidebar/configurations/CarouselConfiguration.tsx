@@ -1,5 +1,5 @@
 import { CarouselElement } from "@/lib/interface";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,10 @@ import CarouselNumberInput from "./inputs/CarouselNumberInput";
 import CarouselTextInput from "./inputs/CarouselTextInput";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   selectedElement: CarouselElement;
@@ -22,6 +26,13 @@ const CarouselConfiguration: React.FC<Props> = () => {
   const { selectedElement } = useElementSelectionStore();
   const settings = (selectedElement as CarouselElement).carouselSettings || {};
   const { updateElementOptimistically } = useEditorStore();
+  const [copied, setCopied] = useState(false);
+  const [jsonValue, setJsonValue] = useState(JSON.stringify(settings, null, 2));
+  const [isValidJson, setIsValidJson] = useState(true);
+
+  useEffect(() => {
+    setJsonValue(JSON.stringify(settings, null, 2));
+  }, [settings]);
 
   const handleChange = <T,>(property: string, value: T) => {
     const updatedSettings = {
@@ -41,6 +52,12 @@ const CarouselConfiguration: React.FC<Props> = () => {
         router.refresh();
       });
     }
+  };
+
+  const copySettingsToClipboard = () => {
+    navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -164,6 +181,65 @@ const CarouselConfiguration: React.FC<Props> = () => {
               checked={settings.vertical === true}
               onCheckedChange={(checked) => handleChange("vertical", checked)}
             />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="custom">
+          <AccordionTrigger>Custom Settings</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-3">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  Edit JSON directly
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copySettingsToClipboard}
+                  className="h-7 gap-1"
+                >
+                  {copied ? (
+                    <>
+                      <CheckIcon className="h-3.5 w-3.5" />{" "}
+                      <span className="text-green-500">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <CopyIcon className="h-3.5 w-3.5" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              <Textarea
+                className={cn("", {
+                  "border-red-500": !isValidJson,
+                })}
+                value={jsonValue}
+                onChange={(e) => {
+                  setJsonValue(e.target.value);
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    setIsValidJson(true);
+                    if (selectedElement) {
+                      React.startTransition(() => {
+                        updateElementOptimistically(selectedElement.id, {
+                          carouselSettings: parsed,
+                        });
+                        router.refresh();
+                      });
+                    }
+                  } catch (err) {
+                    setIsValidJson(false);
+                  }
+                }}
+              />
+              <p className="text-xs text-muted-foreground">
+                {isValidJson ? (
+                  "Changes are applied when valid JSON is detected"
+                ) : (
+                  <span className="text-red-500">Invalid JSON format</span>
+                )}
+              </p>
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

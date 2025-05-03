@@ -1,6 +1,6 @@
 import { FormInput } from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const InputHolder = () => {
   const onDragStart = (
@@ -10,14 +10,16 @@ const InputHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Input")}
-      className="flex flex-row justify-between items-center w-full  rounded-md  cursor-grab active:cursor-grabbing transition-colors"
-    >
-      <div className="font-medium">Input</div>
-      <FormInput/>
-    </div>
+    <ComponentTooltip type="Input">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Input")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Input</div>
+        <FormInput />
+      </div>
+    </ComponentTooltip>
   );
 };
 

@@ -24,7 +24,6 @@ const FrameComponents = (props: EditorComponentProps) => {
     handleContextMenu,
     handleImageDrop,
     handleDragStart,
-    handleDragOver,
     handleDragEnd,
     getContentProps,
     getCommonProps,
@@ -48,8 +47,6 @@ const FrameComponents = (props: EditorComponentProps) => {
               handleDrop(e, element)
             }
             onDragStart={(e, info) => handleDragStart(e, element, info)}
-            onDrag={(e, info) => handleDragOver(e, element, info)}
-            onMouseEnter={() => console.log("mouse enter", element.id)}
             onDragEnd={(e, info) => handleDragEnd(e, info)}
           >
             {(element as FrameElement).elements?.map((childElement) => (
@@ -186,7 +183,6 @@ const FrameComponents = (props: EditorComponentProps) => {
               key={element.id}
               {...commonProps}
               onDragStart={(e, info) => handleDragStart(e, element, info)}
-              onDrag={(e, info) => handleDragOver(e, element, info)}
               onDragEnd={(e, info) => handleDragEnd(e, info)}
               onDrop={(e: React.DragEvent<HTMLDivElement>) =>
                 handleImageDrop(e, element)
@@ -207,7 +203,6 @@ const FrameComponents = (props: EditorComponentProps) => {
               handleDrop(e, element)
             }
             onDragStart={(e, info) => handleDragStart(e, element, info)}
-            onDrag={(e, info) => handleDragOver(e, element, info)}
             onDragEnd={(e, info) => handleDragEnd(e, info)}
           />
         );

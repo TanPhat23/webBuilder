@@ -1,6 +1,6 @@
 import { Frame} from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const FrameHolder = () => {
   const onDragStart = (
@@ -10,14 +10,16 @@ const FrameHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Frame")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>Frame</div>
-      <Frame />
-    </div>
+    <ComponentTooltip type="Frame">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Frame")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Frame</div>
+        <Frame />
+      </div>
+    </ComponentTooltip>
   );
 };
 

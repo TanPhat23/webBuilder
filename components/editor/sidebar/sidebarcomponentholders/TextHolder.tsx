@@ -1,6 +1,6 @@
 import { TypeIcon } from "lucide-react";
 import React from "react";
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const TextHolder = () => {
   const onDragStart = (
@@ -10,14 +10,16 @@ const TextHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Text")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>Text</div>
-      <TypeIcon />
-    </div>
+    <ComponentTooltip type="Text">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Text")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Text</div>
+        <TypeIcon />
+      </div>
+    </ComponentTooltip>
   );
 };
 

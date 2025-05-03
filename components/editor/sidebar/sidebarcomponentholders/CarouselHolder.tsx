@@ -1,7 +1,6 @@
-import Image from "next/image";
+import { Images } from "lucide-react";
 import React from "react";
-
-
+import { ComponentTooltip } from "../../ComponentTooltip";
 
 const CarouselHolder = () => {
   const onDragStart = (
@@ -11,14 +10,16 @@ const CarouselHolder = () => {
     e.dataTransfer.setData("elementType", elementType);
   };
   return (
-    <div
-      draggable
-      onDragStart={(e) => onDragStart(e, "Carousel")}
-      className="flex flex-row justify-between items-center w-full"
-    >
-      <div>Carousel</div>
-      <Image src="/Carousel.png" alt="Carousel" height={16} width={16}></Image>
-    </div>
+    <ComponentTooltip type="Carousel">
+      <div
+        draggable
+        onDragStart={(e) => onDragStart(e, "Carousel")}
+        className="flex flex-row justify-between items-center w-full"
+      >
+        <div>Carousel</div>
+        <Images />
+      </div>
+    </ComponentTooltip>
   );
 };
 

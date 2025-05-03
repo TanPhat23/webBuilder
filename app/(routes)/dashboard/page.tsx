@@ -1,5 +1,5 @@
 "use client";
-import { GetAll } from "@/app/api/project/route";
+import { GetAll } from "@/app/data/project/projectDAL";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,
@@ -33,7 +33,6 @@ export default function Page() {
 
   if (error) console.log(error);
 
-  
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -74,7 +73,9 @@ export default function Page() {
                     className="rounded-lg shadow-md bg-foreground"
                   >
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-primary-foreground">{project.name}</h3>
+                      <h3 className="text-lg font-semibold text-primary-foreground">
+                        {project.name}
+                      </h3>
                       <p className="text-sm">{project.description}</p>
                       <div className="flex gap-2 mt-4">
                         <Button
@@ -83,7 +84,6 @@ export default function Page() {
                         >
                           Edit
                         </Button>
-                        
                       </div>
                     </div>
                   </li>

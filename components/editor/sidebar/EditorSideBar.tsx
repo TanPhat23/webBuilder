@@ -20,6 +20,7 @@ import ImageUpload from "./ImageUpload";
 import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
 import { ModeToggle } from "@/components/ModeToggle";
 import Link from "next/link";
+import Chat from "@/components/ChatModel";
 
 export function EditorSideBar2() {
   return (
@@ -62,7 +63,10 @@ export function EditorSideBar2() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href={"/settings/preferences"} className="flex items-center gap-2">
+                  <Link
+                    href={"/settings/preferences"}
+                    className="flex items-center gap-2"
+                  >
                     <Settings className="w-5 h-5  " />
                     <span>Settings</span>
                   </Link>

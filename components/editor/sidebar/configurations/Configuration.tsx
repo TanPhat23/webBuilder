@@ -1,7 +1,6 @@
 import React, { startTransition, useEffect, useState } from "react";
 import { Input } from "../../../ui/input";
 import BorderRadiusInput from "./inputs/BorderRadiusInput";
-import BorderWeightPopover from "./popovers/BorderWeightPopover";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
@@ -12,26 +11,17 @@ import InputConfiguration from "./InputConfiguration";
 import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
-import CanvasColorSelector from "./CanvasColorSelector";
-import { Button } from "@/components/ui/button";
-
-// Define Google Font interface
-interface GoogleFont {
-  family: string;
-  variants: string[];
-  subsets: string[];
-  version: string;
-  lastModified: string;
-  files?: Record<string, string>;
-  category?: string;
-  kind?: string;
-}
+import CanvasConfiguration from "./CanvasConfiguration";
+import useSWR from "swr";
+import { getFontFamily } from "@/actions";
 
 const Configuration = () => {
-  const [fontFamilies, setFontFamilies] = useState<string[]>([]);
+  const { data: fontFamilies = [] } = useSWR(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
+    getFontFamily
+  );
   const { selectedElement } = useElementSelectionStore();
-  const { elements, deleteElementOptimistically, updateElementOptimistically } =
-    useEditorStore();
+  const { updateElementOptimistically } = useEditorStore();
 
   const [localWidth, setLocalWidth] = useState(
     selectedElement?.styles?.width || ""
@@ -79,25 +69,6 @@ const Configuration = () => {
     });
   };
 
-  const getFontFamily = async () => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`
-      );
-      const data = await response.json();
-      return data.items.map((font: GoogleFont) => font.family);
-    } catch (error) {
-      console.error("Error fetching fonts:", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    getFontFamily().then((data) => {
-      setFontFamilies(data);
-    });
-  }, []);
-
   const renderConfiguration = () => {
     if (!selectedElement) return null;
     switch (selectedElement?.type) {
@@ -131,22 +102,7 @@ const Configuration = () => {
     <div className="m-2 w-full h-full text-xs">
       <div className="flex flex-col gap-2">
         {!selectedElement ? (
-          <>
-            <CanvasColorSelector />
-            <Button
-              className="w-full text-xs p-1 h-8"
-              variant="destructive"
-              onClick={() => {
-                elements.forEach((element) => {
-                  startTransition(() => {
-                    deleteElementOptimistically(element.id);
-                  });
-                });
-              }}
-            >
-              Reset to default
-            </Button>
-          </>
+          <CanvasConfiguration />
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-1 mr-4">
@@ -170,7 +126,6 @@ const Configuration = () => {
             {renderConfiguration()}
             <div className="flex flex-row gap-1 mr-4">
               <BorderRadiusInput selectedElement={selectedElement} />
-              <BorderWeightPopover selectedElement={selectedElement} />
             </div>
           </div>
         )}

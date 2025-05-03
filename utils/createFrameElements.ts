@@ -1,8 +1,13 @@
 import { EditorElement } from "@/lib/type";
-import { FrameElement, CarouselElement, ListElement, FormElement } from "@/lib/interface";
+import {
+  FrameElement,
+  CarouselElement,
+  ListElement,
+  FormElement,
+} from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Create } from "@/app/api/element/route";
+import { Create } from "@/app/data/element/elementDAL";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -87,12 +92,13 @@ const createElements = async (
           borderRadius: "8px",
           border: "1px solid #e5e7eb",
         },
-        tailwindStyles: "flex flex-col p-4 gap-3 min-h-[180px] w-full bg-gray-50 rounded-lg border border-gray-200",
+        tailwindStyles:
+          "flex flex-col p-4 gap-3 min-h-[180px] w-full bg-gray-50 rounded-lg border border-gray-200",
         elements: [],
         formSettings: {
           method: "post",
           autoComplete: "on",
-          noValidate: false
+          noValidate: false,
         },
         projectId: projectId,
       };
@@ -212,6 +218,10 @@ const createElements = async (
   }
 
   const parentElementCopy = { ...parentElement };
+  // Make sure elements is defined and accessible
+  if (!parentElementCopy.elements) {
+    parentElementCopy.elements = [];
+  }
   parentElementCopy.elements.push(newElement);
 
   if (updateElement) {
@@ -222,7 +232,7 @@ const createElements = async (
     try {
       await Create(newElement);
     } catch (error) {
-      // Rollback on error  
+      // Rollback on error
       updateElement(parentElement.id, {
         elements: parentElement.elements.filter(
           (element) => element.id !== newElement.id
