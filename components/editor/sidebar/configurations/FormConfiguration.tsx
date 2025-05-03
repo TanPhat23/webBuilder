@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useEditorStore } from "@/lib/store/editorStore";
-
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -47,6 +47,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["basic", "advanced", "appearance"]}
       className="w-full"
     >
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings
@@ -76,9 +77,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="action"
                 value={formSettings.action || ""}
-                onChange={(e) =>
-                  updateFormSettings({ action: e.target.value })
-                }
+                onChange={(e) => updateFormSettings({ action: e.target.value })}
                 placeholder="https://example.com/submit"
               />
             </div>
@@ -89,9 +88,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="name"
                 value={formSettings.name || ""}
-                onChange={(e) =>
-                  updateFormSettings({ name: e.target.value })
-                }
+                onChange={(e) => updateFormSettings({ name: e.target.value })}
                 placeholder="form-name"
               />
             </div>
@@ -109,8 +106,12 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
             <div className="space-y-2">
               <Label htmlFor="enctype">Encoding Type</Label>
               <Select
-                value={formSettings.encType || "application/x-www-form-urlencoded"}
-                onValueChange={(value) => updateFormSettings({ encType: value })}
+                value={
+                  formSettings.encType || "application/x-www-form-urlencoded"
+                }
+                onValueChange={(value) =>
+                  updateFormSettings({ encType: value })
+                }
               >
                 <SelectTrigger id="enctype">
                   <SelectValue placeholder="Select encoding type" />
@@ -140,7 +141,9 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 <SelectContent>
                   <SelectItem value="_self">Same Frame (_self)</SelectItem>
                   <SelectItem value="_blank">New Window (_blank)</SelectItem>
-                  <SelectItem value="_parent">Parent Frame (_parent)</SelectItem>
+                  <SelectItem value="_parent">
+                    Parent Frame (_parent)
+                  </SelectItem>
                   <SelectItem value="_top">Full Window (_top)</SelectItem>
                 </SelectContent>
               </Select>
@@ -205,10 +208,12 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
             {/* Add Default Submit Button */}
             <div className="pt-2">
               <p className="text-xs text-muted-foreground mb-1">
-                A default submit button will be added automatically if no submit button is present in the form.
+                A default submit button will be added automatically if no submit
+                button is present in the form.
               </p>
               <p className="text-xs text-muted-foreground">
-                To create a custom submit button, add a Button and set its type to "submit" in the Button Configuration.
+                To create a custom submit button, add a Button and set its type
+                to "submit" in the Button Configuration.
               </p>
             </div>
           </div>

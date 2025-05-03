@@ -139,6 +139,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   };
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
         e.preventDefault();
         undo();
@@ -163,10 +164,10 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         }
       }
     };
-
-    document.addEventListener("keydown", handleKeyDown);
+    let canvas = document.getElementById("canvas");
+    canvas?.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      canvas?.removeEventListener("keydown", handleKeyDown);
     };
   }, [undo, redo, selectedElement, handleCopy, handleCut, handlePaste]);
 
@@ -402,9 +403,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       setShowScrollToTop(scrollTop > 500);
     };
 
-    editorElement.addEventListener('scroll', handleScroll);
+    editorElement.addEventListener("scroll", handleScroll);
     return () => {
-      editorElement.removeEventListener('scroll', handleScroll);
+      editorElement.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -412,14 +413,14 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     if (editorContainerRef.current) {
       editorContainerRef.current.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
 
   return (
     <div
-      className="flex flex-col h-full w-full canva-component"
+      className="w-full h-full flex canva-component"
       style={{
         backgroundColor: styles?.backgroundColor,
         width: styles?.width,
@@ -439,13 +440,21 @@ const Editor: React.FC<Props> = ({ projectId }) => {
       <div className="flex-1 overflow-auto bg-gray-200 flex justify-center">
         <div
           style={{
-            width: DEVICE_SIZES[deviceView].width,
-            height: DEVICE_SIZES[deviceView].height,
-            transition: "width 0.3s ease",
+            width:
+              typeof DEVICE_SIZES[deviceView].width === "string"
+                ? DEVICE_SIZES[deviceView].width
+                : `${DEVICE_SIZES[deviceView].width}px`,
+            height:
+              typeof DEVICE_SIZES[deviceView].height === "string"
+                ? DEVICE_SIZES[deviceView].height
+                : `${DEVICE_SIZES[deviceView].height}px`,
+            transition: "width 0.3s ease, height 0.3s ease",
             maxHeight: "100%",
             overflow: "auto",
+            margin: deviceView !== "DESKTOP" ? "20px auto" : "0",
             boxShadow:
               deviceView !== "DESKTOP" ? "0 0 20px rgba(0,0,0,0.1)" : "none",
+            position: "relative",
           }}
           className={`bg-white ${deviceView !== "DESKTOP" ? "rounded-md" : ""}`}
           ref={draggingConstraintRef}

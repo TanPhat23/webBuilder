@@ -20,6 +20,7 @@ import { EditorElement } from "@/lib/type";
 import Typography from "./accorditionitem/Typography";
 import * as CSS from "csstype";
 import { useEditorStore } from "@/lib/store/editorStore";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -149,7 +150,7 @@ const BaseConfiguration: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      defaultValue={["typography", "spacing", "border", "effects"]}
+      defaultValue={["typography", "appearance", "spacing", "border", "effects"]}
       className="w-full"
     >
       <Typography
@@ -161,7 +162,7 @@ const BaseConfiguration: React.FC<Props> = ({
         handleSelectChange={handleSelectChange}
         handleSwitchChange={handleSwitchChange}
       />
-
+      <AppearanceAccordion selectedElement={selectedElement}/>
       {/*Margin and Padding settings*/}
       <AccordionItem value="spacing">
         <AccordionTrigger className="text-sm font-medium">

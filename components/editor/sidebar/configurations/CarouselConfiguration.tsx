@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: CarouselElement;
@@ -63,6 +64,13 @@ const CarouselConfiguration: React.FC<Props> = () => {
   return (
     <div className="flex flex-col">
       <Accordion type="single" collapsible>
+        <AccordionItem value="appearance">
+          <AccordionTrigger>Appearance</AccordionTrigger>
+          <AccordionContent>
+            <AppearanceAccordion selectedElement={selectedElement} />
+          </AccordionContent>
+        </AccordionItem>
+    
         <AccordionItem value="basic">
           <AccordionTrigger>Basic Settings</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-3">

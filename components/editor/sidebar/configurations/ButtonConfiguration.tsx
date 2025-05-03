@@ -21,6 +21,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import Typography from "./accorditionitem/Typography";
 import * as CSS from "csstype";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -294,6 +295,7 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
           });
         }}
       />
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings
