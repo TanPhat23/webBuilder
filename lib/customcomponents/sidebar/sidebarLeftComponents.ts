@@ -110,7 +110,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   textTransform: "uppercase",
                 },
                 tailwindStyles:
-                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+                  "text-gray-500 text-xs  mb-2 tracking-wide uppercase sm:hidden",
               },
 
               // Home link - active state
@@ -135,7 +135,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-indigo-600 bg-indigo-50 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-indigo-100",
+                  "w-full text-indigo-600 bg-indigo-50 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-indigo-100",
                 href: "/",
               },
 
@@ -160,7 +160,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-gray-50",
                 href: "/analytics",
               },
 
@@ -185,7 +185,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-gray-50",
                 href: "/reports",
               },
 
@@ -210,7 +210,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-gray-50",
                 href: "/settings",
               },
             ],
@@ -250,7 +250,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   textTransform: "uppercase",
                 },
                 tailwindStyles:
-                  "text-gray-500 text-xs font-medium mb-2 tracking-wide uppercase sm:hidden",
+                  "text-gray-500 text-xs  mb-2 tracking-wide uppercase sm:hidden",
               },
 
               // Projects link
@@ -274,7 +274,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-gray-50",
                 href: "/projects",
               },
 
@@ -299,7 +299,7 @@ export const sidebarLeftComponent: CustomComponent = {
                   gap: "12px",
                 },
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md  flex items-center gap-3 hover:bg-gray-50",
                 href: "/team",
               },
               {
@@ -312,7 +312,7 @@ export const sidebarLeftComponent: CustomComponent = {
                 x: 0,
                 y: 0,
                 tailwindStyles:
-                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md font-medium flex items-center justify-between gap-3 hover:bg-gray-50",
+                  "w-full text-gray-600 my-0.5 py-2.5 px-3 rounded-md flex items-center justify-between gap-3 hover:bg-gray-50",
                 styles: {
                   color: "#4B5563",
                   margin: "2px 0",
@@ -463,7 +463,7 @@ export const sidebarLeftComponent: CustomComponent = {
               fontSize: "14px",
               fontWeight: "500",
             },
-            tailwindStyles: "text-white text-sm font-medium sm:hidden",
+            tailwindStyles: "text-white text-sm  sm:hidden",
           },
         ],
       },
@@ -784,7 +784,7 @@ export const sidebarLeftComponent3: CustomComponent = {
           letterSpacing: "1px",
         },
         tailwindStyles:
-          "text-gray-500 text-sm font-medium mb-4 uppercase tracking-wide text-center md:text-left",
+          "text-gray-500 text-sm  mb-4 uppercase tracking-wide text-center md:text-left",
         href: "",
         src: "",
         parentId: "",
