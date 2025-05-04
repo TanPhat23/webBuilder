@@ -4,7 +4,7 @@ import BorderRadiusInput from "./inputs/BorderRadiusInput";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
-import { CarouselElement } from "@/lib/interface";
+import { CarouselElement, FrameElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
@@ -12,8 +12,10 @@ import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
 import CanvasConfiguration from "./CanvasConfiguration";
+import NavbarManager from "./NavbarManager";
 import useSWR from "swr";
 import { getFontFamily } from "@/actions";
+import { EditorElement } from "@/lib/type";
 
 const Configuration = () => {
   const { data: fontFamilies = [] } = useSWR(
@@ -71,6 +73,24 @@ const Configuration = () => {
 
   const renderConfiguration = () => {
     if (!selectedElement) return null;
+    
+    const isNavbar = 
+      selectedElement.type === "Frame" && 
+      (selectedElement.name?.toLowerCase().includes("navbar") || 
+       selectedElement.name?.toLowerCase().includes("nav") ||
+       (selectedElement as FrameElement).elements?.some(
+         (el: EditorElement) => el.type === "Frame" && el.name?.toLowerCase().includes("link")
+       ));
+    
+    if (isNavbar) {
+      return (
+        <>
+          <NavbarManager />
+          <FrameConfiguration selectedElement={selectedElement} />
+        </>
+      );
+    }
+    
     switch (selectedElement?.type) {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
