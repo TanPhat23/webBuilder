@@ -1,9 +1,80 @@
 import { auth } from "@clerk/nextjs/server";
-import { streamText, tool } from "ai";
+import { generateText, streamText, tool } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
+
+const requestSchema = z.object({
+  projectId: z.string(),
+  format: z.enum(["html", "react", "vue", "angular", "code"]).default("react"),
+  includeStyles: z.boolean().default(true),
+  includeInteractivity: z.boolean().default(false),
+  customPrompt: z.string().optional(),
+  elements: z.any(),
+});
+
+function buildPrompt(options: {
+  format: string;
+  includeStyles: boolean;
+  includeInteractivity: boolean;
+  customPrompt?: string;
+  elements: any;
+}): string {
+  const {
+    format,
+    includeStyles,
+    includeInteractivity,
+    customPrompt,
+    elements,
+  } = options;
+
+  const prompt = `
+  ${customPrompt ? `${customPrompt}\n\n` : ""}
+  Generate ${format} code from the following structured elements.
+  ${includeStyles ? "Include styling." : "Don't include styling."}
+  ${
+    includeInteractivity
+      ? "Include interactivity."
+      : "Don't include interactivity."
+  }
+  ${JSON.stringify(elements, null, 2)}
+  
+  First, generate the ${format} code.
+  Then, convert any styles to Tailwind classes using arbitrary values.
+  for example, "width: 100px" becomes "w-[100px]", "font: 14px" becomes "text-[14px]".
+  IF Element is a Carousel MUST generate  the code in this format example:
+    <div className="carousel-container w-full h-full px-10">
+      <Slider {...carouselSettings}>
+        <div className="h-[300px] flex justify-center items-center">
+          <img
+            src="https://tkd8ihnk8y.ufs.sh/f/SZ9GMeiaP9HCsVvJMP3n5oua8HZp7xcC12WYGi4vtArlfkbO"
+            alt="Image 1"
+            className="h-[300px] object-cover mx-auto"
+          />
+        </div>
+        <div className="h-[300px] flex justify-center items-center">
+          <img
+            src="https://tkd8ihnk8y.ufs.sh/f/SZ9GMeiaP9HCBDWIViKtNfzEYKZQD5ijMhTn109kb63USpCR"
+            alt="Image 2"
+            className="h-[300px] object-cover mx-auto"
+          />
+        </div>
+        <div className="h-[300px] flex justify-center items-center">
+          <img
+            src="https://tkd8ihnk8y.ufs.sh/f/SZ9GMeiaP9HC92K3xECKVOb9IwgW7hs01CMfqYdFZ8iGue3X"
+            alt="Image 3"
+            className="h-[300px] object-cover mx-auto"
+          />
+        </div>
+      </Slider>
+    </div>
+  
+  Respond with ONLY the final generated code with Tailwind classes.
+  `;
+  return prompt;
+}
 
 export async function POST(req: Request) {
   const user = await auth();
@@ -12,19 +83,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  console.log("Received request body:", JSON.stringify(body.elements, null, 2));
 
-  const schema = z.object({
-    projectId: z.string(),
-    format: z
-      .enum(["html", "react", "vue", "angular", "code"])
-      .default("react"),
-    includeStyles: z.boolean().default(true),
-    includeInteractivity: z.boolean().default(false),
-    customPrompt: z.string().optional(),
-  });
-
-  const result = schema.safeParse(body);
+  const result = requestSchema.safeParse(body);
   if (!result.success) {
     return new Response(JSON.stringify({ error: result.error }), {
       status: 400,
@@ -34,65 +94,39 @@ export async function POST(req: Request) {
     });
   }
 
-  const { format, includeStyles, includeInteractivity, customPrompt } =
-    result.data;
+  const {
+    format,
+    includeStyles,
+    includeInteractivity,
+    customPrompt,
+    elements,
+  } = result.data;
 
-  let promptPrefix = "";
-  if (customPrompt) {
-    promptPrefix = `${customPrompt}\n\n`;
+  if (!elements || elements.length === 0) {
+    return new Response("No elements found", {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
-  const prompt = `${promptPrefix}Generate ${format} code from the following structured elements. ${
-    includeStyles ? "Include styling." : "Don't include styling."
-  } ${
-    includeInteractivity
-      ? "Include interactivity and functionality."
-      : "Don't include interactivity."
-  }
-  The elements follow this structure format and may be nested:
-  
-  Element Structure:
-  - type: The type of element (Text, Button, Frame, Carousel, etc.)
-  - id: Unique identifier
-  - content: Text content
-  - styles: CSS styles as React.CSSProperties
-  - tailwindStyles: Tailwind CSS classes
-  - x/y: Position coordinates
-  - elements: Array of child elements (for container elements)
-  - Override tailwindStyles with styles (React.CSSProperties) if both are present Using arbitrary values
-  - Other properties specific to element types (src for images, href for links, etc.)
-  Here are the elements to convert to code:
-  ${JSON.stringify(body.elements, null, 2)}
-  
-  Respond with ONLY the generated code with no explanations or additional text. Return valid, complete ${format} code that can be directly used.`;
-
-  const aiResponse = streamText({
-    model: google("gemini-1.5-pro"),
-    prompt,
-    temperature: 0.2,
-    maxRetries: 3,
-    tools: {
-      getCode: tool({
-        description: "Get code from the AI",
-        parameters: z.object({
-          code: z.string(),
-        }),
-        execute: async ({ code }) => {
-          return code;
-        },
-      }),
-      convertToTailwind: tool({
-        description:
-          "Convert React CSS properties to Tailwind CSS classes using arbitrary values (ex: text-[14px]) and override existing tailwindStyles",
-        parameters: z.object({
-          tailwindStyles: z.string(),
-        }),
-        execute: async ({ tailwindStyles }) => {
-          return tailwindStyles;
-        },
-      }),
-    },
+  const model = google("gemini-2.0-flash-001");
+  const prompt = buildPrompt({
+    format,
+    includeStyles,
+    includeInteractivity,
+    customPrompt,
+    elements,
   });
 
-  return aiResponse.toDataStreamResponse();
+  const response = await streamText({
+    model,
+    system: "You are a helpful assistant that generates code ",
+    prompt,
+    temperature: 0.3,
+    maxRetries: 3,
+  });
+
+  return response.toDataStreamResponse();
 }

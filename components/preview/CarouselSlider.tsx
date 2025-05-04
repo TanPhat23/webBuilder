@@ -17,7 +17,7 @@ export default function CarouselSlider({
   style,
 }: CarouselSliderProps) {
   return (
-    <div className="h-full carousel-container mx-10">
+    <div className="w-full carousel-container px-10">
       <Slider {...settings}>
         {React.Children.map(children, (child, index) => (
           <div key={index} className="h-full relative px-2 pb-8">

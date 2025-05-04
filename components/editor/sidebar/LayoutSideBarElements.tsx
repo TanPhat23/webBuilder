@@ -28,7 +28,7 @@ const LayoutSideBarElements = () => {
       <div key={element.id} className="w-full">
         <Collapsible className="group/collapsible">
           <div
-            className={`flex flex-row w-full justify-between hover:bg-gray-100 p-2 cursor-pointer ${
+            className={`flex flex-row w-full justify-between  p-2 cursor-pointer ${
               element.isSelected ? "bg-blue-300 rounded-lg" : ""
             }`}
             // onMouseEnter={() => handleMouseEnter(element)}

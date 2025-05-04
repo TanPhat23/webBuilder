@@ -154,7 +154,7 @@ const CarouselComponent: React.FC<Props> = ({
     <div
       id={element.id}
       onDrop={handleDrop}
-      className="h-full carousel-container "
+      className="h-full carousel-container px-10"
       onDragOver={(e) => e.preventDefault()}
       style={{
         backgroundColor: element.styles?.backgroundColor,
