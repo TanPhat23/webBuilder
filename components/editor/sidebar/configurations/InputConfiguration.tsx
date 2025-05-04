@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useEditorStore } from "@/lib/store/editorStore";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -46,6 +47,7 @@ const InputConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["basic", "validation", "appearance"]}
       className="w-full"
     >
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings

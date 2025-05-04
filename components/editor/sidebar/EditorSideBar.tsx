@@ -17,10 +17,9 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown, Settings } from "lucide-react";
 import ImageUpload from "./ImageUpload";
-import { SearchCombobox } from "./configurations/editorseach/SearchCombobox";
-import { ModeToggle } from "@/components/ModeToggle";
+import { SearchCombobox } from "./configurations/editorsidebarcomponents/SearchCombobox";
 import Link from "next/link";
-import Chat from "@/components/ChatModel";
+import PresetsSelector from "./configurations/editorsidebarcomponents/PresetsSelector";
 
 export function EditorSideBar2() {
   return (
@@ -37,6 +36,21 @@ export function EditorSideBar2() {
             <CollapsibleContent>
               <SidebarGroupContent>
                 <SearchCombobox />
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+        <Collapsible className="group/collapsible">
+          <SidebarGroup>
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="sidebar-components">
+                Presets
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <PresetsSelector />{" "}
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>
