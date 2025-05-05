@@ -1,7 +1,6 @@
 "use server";
 import { EditorElement } from "@/lib/type";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { darcula } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/elements`;
 

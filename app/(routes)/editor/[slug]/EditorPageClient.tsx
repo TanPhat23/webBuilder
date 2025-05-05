@@ -1,6 +1,7 @@
 "use client";
 import Editor from "@/components/editor/Editor";
 import EditorJoyRide from "@/components/editor/EditorJoyRide";
+import { appProject } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
@@ -10,11 +11,13 @@ import React from "react";
 interface EditorPageClientProps {
   slug: string;
   initialElements: EditorElement[];
+  project: appProject;
 }
 
 export default function EditorPageClient({
   slug,
   initialElements,
+  project,
 }: EditorPageClientProps) {
   const loadElementsFromDB = useEditorStore(
     (state) => state.loadElementsFromDB

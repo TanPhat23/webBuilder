@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useOptimistic, useMemo, startTransition } from "react";
+import React, { useOptimistic, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";

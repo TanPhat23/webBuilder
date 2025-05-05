@@ -67,8 +67,3 @@ export type ContainerElement =
   | ListElement
   | SelectElement
   | FormElement;
-export interface appProjectTypes {
-  id?: string;
-  name: string;
-  description?: string;
-}

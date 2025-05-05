@@ -1,23 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { CanvasStyles } from "../interface";
 
-export interface CanvasStyles {
-  backgroundColor?: string;
-  width?: string;
-  height?: string;
-  maxWidth?: string;
-  gridEnabled?: boolean;
-  gridSize?: number;
-  snapToGrid?: boolean;
-  gridColor?: string;
-  overflow?: string;
-  borderRadius?: string;
-  border?: string;
-  boxShadow?: string;
-  backdropFilter?: string;
-  transition?: string;
-  [key: string]: any;
-}
 
 interface CanvasState {
   styles: CanvasStyles;

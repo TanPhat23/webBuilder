@@ -10,6 +10,34 @@ export interface EditorComponentProps {
   projectId: string;
 }
 
+export interface CanvasStyles {
+  backgroundColor?: string;
+  width?: string;
+  height?: string;
+  maxWidth?: string;
+  gridEnabled?: boolean;
+  gridSize?: number;
+  snapToGrid?: boolean;
+  gridColor?: string;
+  overflow?: string;
+  borderRadius?: string;
+  border?: string;
+  boxShadow?: string;
+  backdropFilter?: string;
+  transition?: string;
+  [key: string]: any;
+}
+
+export interface appProject {
+  id?: string;
+  name: string;
+  description?: string;
+  subdomain?: string;
+  published?: boolean;
+  styles: CanvasStyles;
+}
+
+
 export interface commonProps {
   onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
   onContextMenu: (e: React.MouseEvent<HTMLElement>) => void;

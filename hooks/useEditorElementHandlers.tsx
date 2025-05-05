@@ -132,7 +132,6 @@ export function useEditorElementHandlers({
     setDraggingElement(element);
   };
 
-
   const handleMouseEnter = (
     e: React.MouseEvent<HTMLElement>,
     element: EditorElement
@@ -140,8 +139,7 @@ export function useEditorElementHandlers({
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(element);
     }
-    console.log(    "hovering", element.id);
-    
+    console.log("hovering", element.id);
   };
 
   const handleDragEnd = (
@@ -183,7 +181,8 @@ export function useEditorElementHandlers({
     // if (element.type !== "Image" && element.type !== "Frame") return;
     const elementType = e.dataTransfer.getData("elementType");
     const advancedType = e.dataTransfer.getData("advancedType");
-    if (!elementType && !advancedType) return;
+    const imgIdx = e.dataTransfer.getData("image");
+    if (!elementType && !advancedType && !imgIdx) return;
     if (elementType) {
       createElements(
         elementType,
@@ -191,6 +190,17 @@ export function useEditorElementHandlers({
         projectId,
         updateElement
       );
+    } else if (imgIdx) {
+      const imgSrc = uploadImages[parseInt(imgIdx)];
+      if (imgSrc) {
+        createElements(
+          imgSrc ? "Image" : elementType,
+          element as FrameElement,
+          projectId,
+          updateElement,
+          imgSrc.ufsUrl
+        );
+      }
     } else if (advancedType) {
       const advancedElement = advancedComponents.find(
         (el) => el.component.name === advancedType
@@ -318,7 +328,7 @@ export function useEditorElementHandlers({
         setHoveredElement(element);
       }
     },
-    
+
     style: { ...element.styles },
   });
 

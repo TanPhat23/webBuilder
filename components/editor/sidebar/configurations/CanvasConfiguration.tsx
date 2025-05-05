@@ -1,5 +1,5 @@
 import React, { startTransition } from "react";
-import { useCanvasStore, CanvasStyles } from "@/lib/store/canvasStore";
+import { useCanvasStore } from "@/lib/store/canvasStore";
 import {
   Accordion,
   AccordionContent,
@@ -16,11 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { useEditorStore } from "@/lib/store/editorStore";
 import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
+import { CanvasStyles } from "@/lib/interface";
 
 const CanvasConfiguration = () => {
   const { styles, setStyles } = useCanvasStore();

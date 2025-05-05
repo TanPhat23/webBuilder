@@ -1,5 +1,6 @@
-import { GetAll } from "@/app/data/element/elementDAL";
+import { GetAll } from "@/actions/element/action";
 import EditorPageClient from "./EditorPageClient";
+import { GetProjectById } from "@/actions/project/action";
 
 // export const dynamic = "force-dynamic";
 
@@ -13,5 +14,13 @@ export default async function Page({
     `${process.env.NEXT_PUBLIC_API_URL}/elements/${slug}`
   );
 
-  return <EditorPageClient slug={slug} initialElements={elements} />;
+  const project = await GetProjectById(slug);
+
+  return (
+    <EditorPageClient
+      slug={slug}
+      initialElements={elements}
+      project={project}
+    />
+  );
 }
