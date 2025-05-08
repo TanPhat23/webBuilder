@@ -24,38 +24,11 @@ import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
-  fontFamilies: string[];
 };
 
-const BaseConfiguration: React.FC<Props> = ({
-  selectedElement,
-  fontFamilies,
-}) => {
-  const [localFontSize, setLocalFontSize] = useState<
-    CSS.Property.FontSize | undefined
-  >((selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined);
+const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const { updateElementOptimistically } = useEditorStore();
-
-  useEffect(() => {
-    setLocalFontSize(
-      (selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined
-    );
-  }, [selectedElement]);
-
-  const handleFontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.target.value as CSS.Property.FontSize;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-          transition: "font-size 0.2s ease",
-        },
-      });
-    });
-  };
+  
 
   const handleNumberInput = React.useCallback(
     (property: string, value: string | number) => {
@@ -101,28 +74,6 @@ const BaseConfiguration: React.FC<Props> = ({
     [selectedElement, updateElementOptimistically]
   );
 
-  const handleSwitchChange = (property: string, value: boolean) => {
-    if (!selectedElement) return;
-
-    let styleValue = "";
-    if (property === "textDecoration") {
-      styleValue = value ? "underline" : "none";
-    } else if (property === "fontStyle") {
-      styleValue = value ? "italic" : "normal";
-    } else if (property === "fontWeight") {
-      styleValue = value ? "bold" : "normal";
-    }
-
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: styleValue,
-        },
-      });
-    });
-  };
-
   const handleSelectChange = (property: string, value: string) => {
     if (!selectedElement) return;
     startTransition(() => {
@@ -150,19 +101,19 @@ const BaseConfiguration: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      defaultValue={["typography", "appearance", "spacing", "border", "effects"]}
+      defaultValue={[
+        "typography",
+        "appearance",
+        "spacing",
+        "border",
+        "effects",
+      ]}
       className="w-full"
     >
       <Typography
-        fontFamilies={fontFamilies}
-        localFontSize={localFontSize}
         selectedElement={selectedElement}
-        handleFontChange={handleFontChange}
-        handleNumberInput={handleNumberInput}
-        handleSelectChange={handleSelectChange}
-        handleSwitchChange={handleSwitchChange}
       />
-      <AppearanceAccordion selectedElement={selectedElement}/>
+      <AppearanceAccordion selectedElement={selectedElement} />
       {/*Margin and Padding settings*/}
       <AccordionItem value="spacing">
         <AccordionTrigger className="text-sm font-medium">

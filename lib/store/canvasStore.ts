@@ -1,11 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CanvasStyles } from "../interface";
-
+import { UpdateProject } from "@/actions/project/action";
 
 interface CanvasState {
   styles: CanvasStyles;
-  setStyles: (styles: CanvasStyles) => void;
+  fontfamilies: string[];
+  setFontFamilies: (fontfamilies: string[]) => void;
+  setStyles: (id: string, styles: CanvasStyles) => void;
+  loadCansvasStylesFromDB: (styles: CanvasStyles) => void;
 }
 
 const defaultStyles: CanvasStyles = {
@@ -22,8 +25,24 @@ const defaultStyles: CanvasStyles = {
 export const useCanvasStore = create<CanvasState>()(
   persist(
     (set) => ({
+      fontfamilies: [],
       styles: defaultStyles,
-      setStyles: (styles: CanvasStyles) => {
+      setStyles: (id: string, styles: CanvasStyles) => {
+        const prevstyles = useCanvasStore.getState().styles;
+        try {
+          set({ styles });
+          UpdateProject({ id: id, styles: styles });
+        } catch (error) {
+          set({ styles: prevstyles });
+          console.error("Error setting styles:", error);
+        }
+      },
+      
+      setFontFamilies: (fontfamilies: string[]) => {
+        set({ fontfamilies });
+      },
+
+      loadCansvasStylesFromDB: (styles: CanvasStyles) => {
         set({ styles });
       },
     }),

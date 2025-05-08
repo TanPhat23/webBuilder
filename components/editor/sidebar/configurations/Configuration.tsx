@@ -18,10 +18,7 @@ import { getFontFamily } from "@/actions";
 import { EditorElement } from "@/lib/type";
 
 const Configuration = () => {
-  const { data: fontFamilies = [] } = useSWR(
-    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
-    getFontFamily
-  );
+  
   const { selectedElement } = useElementSelectionStore();
   const { updateElementOptimistically } = useEditorStore();
 
@@ -112,7 +109,6 @@ const Configuration = () => {
         return (
           <BaseConfiguration
             selectedElement={selectedElement}
-            fontFamilies={fontFamilies}
           />
         );
     }

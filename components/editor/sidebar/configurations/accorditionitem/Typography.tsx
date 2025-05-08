@@ -12,32 +12,108 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import TextColorInput from "../inputs/TextColorInput";
 import BackGroundColorInput from "../inputs/BackGroundColorInput";
 import { EditorElement } from "@/lib/type";
 import { Switch } from "@/components/ui/switch";
 import * as CSS from "csstype";
+import { loadFont } from "@/app/utils/LoadFont";
+import { useCanvasStore } from "@/lib/store/canvasStore";
+import { useEditorStore } from "@/lib/store/editorStore";
+import useSWR from "swr";
+import { getFontFamily } from "@/actions";
 
 type Props = {
   selectedElement: EditorElement;
-  localFontSize: CSS.Property.FontSize | undefined;
-  fontFamilies: string[];
-  handleSelectChange: (property: string, value: string) => void;
-  handleSwitchChange: (property: string, value: boolean) => void;
-  handleNumberInput: (property: string, value: string) => void;
-  handleFontChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-const Typography = ({
-  selectedElement,
-  localFontSize,
-  fontFamilies,
-  handleFontChange,
-  handleNumberInput,
-  handleSelectChange,
-  handleSwitchChange,
-}: Props) => {
+const Typography = ({ selectedElement }: Props) => {
+  const { updateElementOptimistically } = useEditorStore();
+  const [localFontSize, setLocalFontSize] = useState<
+    CSS.Property.FontSize | undefined
+  >((selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined);
+
+  useEffect(() => {
+    setLocalFontSize(
+      (selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined
+    );
+  }, [selectedElement]);
+  const { data: fontFamilies = [] } = useSWR(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
+    getFontFamily
+  );
+  const { fontfamilies, setFontFamilies } = useCanvasStore();
+
+  const handleFontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!selectedElement) return;
+    const newFontSize = e.target.value as CSS.Property.FontSize;
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          fontSize: newFontSize,
+          transition: "font-size 0.2s ease",
+        },
+      });
+    });
+  };
+
+  const handleNumberInput = (property: string, value: string) => {
+    if (!selectedElement) return;
+
+    let formattedValue = value;
+
+    const needsPxSuffix = ["letterSpacing", "lineHeight"];
+
+    if (needsPxSuffix.includes(property) && /^\d+$/.test(value)) {
+      formattedValue = `${value}px`;
+    }
+
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          [property]: formattedValue,
+        },
+      });
+    });
+  };
+
+  const handleSelectChange = (property: string, value: string) => {
+    if (!selectedElement) return;
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          [property]: value,
+        },
+      });
+    });
+  };
+
+  const handleSwitchChange = (property: string, value: boolean) => {
+    if (!selectedElement) return;
+
+    let styleValue = "";
+    if (property === "textDecoration") {
+      styleValue = value ? "underline" : "none";
+    } else if (property === "fontStyle") {
+      styleValue = value ? "italic" : "normal";
+    } else if (property === "fontWeight") {
+      styleValue = value ? "bold" : "normal";
+    }
+
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
+        styles: {
+          ...selectedElement.styles,
+          [property]: styleValue,
+        },
+      });
+    });
+  };
+
   return (
     <AccordionItem value="typography">
       <AccordionTrigger className="text-sm font-medium">
@@ -61,15 +137,19 @@ const Typography = ({
             <div className="flex flex-col flex-1">
               <Select
                 value={selectedElement?.styles?.fontFamily || ""}
-                onValueChange={(value) =>
-                  handleSelectChange("fontFamily", value)
-                }
+                onValueChange={(value) => {
+                  handleSelectChange("fontFamily", value);
+                  loadFont(value);
+                  if (!fontfamilies.includes(value)) {
+                    setFontFamilies([...fontfamilies, value]);
+                  }
+                }}
               >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder="Select font" />
                 </SelectTrigger>
                 <SelectContent>
-                  {fontFamilies.map((font) => (
+                  {fontFamilies.map((font: string) => (
                     <SelectItem key={font} value={font}>
                       {font}
                     </SelectItem>
@@ -163,6 +243,7 @@ const Typography = ({
                 }
               />
             </div>
+
             <div className="flex flex-row items-center justify-between">
               <Label htmlFor="Bold">Bold</Label>
               <Switch

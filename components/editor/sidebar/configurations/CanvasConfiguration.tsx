@@ -19,19 +19,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { useEditorStore } from "@/lib/store/editorStore";
-import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 import { CanvasStyles } from "@/lib/interface";
+import { useParams } from "next/navigation";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 const CanvasConfiguration = () => {
   const { styles, setStyles } = useCanvasStore();
   const { elements, deleteElementOptimistically } = useEditorStore();
+  const { slug } = useParams();
 
   const handleChange = (
     key: keyof CanvasStyles,
     value: string | boolean | number | undefined
   ) => {
     startTransition(() => {
-      setStyles({
+      setStyles(slug as string, {
         ...styles,
         [key]: value,
       });
@@ -40,7 +42,7 @@ const CanvasConfiguration = () => {
 
   const handleResetCanvas = () => {
     startTransition(() => {
-      setStyles({
+      setStyles(slug as string, {
         backgroundColor: "#ffffff",
         width: "100%",
         height: "100%",
@@ -68,6 +70,7 @@ const CanvasConfiguration = () => {
       defaultValue={["dimensions", "appearance", "grid", "advanced"]}
       className="w-full"
     >
+      7{" "}
       <AccordionItem value="dimensions">
         <AccordionTrigger className="text-sm font-medium">
           Canvas Dimensions
@@ -129,13 +132,11 @@ const CanvasConfiguration = () => {
           </div>
         </AccordionContent>
       </AccordionItem>
-
       <AppearanceAccordion
         styles={styles}
         onChange={handleChange}
         isCanvas={true}
       />
-
       <AccordionItem value="grid">
         <AccordionTrigger className="text-sm font-medium">
           Grid Settings
@@ -224,7 +225,6 @@ const CanvasConfiguration = () => {
           </div>
         </AccordionContent>
       </AccordionItem>
-
       <AccordionItem value="advanced">
         <AccordionTrigger className="text-sm font-medium">
           Advanced Settings
@@ -298,7 +298,6 @@ const CanvasConfiguration = () => {
           </div>
         </AccordionContent>
       </AccordionItem>
-
       <div className="flex justify-between mt-4">
         <Button
           variant="destructive"

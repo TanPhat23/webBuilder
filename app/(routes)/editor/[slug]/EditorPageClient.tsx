@@ -1,7 +1,9 @@
 "use client";
+import { loadFonts } from "@/app/utils/LoadFont";
 import Editor from "@/components/editor/Editor";
 import EditorJoyRide from "@/components/editor/EditorJoyRide";
 import { appProject } from "@/lib/interface";
+import { useCanvasStore } from "@/lib/store/canvasStore";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
@@ -22,8 +24,11 @@ export default function EditorPageClient({
   const loadElementsFromDB = useEditorStore(
     (state) => state.loadElementsFromDB
   );
+  const loadProjectFromDB = useCanvasStore(
+    (state) => state.loadCansvasStylesFromDB
+  );
   const { startTour, needHelp, setStartTour } = useElementSelectionStore();
-
+  const { fontfamilies } = useCanvasStore();
   const handleEndTour = () => {
     setStartTour(false);
     useElementSelectionStore.getState().setNeedHelp(true);
@@ -33,7 +38,13 @@ export default function EditorPageClient({
     if (initialElements) {
       loadElementsFromDB(initialElements);
     }
-  }, [initialElements, loadElementsFromDB]);
+    if (project) {
+      loadProjectFromDB(project.styles);
+    }
+    if (fontfamilies) {
+      loadFonts(fontfamilies);
+    }
+  }, [initialElements, loadElementsFromDB, loadProjectFromDB, project, fontfamilies]);
 
   return (
     <>

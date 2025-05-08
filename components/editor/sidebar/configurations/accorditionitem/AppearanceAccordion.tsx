@@ -17,11 +17,16 @@ import { Eye, EyeClosed, Image as ImageIcon } from "lucide-react";
 import { EditorElement } from "@/lib/type";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { startTransition } from "react";
+import { useCanvasStore } from "@/lib/store/canvasStore";
+import useSWR from "swr";
+import { getFontFamily } from "@/actions";
+import { loadFont } from "@/app/utils/LoadFont";
+import { CanvasStyles } from "@/lib/interface";
 
 interface AppearanceProps {
   selectedElement?: EditorElement;
   onChange?: (property: string, value: string | boolean | number) => void;
-  styles?: Record<string, any>;
+  styles?: CanvasStyles;
   isCanvas?: boolean;
 }
 
@@ -32,6 +37,11 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
   isCanvas = false,
 }) => {
   const { updateElementOptimistically } = useEditorStore();
+  const { fontfamilies, setFontFamilies } = useCanvasStore();
+  const { data: googleFontFamilies = [] } = useSWR(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
+    getFontFamily
+  );
 
   const handleChange = (property: string, value: string | boolean | number) => {
     if (onChange) {
@@ -70,6 +80,36 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
           )}
         </div>
         <div className="flex flex-col gap-4 p-1">
+          {/* Font Family - Only visible for Canvas */}
+          {isCanvas && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="fontFamily" className="text-xs">
+                Default Font Family
+              </Label>
+              <Select
+                value={currentStyles?.fontFamily || ""}
+                onValueChange={(value) => {
+                  handleChange("fontFamily", value);
+                  loadFont(value);
+                  if (!fontfamilies.includes(value)) {
+                    setFontFamilies([...fontfamilies, value]);
+                  }
+                }}
+              >
+                <SelectTrigger id="fontFamily" className="h-8 text-xs">
+                  <SelectValue placeholder="Select default font" />
+                </SelectTrigger>
+                <SelectContent>
+                  {googleFontFamilies.map((font: string) => (
+                    <SelectItem key={font} value={font}>
+                      {font}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Background Color */}
           <div className="flex flex-col gap-2">
             <Label htmlFor="backgroundColor" className="text-xs">

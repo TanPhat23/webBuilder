@@ -72,7 +72,7 @@ export const GetProjectById = async (id: string): Promise<appProject> => {
   }
 };
 
-export const UpdateProject = async (data: appProject) => {
+export const UpdateProject = async (data: Partial<appProject>) => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");
@@ -88,7 +88,8 @@ export const UpdateProject = async (data: appProject) => {
       body: JSON.stringify(data),
     });
 
-    return response.json();
+    if (response.status === 204)
+      return "Project updated successfully";
   } catch (error: Error | unknown) {
     throw new Error(error instanceof Error ? error.message : String(error));
   }

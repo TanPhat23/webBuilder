@@ -139,7 +139,6 @@ const Editor: React.FC<Props> = ({ projectId }) => {
   };
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {
         e.preventDefault();
         undo();
@@ -432,6 +431,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         boxShadow: styles?.boxShadow,
         backdropFilter: styles?.backdropFilter,
         transition: styles?.transition,
+        fontFamily: styles?.fontFamily,
       }}
     >
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">
@@ -509,9 +509,9 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                   height: element.styles?.height || "100px",
                   zIndex: element.isSelected ? 10 : 1,
                 }}
-                className={cn("cursor-pointer", "", {
+                className={cn("cursor-pointer ", "", {
                   "border-2 border-black hover:cursor-text": element.isSelected,
-                  "border-dashed border-black border-2":
+                  "border-dashed border-black border-2 ":
                     draggingElement?.id === element.id,
                 })}
               >
@@ -523,7 +523,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     onBlur={(e) => handleInput(e, element.id)}
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(element.content),
-                    }}
+                    }} 
                     style={{
                       fontFamily: `"${element.styles?.fontFamily}"`,
                       height: "100%",

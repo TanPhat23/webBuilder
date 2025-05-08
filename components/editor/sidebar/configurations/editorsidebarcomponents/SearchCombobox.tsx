@@ -20,16 +20,14 @@ import {
   BASIC_COMPONENTS,
   COMPONENT_CATEGORIES,
 } from "@/lib/constants/componentsconstants";
-
-const handleDragStart = (
-  e: React.DragEvent<HTMLDivElement>,
-  elementType: string
-) => {
-  e.dataTransfer.setData("customElement", elementType);
-  e.dataTransfer.effectAllowed = "copyMove";
-};
+import { createElements } from "@/utils/createElements";
+import { useParams } from "next/navigation";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { EditorElement } from "@/lib/type";
 
 export const SearchCombobox: React.FC = () => {
+  const { slug } = useParams();
+  const { addElementOptimistically } = useEditorStore();
   const [openSections, setOpenSections] = React.useState<
     Record<string, boolean>
   >(
@@ -42,6 +40,40 @@ export const SearchCombobox: React.FC = () => {
     )
   );
 
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    elementType: string
+  ) => {
+    e.dataTransfer.setData("customElement", elementType);
+    e.dataTransfer.effectAllowed = "copyMove";
+  };
+
+  const handleDoubleClick = (
+    e: React.MouseEvent<HTMLElement>,
+    elementType: string,  
+    componentType: "basic" | "custom" | "advanced"
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (componentType === "basic") {
+      createElements(
+        elementType,
+        0,
+        0,
+        slug as string,
+        addElementOptimistically
+      );
+    } else {
+      const customComponent = customComponents.find(
+        (component) => component.component.name === elementType
+      )?.component as EditorElement;
+      if (customComponent) {
+        React.startTransition(() => {
+          addElementOptimistically(customComponent, slug as string);
+        });
+      }
+    }
+  };
   // Memoized filtered components to prevent unnecessary recalculations
   const filteredComponents = () => {
     return COMPONENT_CATEGORIES.reduce((acc, category) => {
@@ -69,6 +101,9 @@ export const SearchCombobox: React.FC = () => {
               key={component.type}
               value={component.label}
               className="cursor-grab active:cursor-grabbing"
+              onDoubleClick={(e) =>
+                handleDoubleClick(e, component.type, "basic")
+              }
             >
               <div
                 draggable
@@ -88,7 +123,7 @@ export const SearchCombobox: React.FC = () => {
               className="cursor-grab active:cursor-grabbing"
             >
               <div
-              draggable
+                draggable
                 onDragStart={(e) => handleDragStart(e, component.type)}
                 className="w-full"
               >
@@ -126,6 +161,13 @@ export const SearchCombobox: React.FC = () => {
                       draggable
                       onDragStart={(e) =>
                         handleDragStart(e, component.component.name ?? "")
+                      }
+                      onDoubleClick={(e) =>
+                        handleDoubleClick(
+                          e,
+                          component.component.name ?? "",
+                          "custom"
+                        )
                       }
                       className="flex justify-between w-full"
                     >

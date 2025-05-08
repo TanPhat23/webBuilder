@@ -262,39 +262,7 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["typography", "basic", "appearance", "border"]}
       className="w-full"
     >
-      <Typography
-        fontFamilies={[
-          "Arial",
-          "Roboto",
-          "Open Sans",
-          "Helvetica",
-          "Times New Roman",
-        ]}
-        localFontSize={localFontSize as CSS.Property.FontSize}
-        selectedElement={selectedElement}
-        handleFontChange={handleFontChange}
-        handleNumberInput={handleNumberInput}
-        handleSelectChange={handleSelectChange}
-        handleSwitchChange={(property, value) => {
-          let styleValue = "";
-          if (property === "textDecoration") {
-            styleValue = value ? "underline" : "none";
-          } else if (property === "fontStyle") {
-            styleValue = value ? "italic" : "normal";
-          } else if (property === "fontWeight") {
-            styleValue = value ? "bold" : "normal";
-          }
-
-          startTransition(() => {
-            updateElementOptimistically(selectedElement.id, {
-              styles: {
-                ...selectedElement.styles,
-                [property]: styleValue,
-              },
-            });
-          });
-        }}
-      />
+      <Typography selectedElement={selectedElement} />
       <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
