@@ -1,4 +1,4 @@
-import React, { startTransition, useState, useEffect } from "react";
+import React, { startTransition } from "react";
 import { Input } from "../../../ui/input";
 import { Label } from "../../../ui/label";
 import { Slider } from "../../../ui/slider";
@@ -18,7 +18,6 @@ import {
 } from "../../../ui/accordion";
 import { EditorElement } from "@/lib/type";
 import Typography from "./accorditionitem/Typography";
-import * as CSS from "csstype";
 import { useEditorStore } from "@/lib/store/editorStore";
 import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
@@ -28,7 +27,6 @@ type Props = {
 
 const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const { updateElementOptimistically } = useEditorStore();
-  
 
   const handleNumberInput = React.useCallback(
     (property: string, value: string | number) => {
@@ -110,9 +108,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
       ]}
       className="w-full"
     >
-      <Typography
-        selectedElement={selectedElement}
-      />
+      <Typography selectedElement={selectedElement} />
       <AppearanceAccordion selectedElement={selectedElement} />
       {/*Margin and Padding settings*/}
       <AccordionItem value="spacing">

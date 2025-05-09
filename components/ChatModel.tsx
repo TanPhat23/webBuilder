@@ -114,7 +114,7 @@ export default function Chat() {
     }
 
     const codeBlockPattern = "```";
-    let content = currentResponse;
+    const content = currentResponse;
     let startIdx = content.indexOf(codeBlockPattern);
 
     while (startIdx !== -1) {

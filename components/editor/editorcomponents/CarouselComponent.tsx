@@ -36,7 +36,7 @@ const CarouselComponent: React.FC<Props> = ({
   );
   React.useEffect(() => {
     setSettings((element as CarouselElement).carouselSettings || {});
-  }, [element.carouselSettings]);
+  }, [element]);
 
   const [optimisticElements] = useOptimistic(
     element.elements,

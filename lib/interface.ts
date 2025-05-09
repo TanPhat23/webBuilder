@@ -10,7 +10,7 @@ export interface EditorComponentProps {
   projectId: string;
 }
 
-export interface CanvasStyles {
+export interface CanvasStyles extends React.CSSProperties {
   backgroundColor?: string;
   width?: string;
   height?: string;
@@ -25,9 +25,7 @@ export interface CanvasStyles {
   boxShadow?: string;
   backdropFilter?: string;
   transition?: string;
-  [key: string]: any;
 }
-
 export interface appProject {
   id?: string;
   name: string;
@@ -36,7 +34,6 @@ export interface appProject {
   published?: boolean;
   styles: CanvasStyles;
 }
-
 
 export interface commonProps {
   onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
@@ -134,5 +131,5 @@ export interface DataTableElement extends Element {
 
 export interface FormElement extends Element {
   elements: EditorElement[];
-  formSettings?: Partial<HTMLFormElement>
+  formSettings?: Partial<HTMLFormElement>;
 }

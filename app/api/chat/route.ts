@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
-import { generateText, streamText, tool } from "ai";
+import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
-import { NextResponse } from "next/server";
+import { EditorElement } from "@/lib/type";
 
 export const maxDuration = 30;
 
@@ -20,7 +20,7 @@ function buildPrompt(options: {
   includeStyles: boolean;
   includeInteractivity: boolean;
   customPrompt?: string;
-  elements: any;
+  elements: EditorElement[];
 }): string {
   const {
     format,

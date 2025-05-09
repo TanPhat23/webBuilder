@@ -25,7 +25,9 @@ type Props = {
 const CarouselConfiguration: React.FC<Props> = () => {
   const router = useRouter();
   const { selectedElement } = useElementSelectionStore();
-  const settings = (selectedElement as CarouselElement).carouselSettings || {};
+  const settings = React.useMemo(() => {
+    return (selectedElement as CarouselElement).carouselSettings || {};
+  }, [selectedElement]);
   const { updateElementOptimistically } = useEditorStore();
   const [copied, setCopied] = useState(false);
   const [jsonValue, setJsonValue] = useState(JSON.stringify(settings, null, 2));
@@ -70,7 +72,7 @@ const CarouselConfiguration: React.FC<Props> = () => {
             <AppearanceAccordion selectedElement={selectedElement} />
           </AccordionContent>
         </AccordionItem>
-    
+
         <AccordionItem value="basic">
           <AccordionTrigger>Basic Settings</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-3">

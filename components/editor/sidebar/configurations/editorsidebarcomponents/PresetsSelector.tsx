@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Presets from "@/lib/constants/presets";
-import { CanvasStyles, useCanvasStore } from "@/lib/store/canvasStore";
+import { CanvasStyles } from "@/lib/interface";
+import { useCanvasStore } from "@/lib/store/canvasStore";
+import { useParams } from "next/navigation";
 
 const PresetsSelector = () => {
+  const { slug } = useParams();
   const { setStyles } = useCanvasStore();
   const handlePresetClick = (preset: CanvasStyles) => {
-    setStyles(preset);
+    setStyles(slug as string, preset);
   };
   return (
     <div className="grid grid-cols-2 gap-2">

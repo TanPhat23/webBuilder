@@ -40,6 +40,14 @@ const CanvasConfiguration = () => {
     });
   };
 
+  // Create a wrapper function that adapts our handleChange to match the expected type for AppearanceAccordion
+  const handleAppearanceChange = (property: string, value: unknown) => {
+    handleChange(
+      property as keyof CanvasStyles,
+      value as string | boolean | number | undefined
+    );
+  };
+
   const handleResetCanvas = () => {
     startTransition(() => {
       setStyles(slug as string, {
@@ -134,7 +142,7 @@ const CanvasConfiguration = () => {
       </AccordionItem>
       <AppearanceAccordion
         styles={styles}
-        onChange={handleChange}
+        onChange={handleAppearanceChange}
         isCanvas={true}
       />
       <AccordionItem value="grid">

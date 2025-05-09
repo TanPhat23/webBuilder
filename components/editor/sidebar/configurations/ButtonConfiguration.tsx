@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
 import Typography from "./accorditionitem/Typography";
-import * as CSS from "csstype";
 import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {

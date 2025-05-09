@@ -13,8 +13,6 @@ import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
 import CanvasConfiguration from "./CanvasConfiguration";
 import NavbarManager from "./NavbarManager";
-import useSWR from "swr";
-import { getFontFamily } from "@/actions";
 import { EditorElement } from "@/lib/type";
 
 const Configuration = () => {
@@ -36,7 +34,7 @@ const Configuration = () => {
     setLocalWidth(selectedElement?.styles?.width || "");
     setLocalHeight(selectedElement?.styles?.height || "");
     setLocalFontSize(selectedElement?.styles?.fontSize || localFontSize);
-  }, [selectedElement]);
+  }, [selectedElement, localFontSize]);
 
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newWidth = e.currentTarget.value;

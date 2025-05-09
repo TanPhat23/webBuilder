@@ -1,5 +1,11 @@
 "use client";
-import React, { useRef, useState, useEffect, startTransition } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  startTransition,
+  useCallback,
+} from "react";
 import ContextMenu from "./contextmenu/EditorContextMenu";
 import DOMPurify from "dompurify";
 import { EditorElement } from "@/lib/type";
@@ -163,7 +169,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
         }
       }
     };
-    let canvas = document.getElementById("canvas");
+    const canvas = document.getElementById("canvas");
     canvas?.addEventListener("keydown", handleKeyDown);
     return () => {
       canvas?.removeEventListener("keydown", handleKeyDown);
@@ -335,7 +341,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     [elements, updateElement]
   );
 
-  const handleResizeEnd = () => {
+  const handleResizeEnd = useCallback(() => {
     const element = elements.find(
       (el) => el.id === resizingElement.current?.id
     );
@@ -352,7 +358,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     });
     document.removeEventListener("mousemove", handleResize);
     document.removeEventListener("mouseup", handleResizeEnd);
-  };
+  }, [elements, updateElementOptimistically, handleResize]);
 
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLElement>,
@@ -523,7 +529,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
                     onBlur={(e) => handleInput(e, element.id)}
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(element.content),
-                    }} 
+                    }}
                     style={{
                       fontFamily: `"${element.styles?.fontFamily}"`,
                       height: "100%",

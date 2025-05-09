@@ -25,7 +25,7 @@ import { CanvasStyles } from "@/lib/interface";
 
 interface AppearanceProps {
   selectedElement?: EditorElement;
-  onChange?: (property: string, value: string | boolean | number) => void;
+  onChange?: (property: string, value: unknown) => void;
   styles?: CanvasStyles;
   isCanvas?: boolean;
 }
@@ -59,6 +59,20 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
   };
 
   const currentStyles = selectedElement?.styles || styles || {};
+
+  const getBackgroundSizeValue = (): string => {
+    const bgSize = currentStyles?.backgroundSize;
+    if (bgSize === undefined) return "cover";
+    if (typeof bgSize === "number") return `${bgSize}px`;
+    return String(bgSize);
+  };
+
+  const getBackgroundPositionValue = (): string => {
+    const bgPosition = currentStyles?.backgroundPosition;
+    if (bgPosition === undefined) return "center";
+    if (typeof bgPosition === "number") return `${bgPosition}px`;
+    return String(bgPosition);
+  };
 
   return (
     <AccordionItem value="appearance">
@@ -173,7 +187,7 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
                   Background Size
                 </Label>
                 <Select
-                  value={currentStyles?.backgroundSize || "cover"}
+                  value={getBackgroundSizeValue()}
                   onValueChange={(value) =>
                     handleChange("backgroundSize", value)
                   }
@@ -217,7 +231,7 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
                   Background Position
                 </Label>
                 <Select
-                  value={currentStyles?.backgroundPosition || "center"}
+                  value={getBackgroundPositionValue()}
                   onValueChange={(value) =>
                     handleChange("backgroundPosition", value)
                   }
