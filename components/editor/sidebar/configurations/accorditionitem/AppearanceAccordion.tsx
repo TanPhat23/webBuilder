@@ -37,7 +37,7 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
   isCanvas = false,
 }) => {
   const { updateElementOptimistically } = useEditorStore();
-  const { fontfamilies, setFontFamilies } = useCanvasStore();
+  const { canvasFontFamilies, setFontFamilies } = useCanvasStore();
   const { data: googleFontFamilies = [] } = useSWR(
     `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
     getFontFamily
@@ -105,8 +105,8 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
                 onValueChange={(value) => {
                   handleChange("fontFamily", value);
                   loadFont(value);
-                  if (!fontfamilies.includes(value)) {
-                    setFontFamilies([...fontfamilies, value]);
+                  if (!canvasFontFamilies.includes(value)) {
+                    setFontFamilies([...canvasFontFamilies, value]);
                   }
                 }}
               >
@@ -123,6 +123,30 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
               </Select>
             </div>
           )}
+          {/* Text */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="text" className="text-xs">
+              Text Color
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="color"
+                id="backgroundColor"
+                className="w-10 h-8 p-1"
+                value={currentStyles?.color || "#ffffff"}
+                onChange={(e) => handleChange("color", e.target.value)}
+              />
+              <Input
+                id="backgroundColorText"
+                className="flex-1 h-8 text-xs"
+                value={currentStyles?.color || ""}
+                onChange={(e) => {
+                  handleChange("backgroundColor", e.target.value);
+                }}
+                placeholder="#ffffff"
+              />
+            </div>
+          </div>
 
           {/* Background Color */}
           <div className="flex flex-col gap-2">

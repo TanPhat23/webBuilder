@@ -60,7 +60,6 @@ export function createElements(
           ...baseElement.styles,
           padding: "8px 16px",
           backgroundColor: "#0070f3",
-          color: "#ffffff",
           borderRadius: "4px",
           border: "none",
           cursor: "pointer",

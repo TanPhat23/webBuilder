@@ -40,7 +40,6 @@ const CanvasConfiguration = () => {
     });
   };
 
-  // Create a wrapper function that adapts our handleChange to match the expected type for AppearanceAccordion
   const handleAppearanceChange = (property: string, value: unknown) => {
     handleChange(
       property as keyof CanvasStyles,
@@ -78,7 +77,6 @@ const CanvasConfiguration = () => {
       defaultValue={["dimensions", "appearance", "grid", "advanced"]}
       className="w-full"
     >
-      7{" "}
       <AccordionItem value="dimensions">
         <AccordionTrigger className="text-sm font-medium">
           Canvas Dimensions
