@@ -1,5 +1,5 @@
 "use client";
-import { GetAll } from "@/app/data/project/projectDAL";
+import { GetAll } from "@/actions/project/action";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,
@@ -16,7 +16,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { appProjectTypes } from "@/lib/type";
+import { appProject } from "@/lib/interface";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
 
@@ -26,7 +26,7 @@ export default function Page() {
     data: projects,
     error,
     isLoading,
-  } = useSWR<appProjectTypes[]>(
+  } = useSWR<appProject[]>(
     process.env.NEXT_PUBLIC_API_URL + "/projects",
     GetAll
   );

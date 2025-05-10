@@ -3,14 +3,19 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import {
   ButtonElement,
   CarouselElement,
+  FormElement,
   FrameElement,
   ListElement,
 } from "../interface";
 import { EditorElement } from "../type";
 import { v4 as uuidv4 } from "uuid";
-import { BatchCreate, Delete, Update } from "@/app/data/element/elementDAL";
+import { BatchCreate, Delete, Update } from "@/actions/element/action";
 
-type ContainerElement = FrameElement | CarouselElement | ListElement;
+type ContainerElement =
+  | FrameElement
+  | CarouselElement
+  | ListElement
+  | FormElement;
 
 const isContainerElement = (
   element: EditorElement
@@ -18,6 +23,7 @@ const isContainerElement = (
   return (
     (element.type === "Frame" ||
       element.type === "Carousel" ||
+      element.type === "Form" ||
       element.type === "ListItem") &&
     Array.isArray((element as ContainerElement).elements)
   );
@@ -92,7 +98,6 @@ export const useEditorStore = create<EditorState>()(
             return { ...element, ...updates };
           }
 
-          // Improved Button element handling with better type safety
           if (element.type === "Button" && (element as ButtonElement).element) {
             const buttonElement = element as ButtonElement;
             return {
@@ -191,6 +196,7 @@ export const useEditorStore = create<EditorState>()(
 
       loadElementsFromDB: (elements) => {
         const { _updateHistory } = get();
+
         _updateHistory(elements);
       },
 

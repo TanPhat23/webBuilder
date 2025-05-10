@@ -79,57 +79,57 @@ export const BASIC_COMPONENTS: DraggableComponent[] = [
   {
     component: <TextHolder />,
     label: "Text",
-    type: "text",
+    type: "Text",
   },
   {
     component: <HeadingHolder />,
     label: "Heading",
-    type: "heading",
+    type: "Heading",
   },
   {
     component: <LinkHolder />,
     label: "Link",
-    type: "link",
+    type: "Link",
   },
   {
     component: <ButtonHolder />,
     label: "Button",
-    type: "button",
+    type: "Button",
   },
   {
     component: <FrameHolder />,
     label: "Frame",
-    type: "frame",
+    type: "Frame",
   },
   {
     component: <CarouselHolder />,
     label: "Carousel",
-    type: "carousel",
+    type: "Carousel",
   },
   {
     component: <ListItemHolder />,
     label: "List Item",
-    type: "listItem",
+    type: "ListItem",
   },
   {
     component: <ImageHolder />,
     label: "Image",
-    type: "image",
+    type: "Image",
   },
   {
     component: <InputHolder />,
     label: "Input",
-    type: "input",
+    type: "Input",
   },
   {
     component: <SelectHolder />,
     label: "Select",
-    type: "select",
+    type: "Select",
   },
   {
     component: <FormHolder />,
     label: "Form",
-    type: "form",
+    type: "Form",
   },
 ];
 
@@ -137,22 +137,22 @@ export const ADVANCED_COMPONENTS: DraggableComponent[] = [
   {
     component: <CardHolder />,
     label: "Card",
-    type: "card",
+    type: "Card",
   },
   {
     component: <ButtonMultiHolder />,
     label: "Button Multi",
-    type: "buttonMulti",
+    type: "ButtonMulti",
   },
   {
     component: <ChartHolder />,
     label: "Chart",
-    type: "chart",
+    type: "Chart",
   },
   {
     component: <DataTableHolder />,
     label: "Data Table",
-    type: "dataTable",
+    type: "DataTable",
   },
 ];
 

@@ -1,11 +1,10 @@
 import React, { startTransition, useEffect, useState } from "react";
 import { Input } from "../../../ui/input";
 import BorderRadiusInput from "./inputs/BorderRadiusInput";
-import BorderWeightPopover from "./popovers/BorderWeightPopover";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
-import { CarouselElement } from "@/lib/interface";
+import { CarouselElement, FrameElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
@@ -13,21 +12,11 @@ import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
 import CanvasConfiguration from "./CanvasConfiguration";
-
-// Define Google Font interface
-interface GoogleFont {
-  family: string;
-  variants: string[];
-  subsets: string[];
-  version: string;
-  lastModified: string;
-  files?: Record<string, string>;
-  category?: string;
-  kind?: string;
-}
+import NavbarManager from "./NavbarManager";
+import { EditorElement } from "@/lib/type";
 
 const Configuration = () => {
-  const [fontFamilies, setFontFamilies] = useState<string[]>([]);
+  
   const { selectedElement } = useElementSelectionStore();
   const { updateElementOptimistically } = useEditorStore();
 
@@ -45,7 +34,7 @@ const Configuration = () => {
     setLocalWidth(selectedElement?.styles?.width || "");
     setLocalHeight(selectedElement?.styles?.height || "");
     setLocalFontSize(selectedElement?.styles?.fontSize || localFontSize);
-  }, [selectedElement]);
+  }, [selectedElement, localFontSize]);
 
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newWidth = e.currentTarget.value;
@@ -77,27 +66,26 @@ const Configuration = () => {
     });
   };
 
-  const getFontFamily = async () => {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`
-      );
-      const data = await response.json();
-      return data.items.map((font: GoogleFont) => font.family);
-    } catch (error) {
-      console.error("Error fetching fonts:", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    getFontFamily().then((data) => {
-      setFontFamilies(data);
-    });
-  }, []);
-
   const renderConfiguration = () => {
     if (!selectedElement) return null;
+    
+    const isNavbar = 
+      selectedElement.type === "Frame" && 
+      (selectedElement.name?.toLowerCase().includes("navbar") || 
+       selectedElement.name?.toLowerCase().includes("nav") ||
+       (selectedElement as FrameElement).elements?.some(
+         (el: EditorElement) => el.type === "Frame" && el.name?.toLowerCase().includes("link")
+       ));
+    
+    if (isNavbar) {
+      return (
+        <>
+          <NavbarManager />
+          <FrameConfiguration selectedElement={selectedElement} />
+        </>
+      );
+    }
+    
     switch (selectedElement?.type) {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
@@ -110,15 +98,7 @@ const Configuration = () => {
       case "Input":
         return <InputConfiguration selectedElement={selectedElement} />;
       case "Button":
-        return (
-          <>
-            <ButtonConfiguration selectedElement={selectedElement} />
-            <BaseConfiguration
-              selectedElement={selectedElement}
-              fontFamilies={fontFamilies}
-            />
-          </>
-        );
+        return <ButtonConfiguration selectedElement={selectedElement} />;
       case "Select":
         return <SelectConfiguration selectedElement={selectedElement} />;
       case "Form":
@@ -127,7 +107,6 @@ const Configuration = () => {
         return (
           <BaseConfiguration
             selectedElement={selectedElement}
-            fontFamilies={fontFamilies}
           />
         );
     }
@@ -161,7 +140,6 @@ const Configuration = () => {
             {renderConfiguration()}
             <div className="flex flex-row gap-1 mr-4">
               <BorderRadiusInput selectedElement={selectedElement} />
-              <BorderWeightPopover selectedElement={selectedElement} />
             </div>
           </div>
         )}

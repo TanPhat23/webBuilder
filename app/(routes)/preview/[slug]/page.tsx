@@ -8,7 +8,7 @@ import {
   SelectElement,
 } from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/app/data/element/elementDAL";
+import { GetAllPublic } from "@/actions/element/action";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 
@@ -197,6 +197,8 @@ export default async function PreviewPage({
             alt={element.content || "Image"}
             style={{
               ...element.styles,
+              maxWidth: "100%",
+              height: "auto",
             }}
             className={cn(element.tailwindStyles, "object-cover ")}
             loading="lazy"

@@ -5,7 +5,7 @@ import JustifyContentSelect from "./selects/FrameJustifyContentSelect";
 import FrameGapSelect from "./selects/FrameGapSelect";
 import FrameFlexWrapSelect from "./selects/FrameFlexWrapSelect";
 import FramePaddingControls from "./selects/FramePaddingControls";
-import FrameBackgroundColorPicker from "./selects/FrameBackgroundColorPicker";
+
 import { EditorElement } from "@/lib/type";
 import {
   Accordion,
@@ -13,6 +13,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Typography from "./accorditionitem/Typography";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -25,6 +27,8 @@ const FrameConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["layout", "spacing", "appearance"]}
       className="w-full"
     >
+      <Typography selectedElement={selectedElement} />
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="layout">
         <AccordionTrigger className="text-sm font-medium">
           Layout
@@ -51,17 +55,6 @@ const FrameConfiguration: React.FC<Props> = ({ selectedElement }) => {
           <div className="flex flex-col gap-4 p-1">
             <FrameGapSelect selectedElement={selectedElement} />
             <FramePaddingControls selectedElement={selectedElement} />
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="appearance">
-        <AccordionTrigger className="text-sm font-medium">
-          Appearance
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="flex flex-col gap-4 p-1">
-            <FrameBackgroundColorPicker selectedElement={selectedElement} />
           </div>
         </AccordionContent>
       </AccordionItem>

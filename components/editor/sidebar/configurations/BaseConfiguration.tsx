@@ -1,4 +1,4 @@
-import React, { startTransition, useState, useEffect } from "react";
+import React, { startTransition } from "react";
 import { Input } from "../../../ui/input";
 import { Label } from "../../../ui/label";
 import { Slider } from "../../../ui/slider";
@@ -16,67 +16,61 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../../../ui/accordion";
-import FontSizeComboBox from "./comboboxes/FontSizeComboBox";
-import FontFamilyComboBox from "./comboboxes/FontFamilyComboBox";
-import TextAlignButton from "./buttons/TextAlignButton";
-import TextStyleButtons from "./buttons/TextStyleButtons";
-import TextColorInput from "./inputs/TextColorInput";
-import BackGroundColorInput from "./inputs/BackGroundColorInput";
-import { useOptimisticElement } from "@/hooks/useOptimisticElement";
 import { EditorElement } from "@/lib/type";
+import Typography from "./accorditionitem/Typography";
+import { useEditorStore } from "@/lib/store/editorStore";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
-  fontFamilies: string[];
 };
 
-const BaseConfiguration: React.FC<Props> = ({
-  selectedElement,
-  fontFamilies,
-}) => {
-  const [localFontSize, setLocalFontSize] = useState(
-    selectedElement?.styles?.fontSize || ""
+const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
+  const { updateElementOptimistically } = useEditorStore();
+
+  const handleNumberInput = React.useCallback(
+    (property: string, value: string | number) => {
+      if (!selectedElement) return;
+
+      let formattedValue = value;
+
+      if (property === "margin" || property === "padding") {
+        if (typeof value === "string" && /^\d+$/.test(value)) {
+          formattedValue = `${value}px`;
+        }
+      } else {
+        if (typeof value === "number") {
+          const needsPxSuffix = [
+            "marginTop",
+            "marginRight",
+            "marginBottom",
+            "marginLeft",
+            "paddingTop",
+            "paddingRight",
+            "paddingBottom",
+            "paddingLeft",
+            "borderWidth",
+            "borderRadius",
+            "letterSpacing",
+          ];
+
+          if (needsPxSuffix.includes(property)) {
+            formattedValue = `${value}px`;
+          }
+        }
+      }
+
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            [property]: formattedValue,
+          },
+        });
+      });
+    },
+    [selectedElement, updateElementOptimistically]
   );
-  const { updateElementOptimistically } = useOptimisticElement();
-
-  useEffect(() => {
-    setLocalFontSize(selectedElement?.styles?.fontSize || "");
-  }, [selectedElement]);
-
-  const handleFontChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.currentTarget.value;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-          transition: "font-size 0.2s ease",
-        },
-      });
-    });
-  };
-
-  const handleNumberInput = (property: string, value: string | number) => {
-    if (!selectedElement) return;
-
-    // Add 'px' if the user only entered a number
-    let formattedValue = value;
-    if (typeof value === "string" && /^\d+$/.test(value)) {
-      formattedValue = `${value}px`;
-    }
-
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: formattedValue,
-        },
-      });
-    });
-  };
-
 
   const handleSelectChange = (property: string, value: string) => {
     if (!selectedElement) return;
@@ -105,216 +99,311 @@ const BaseConfiguration: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      defaultValue={["typography", "spacing", "border", "effects"]}
+      defaultValue={[
+        "typography",
+        "appearance",
+        "spacing",
+        "border",
+        "effects",
+      ]}
       className="w-full"
     >
-      <AccordionItem value="typography">
-        <AccordionTrigger className="text-sm font-medium">
-          Typography
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-4">
-            <div className="flex flex-row gap-1 flex-wrap">
-              <div className="flex flex-col ">
-                <div className="flex flex-row gap-1">
-                  <Input
-                    className="w-full max-w-[100px] text-xs p-1"
-                    value={localFontSize}
-                    onChange={handleFontChange}
-                  />
-                  <FontSizeComboBox selectedElement={selectedElement} />
-                </div>
-                <label className="text-xs">Font size</label>
-              </div>
-              <div className="flex flex-col gap-1 flex-1">
-                <FontFamilyComboBox
-                  selectedElement={selectedElement}
-                  fontFamilies={fontFamilies}
-                />
-                <label className="text-xs">Font Family</label>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-1 mr-4">
-              <TextAlignButton selectedElement={selectedElement} />
-              <TextStyleButtons selectedElement={selectedElement} />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex flex-row items-center gap-2">
-                <Label htmlFor="letterSpacing" className="w-1/3">
-                  Letter Spacing
-                </Label>
-                <Input
-                  id="letterSpacing"
-                  className="flex-1"
-                  value={selectedElement?.styles?.letterSpacing || ""}
-                  onChange={(e) =>
-                    handleNumberInput("letterSpacing", e.target.value)
-                  }
-                  placeholder="e.g., 1px"
-                />
-              </div>
-
-              <div className="flex flex-row items-center gap-2">
-                <Label htmlFor="lineHeight" className="w-1/3">
-                  Line Height
-                </Label>
-                <Input
-                  id="lineHeight"
-                  className="flex-1"
-                  value={selectedElement?.styles?.lineHeight || ""}
-                  onChange={(e) =>
-                    handleNumberInput("lineHeight", e.target.value)
-                  }
-                  placeholder="e.g., 1.5"
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-row mr-4 gap-1">
-              <TextColorInput selectedElement={selectedElement} />
-              <BackGroundColorInput selectedElement={selectedElement} />
-            </div>
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
+      <Typography selectedElement={selectedElement} />
+      <AppearanceAccordion selectedElement={selectedElement} />
+      {/*Margin and Padding settings*/}
       <AccordionItem value="spacing">
         <AccordionTrigger className="text-sm font-medium">
           Spacing
         </AccordionTrigger>
         <AccordionContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>Margin</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="marginTop" className="text-xs">
-                      Top
-                    </Label>
-                    <Input
-                      id="marginTop"
-                      className="mt-1"
-                      value={selectedElement?.styles?.marginTop || ""}
-                      onChange={(e) =>
-                        handleNumberInput("marginTop", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="marginRight" className="text-xs">
-                      Right
-                    </Label>
-                    <Input
-                      id="marginRight"
-                      className="mt-1"
-                      value={selectedElement?.styles?.marginRight || ""}
-                      onChange={(e) =>
-                        handleNumberInput("marginRight", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="marginBottom" className="text-xs">
-                      Bottom
-                    </Label>
-                    <Input
-                      id="marginBottom"
-                      className="mt-1"
-                      value={selectedElement?.styles?.marginBottom || ""}
-                      onChange={(e) =>
-                        handleNumberInput("marginBottom", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="marginLeft" className="text-xs">
-                      Left
-                    </Label>
-                    <Input
-                      id="marginLeft"
-                      className="mt-1"
-                      value={selectedElement?.styles?.marginLeft || ""}
-                      onChange={(e) =>
-                        handleNumberInput("marginLeft", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                </div>
-              </div>
+          <AccordionItem value="auto">
+            <AccordionTrigger className="text-sm font-medium">
+              Manual
+            </AccordionTrigger>
+            <AccordionContent>
+              <AccordionItem value="margin">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Margin</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor="marginTop" className="text-xs">
+                            Top
+                          </Label>
+                          <Input
+                            id="marginTop"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.marginTop
+                                ? parseInt(
+                                    String(selectedElement?.styles?.marginTop)
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "marginTop",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="marginRight" className="text-xs">
+                            Right
+                          </Label>
+                          <Input
+                            id="marginRight"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.marginRight
+                                ? parseInt(
+                                    String(selectedElement?.styles?.marginRight)
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "marginRight",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="marginBottom" className="text-xs">
+                            Bottom
+                          </Label>
+                          <Input
+                            id="marginBottom"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.marginBottom
+                                ? parseInt(
+                                    String(
+                                      selectedElement?.styles?.marginBottom
+                                    )
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "marginBottom",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="marginLeft" className="text-xs">
+                            Left
+                          </Label>
+                          <Input
+                            id="marginLeft"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.marginLeft
+                                ? parseInt(
+                                    String(selectedElement?.styles?.marginLeft)
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "marginLeft",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="space-y-2">
-                <Label>Padding</Label>
-                <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <Label>Padding</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor="paddingTop" className="text-xs">
+                            Top
+                          </Label>
+                          <Input
+                            id="paddingTop"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.paddingTop
+                                ? parseInt(
+                                    String(selectedElement?.styles?.paddingTop)
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "paddingTop",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="paddingRight" className="text-xs">
+                            Right
+                          </Label>
+                          <Input
+                            id="paddingRight"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.paddingRight
+                                ? parseInt(
+                                    String(
+                                      selectedElement?.styles?.paddingRight
+                                    )
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "paddingRight",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="paddingBottom" className="text-xs">
+                            Bottom
+                          </Label>
+                          <Input
+                            id="paddingBottom"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.paddingBottom
+                                ? parseInt(
+                                    String(
+                                      selectedElement?.styles?.paddingBottom
+                                    )
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "paddingBottom",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="paddingLeft" className="text-xs">
+                            Left
+                          </Label>
+                          <Input
+                            id="paddingLeft"
+                            type="number"
+                            className="mt-1"
+                            value={
+                              selectedElement?.styles?.paddingLeft
+                                ? parseInt(
+                                    String(selectedElement?.styles?.paddingLeft)
+                                  )
+                                : ""
+                            }
+                            onChange={(e) =>
+                              handleNumberInput(
+                                "paddingLeft",
+                                parseInt(e.target.value)
+                              )
+                            }
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </AccordionItem>
+            </AccordionContent>
+          </AccordionItem>
+
+          <div className="mt-4">
+            <AccordionItem value="auto">
+              <AccordionTrigger className="text-sm font-medium">
+                Auto Spacing
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4">
                   <div>
-                    <Label htmlFor="paddingTop" className="text-xs">
-                      Top
+                    <Label htmlFor="marginSlider">
+                      Margin (
+                      {Math.round(
+                        parseInt(
+                          (selectedElement?.styles?.margin as string) || "0"
+                        ) || 0
+                      )}
+                      px)
                     </Label>
-                    <Input
-                      id="paddingTop"
-                      className="mt-1"
-                      value={selectedElement?.styles?.paddingTop || ""}
-                      onChange={(e) =>
-                        handleNumberInput("paddingTop", e.target.value)
-                      }
-                      placeholder="px"
+                    <Slider
+                      id="marginSlider"
+                      className="mt-2"
+                      defaultValue={[
+                        parseInt(
+                          (selectedElement?.styles?.margin as string) || "0"
+                        ) || 0,
+                      ]}
+                      max={100}
+                      step={1}
+                      onValueChange={(value) => {
+                        handleNumberInput("margin", `${value[0]}px`);
+                      }}
                     />
                   </div>
+
                   <div>
-                    <Label htmlFor="paddingRight" className="text-xs">
-                      Right
+                    <Label htmlFor="paddingSlider">
+                      Padding (
+                      {Math.round(
+                        parseInt(
+                          (selectedElement?.styles?.padding as string) || "0"
+                        ) || 0
+                      )}
+                      px)
                     </Label>
-                    <Input
-                      id="paddingRight"
-                      className="mt-1"
-                      value={selectedElement?.styles?.paddingRight || ""}
-                      onChange={(e) =>
-                        handleNumberInput("paddingRight", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="paddingBottom" className="text-xs">
-                      Bottom
-                    </Label>
-                    <Input
-                      id="paddingBottom"
-                      className="mt-1"
-                      value={selectedElement?.styles?.paddingBottom || ""}
-                      onChange={(e) =>
-                        handleNumberInput("paddingBottom", e.target.value)
-                      }
-                      placeholder="px"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="paddingLeft" className="text-xs">
-                      Left
-                    </Label>
-                    <Input
-                      id="paddingLeft"
-                      className="mt-1"
-                      value={selectedElement?.styles?.paddingLeft || ""}
-                      onChange={(e) =>
-                        handleNumberInput("paddingLeft", e.target.value)
-                      }
-                      placeholder="px"
+                    <Slider
+                      id="paddingSlider"
+                      className="mt-2"
+                      defaultValue={[
+                        parseInt(
+                          (selectedElement?.styles?.padding as string) || "0"
+                        ) || 0,
+                      ]}
+                      max={100}
+                      step={1}
+                      onValueChange={(value) => {
+                        handleNumberInput("padding", `${value[0]}px`);
+                      }}
                     />
                   </div>
                 </div>
-              </div>
-            </div>
+              </AccordionContent>
+            </AccordionItem>
           </div>
         </AccordionContent>
       </AccordionItem>
-
+      {/*Border settings*/}
       <AccordionItem value="border">
         <AccordionTrigger className="text-sm font-medium">
           Border
@@ -369,7 +458,7 @@ const BaseConfiguration: React.FC<Props> = ({
                 <Input
                   type="color"
                   id="borderColor"
-                  className="w-8 h-8 p-1"
+                  className="w-10 h-10 p-1"
                   value={selectedElement?.styles?.borderColor || "#000000"}
                   onChange={(e) =>
                     handleSelectChange("borderColor", e.target.value)

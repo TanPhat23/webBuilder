@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useEditorStore } from "@/lib/store/editorStore";
-
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -47,6 +47,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["basic", "advanced", "appearance"]}
       className="w-full"
     >
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings
@@ -212,7 +213,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
               </p>
               <p className="text-xs text-muted-foreground">
                 To create a custom submit button, add a Button and set its type
-                to &quot;submit&quot; in the Button Configuration.
+                to "submit" in the Button Configuration.
               </p>
             </div>
           </div>

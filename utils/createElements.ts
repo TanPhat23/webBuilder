@@ -135,9 +135,8 @@ export function createElements(
         ...baseElement,
         x: 0,
         styles: {
-          ...baseElement.styles,
-          height: "300px",
           width: "100%",
+          height: "300px",
         },
         carouselSettings: {
           dots: true,

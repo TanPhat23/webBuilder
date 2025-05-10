@@ -1,0 +1,346 @@
+import React from "react";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Eye, EyeClosed, Image as ImageIcon } from "lucide-react";
+import { EditorElement } from "@/lib/type";
+import { useEditorStore } from "@/lib/store/editorStore";
+import { startTransition } from "react";
+import { useCanvasStore } from "@/lib/store/canvasStore";
+import useSWR from "swr";
+import { getFontFamily } from "@/actions";
+import { loadFont } from "@/app/utils/LoadFont";
+import { CanvasStyles } from "@/lib/interface";
+
+interface AppearanceProps {
+  selectedElement?: EditorElement;
+  onChange?: (property: string, value: unknown) => void;
+  styles?: CanvasStyles;
+  isCanvas?: boolean;
+}
+
+const AppearanceAccordion: React.FC<AppearanceProps> = ({
+  selectedElement,
+  onChange,
+  styles,
+  isCanvas = false,
+}) => {
+  const { updateElementOptimistically } = useEditorStore();
+  const { fontfamilies, setFontFamilies } = useCanvasStore();
+  const { data: googleFontFamilies = [] } = useSWR(
+    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
+    getFontFamily
+  );
+
+  const handleChange = (property: string, value: string | boolean | number) => {
+    if (onChange) {
+      onChange(property, value);
+    } else if (selectedElement) {
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            [property]: value,
+          },
+        });
+      });
+    }
+  };
+
+  const currentStyles = selectedElement?.styles || styles || {};
+
+  const getBackgroundSizeValue = (): string => {
+    const bgSize = currentStyles?.backgroundSize;
+    if (bgSize === undefined) return "cover";
+    if (typeof bgSize === "number") return `${bgSize}px`;
+    return String(bgSize);
+  };
+
+  const getBackgroundPositionValue = (): string => {
+    const bgPosition = currentStyles?.backgroundPosition;
+    if (bgPosition === undefined) return "center";
+    if (typeof bgPosition === "number") return `${bgPosition}px`;
+    return String(bgPosition);
+  };
+
+  return (
+    <AccordionItem value="appearance">
+      <AccordionTrigger className="text-sm font-medium">
+        Appearance
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="flex">
+          {selectedElement?.styles?.visibility === "hidden" ? (
+            <EyeClosed
+              className="w-4 h-4 text-muted-foreground"
+              onClick={() => handleChange("visibility", "visible")}
+            />
+          ) : (
+            <Eye
+              className="w-4 h-4 text-primary"
+              onClick={() => handleChange("visibility", "hidden")}
+            />
+          )}
+        </div>
+        <div className="flex flex-col gap-4 p-1">
+          {/* Font Family - Only visible for Canvas */}
+          {isCanvas && (
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="fontFamily" className="text-xs">
+                Default Font Family
+              </Label>
+              <Select
+                value={currentStyles?.fontFamily || ""}
+                onValueChange={(value) => {
+                  handleChange("fontFamily", value);
+                  loadFont(value);
+                  if (!fontfamilies.includes(value)) {
+                    setFontFamilies([...fontfamilies, value]);
+                  }
+                }}
+              >
+                <SelectTrigger id="fontFamily" className="h-8 text-xs">
+                  <SelectValue placeholder="Select default font" />
+                </SelectTrigger>
+                <SelectContent>
+                  {googleFontFamilies.map((font: string) => (
+                    <SelectItem key={font} value={font}>
+                      {font}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Background Color */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="backgroundColor" className="text-xs">
+              Background Color
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                type="color"
+                id="backgroundColor"
+                className="w-10 h-8 p-1"
+                value={currentStyles?.backgroundColor || "#ffffff"}
+                onChange={(e) =>
+                  handleChange("backgroundColor", e.target.value)
+                }
+              />
+              <Input
+                id="backgroundColorText"
+                className="flex-1 h-8 text-xs"
+                value={currentStyles?.backgroundColor || ""}
+                onChange={(e) => {
+                  handleChange("backgroundColor", e.target.value);
+                }}
+                placeholder="#ffffff"
+              />
+            </div>
+          </div>
+
+          {/* Background Image */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="backgroundImage" className="text-xs">
+              Background Image
+            </Label>
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-8 flex items-center justify-center border rounded">
+                {currentStyles?.backgroundImage ? (
+                  <div
+                    className="w-full h-full bg-center bg-no-repeat bg-cover"
+                    style={{ backgroundImage: currentStyles.backgroundImage }}
+                  />
+                ) : (
+                  <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                )}
+              </div>
+              <Input
+                id="backgroundImage"
+                className="flex-1 h-8 text-xs"
+                value={currentStyles?.backgroundImage || ""}
+                onChange={(e) => {
+                  handleChange("backgroundImage", `url(${e.target.value})`);
+                }}
+                placeholder="url('/path/to/image.jpg')"
+              />
+            </div>
+          </div>
+
+          {/* Background Image Properties (show only when image is set) */}
+          {currentStyles?.backgroundImage && (
+            <>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="backgroundSize" className="text-xs">
+                  Background Size
+                </Label>
+                <Select
+                  value={getBackgroundSizeValue()}
+                  onValueChange={(value) =>
+                    handleChange("backgroundSize", value)
+                  }
+                >
+                  <SelectTrigger id="backgroundSize" className="h-8 text-xs">
+                    <SelectValue placeholder="Select size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cover">Cover</SelectItem>
+                    <SelectItem value="contain">Contain</SelectItem>
+                    <SelectItem value="auto">Auto</SelectItem>
+                    <SelectItem value="100% 100%">Stretch</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="backgroundAttachment" className="text-xs">
+                  Background Attachment
+                </Label>
+                <Select
+                  value={currentStyles?.backgroundAttachment || "scroll"}
+                  onValueChange={(value) =>
+                    handleChange("backgroundAttachment", value)
+                  }
+                >
+                  <SelectTrigger
+                    id="backgroundAttachment"
+                    className="h-8 text-xs"
+                  >
+                    <SelectValue placeholder="Select attachment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="scroll">Scroll</SelectItem>
+                    <SelectItem value="fixed">Fixed</SelectItem>
+                    <SelectItem value="local">Local</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="backgroundPosition" className="text-xs">
+                  Background Position
+                </Label>
+                <Select
+                  value={getBackgroundPositionValue()}
+                  onValueChange={(value) =>
+                    handleChange("backgroundPosition", value)
+                  }
+                >
+                  <SelectTrigger
+                    id="backgroundPosition"
+                    className="h-8 text-xs"
+                  >
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="center">Center</SelectItem>
+                    <SelectItem value="top">Top</SelectItem>
+                    <SelectItem value="bottom">Bottom</SelectItem>
+                    <SelectItem value="left">Left</SelectItem>
+                    <SelectItem value="right">Right</SelectItem>
+                    <SelectItem value="top left">Top Left</SelectItem>
+                    <SelectItem value="top right">Top Right</SelectItem>
+                    <SelectItem value="bottom left">Bottom Left</SelectItem>
+                    <SelectItem value="bottom right">Bottom Right</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="backgroundRepeat" className="text-xs">
+                  Background Repeat
+                </Label>
+                <Select
+                  value={currentStyles?.backgroundRepeat || "no-repeat"}
+                  onValueChange={(value) =>
+                    handleChange("backgroundRepeat", value)
+                  }
+                >
+                  <SelectTrigger id="backgroundRepeat" className="h-8 text-xs">
+                    <SelectValue placeholder="Select repeat" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no-repeat">No Repeat</SelectItem>
+                    <SelectItem value="repeat">Repeat</SelectItem>
+                    <SelectItem value="repeat-x">Repeat X</SelectItem>
+                    <SelectItem value="repeat-y">Repeat Y</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+
+          {/* Border Radius */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="borderRadius" className="text-xs">
+              Border Radius
+            </Label>
+            <Input
+              id="borderRadius"
+              className="h-8 text-xs"
+              value={currentStyles?.borderRadius || ""}
+              onChange={(e) => handleChange("borderRadius", e.target.value)}
+              placeholder="0px"
+            />
+          </div>
+
+          {/* Border */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="border" className="text-xs">
+              Border
+            </Label>
+            <Input
+              id="border"
+              className="h-8 text-xs"
+              value={currentStyles?.border || ""}
+              onChange={(e) => handleChange("border", e.target.value)}
+              placeholder="1px solid #eeeeee"
+            />
+          </div>
+
+          {/* Box Shadow */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="boxShadow" className="text-xs">
+              Box Shadow
+            </Label>
+            <Select
+              value={currentStyles?.boxShadow || "none"}
+              onValueChange={(value) => handleChange("boxShadow", value)}
+            >
+              <SelectTrigger id="boxShadow" className="h-8 text-xs">
+                <SelectValue placeholder="Choose a shadow style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="0 1px 3px rgba(0,0,0,0.12)">
+                  Light
+                </SelectItem>
+                <SelectItem value="0 4px 6px rgba(0,0,0,0.1)">
+                  Medium
+                </SelectItem>
+                <SelectItem value="0 10px 15px rgba(0,0,0,0.1)">
+                  Strong
+                </SelectItem>
+                <SelectItem value="0 20px 25px rgba(0,0,0,0.15)">
+                  Extra Strong
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  );
+};
+
+export default AppearanceAccordion;

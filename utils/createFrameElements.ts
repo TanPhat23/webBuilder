@@ -7,7 +7,7 @@ import {
 } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Create } from "@/app/data/element/elementDAL";
+import { Create } from "@/actions/element/action";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -218,7 +218,10 @@ const createElements = async (
   }
 
   const parentElementCopy = { ...parentElement };
-
+  // Make sure elements is defined and accessible
+  if (!parentElementCopy.elements) {
+    parentElementCopy.elements = [];
+  }
   parentElementCopy.elements.push(newElement);
 
   if (updateElement) {
