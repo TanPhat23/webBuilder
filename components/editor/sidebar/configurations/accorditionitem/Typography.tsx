@@ -43,7 +43,7 @@ const Typography = ({ selectedElement }: Props) => {
     `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
     getFontFamily
   );
-  const { fontfamilies, setFontFamilies } = useCanvasStore();
+  const { canvasFontFamilies, setFontFamilies } = useCanvasStore();
 
   const handleFontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedElement) return;
@@ -140,8 +140,8 @@ const Typography = ({ selectedElement }: Props) => {
                 onValueChange={(value) => {
                   handleSelectChange("fontFamily", value);
                   loadFont(value);
-                  if (!fontfamilies.includes(value)) {
-                    setFontFamilies([...fontfamilies, value]);
+                  if (!canvasFontFamilies.includes(value)) {
+                    setFontFamilies([...canvasFontFamilies, value]);
                   }
                 }}
               >

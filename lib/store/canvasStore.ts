@@ -5,10 +5,10 @@ import { UpdateProject } from "@/actions/project/action";
 
 interface CanvasState {
   styles: CanvasStyles;
-  fontfamilies: string[];
-  setFontFamilies: (fontfamilies: string[]) => void;
+  canvasFontFamilies: string[];
+  setFontFamilies: (fontFamilies: string[]) => void;
   setStyles: (id: string, styles: CanvasStyles) => void;
-  loadCansvasStylesFromDB: (styles: CanvasStyles) => void;
+  loadCanvasStylesFromDB: (styles: CanvasStyles) => void;
 }
 
 const defaultStyles: CanvasStyles = {
@@ -25,24 +25,24 @@ const defaultStyles: CanvasStyles = {
 export const useCanvasStore = create<CanvasState>()(
   persist(
     (set) => ({
-      fontfamilies: [],
+      canvasFontFamilies: [],
       styles: defaultStyles,
       setStyles: (id: string, styles: CanvasStyles) => {
-        const prevstyles = useCanvasStore.getState().styles;
+        const prevStyles = useCanvasStore.getState().styles;
         try {
           set({ styles });
           UpdateProject({ id: id, styles: styles });
         } catch (error) {
-          set({ styles: prevstyles });
+          set({ styles: prevStyles });
           console.error("Error setting styles:", error);
         }
       },
-      
-      setFontFamilies: (fontfamilies: string[]) => {
-        set({ fontfamilies });
+
+      setFontFamilies: (fontFamilies: string[]) => {
+        set({ canvasFontFamilies: fontFamilies });
       },
 
-      loadCansvasStylesFromDB: (styles: CanvasStyles) => {
+      loadCanvasStylesFromDB: (styles: CanvasStyles) => {
         set({ styles });
       },
     }),

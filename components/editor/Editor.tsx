@@ -427,17 +427,7 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     <div
       className="w-full h-full flex canva-component"
       style={{
-        backgroundColor: styles?.backgroundColor,
-        width: styles?.width,
-        height: styles?.height,
-        maxWidth: styles?.maxWidth,
-        overflow: styles?.overflow,
-        borderRadius: styles?.borderRadius,
-        border: styles?.border,
-        boxShadow: styles?.boxShadow,
-        backdropFilter: styles?.backdropFilter,
-        transition: styles?.transition,
-        fontFamily: styles?.fontFamily,
+        ...styles,
       }}
     >
       <div className="flex flex-row absolute top-0 z-10 left-1/2 transform -translate-x-1/2">

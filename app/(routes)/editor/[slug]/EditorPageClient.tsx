@@ -25,10 +25,10 @@ export default function EditorPageClient({
     (state) => state.loadElementsFromDB
   );
   const loadProjectFromDB = useCanvasStore(
-    (state) => state.loadCansvasStylesFromDB
+    (state) => state.loadCanvasStylesFromDB
   );
   const { startTour, needHelp, setStartTour } = useElementSelectionStore();
-  const { fontfamilies } = useCanvasStore();
+  const { canvasFontFamilies } = useCanvasStore();
   const handleEndTour = () => {
     setStartTour(false);
     useElementSelectionStore.getState().setNeedHelp(true);
@@ -41,10 +41,16 @@ export default function EditorPageClient({
     if (project) {
       loadProjectFromDB(project.styles);
     }
-    if (fontfamilies) {
-      loadFonts(fontfamilies);
+    if (canvasFontFamilies) {
+      loadFonts(canvasFontFamilies);
     }
-  }, [initialElements, loadElementsFromDB, loadProjectFromDB, project, fontfamilies]);
+  }, [
+    initialElements,
+    loadElementsFromDB,
+    loadProjectFromDB,
+    project,
+    canvasFontFamilies,
+  ]);
 
   return (
     <>
