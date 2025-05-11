@@ -15,7 +15,6 @@ export const loadFont = (fontName: string) => {
   const fontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
     fontName
   )}&display=swap`;
-  console.log(`Loading font: ${fontName}`);
   
   const existingLinks = document.querySelectorAll(`link[href="${fontUrl}"]`);
 
