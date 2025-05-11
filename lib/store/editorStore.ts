@@ -7,9 +7,10 @@ import {
   FrameElement,
   ListElement,
 } from "../interface";
-import { EditorElement } from "../type";
+import { AnimatedEditorElement, ElementAnimationState } from "../type";
 import { v4 as uuidv4 } from "uuid";
 import { BatchCreate, Delete, Update } from "@/actions/element/action";
+import { EditorElement } from "@/lib/type";
 
 type ContainerElement =
   | FrameElement
@@ -30,8 +31,8 @@ const isContainerElement = (
 };
 
 interface EditorState {
-  elements: EditorElement[];
-  history: EditorElement[][];
+  elements: AnimatedEditorElement[];
+  history: AnimatedEditorElement[][];
   historyIndex: number;
   isLoading: boolean;
   error: string | null;
@@ -46,7 +47,11 @@ interface EditorState {
   undo: () => void;
   redo: () => void;
 
-  // Optimistic update methods
+  setElementAnimationState: (id: string, animState: ElementAnimationState) => void;
+  clearElementAnimationStates: () => void;
+
+  setElementDragging: (id: string, isDragging: boolean) => void;
+
   addElementOptimistically: (
     element: EditorElement,
     projectId: string,
@@ -58,11 +63,9 @@ interface EditorState {
   ) => Promise<void>;
   deleteElementOptimistically: (id: string) => Promise<void>;
 
-  // Helper to update history
-  _updateHistory: (newElements: EditorElement[]) => void;
+  _updateHistory: (newElements: AnimatedEditorElement[]) => void;
 
-  // Helper to find element by id
-  _findElementById: (id: string) => EditorElement | null;
+  _findElementById: (id: string) => AnimatedEditorElement | null;
 }
 
 export const useEditorStore = create<EditorState>()(
@@ -87,23 +90,31 @@ export const useEditorStore = create<EditorState>()(
 
       addElement: (element) => {
         const { elements, _updateHistory } = get();
-        _updateHistory([...elements, element]);
+        const animatedElement = {
+          ...element,
+          isEntering: true,
+        } as AnimatedEditorElement;
+        
+        _updateHistory([...elements, animatedElement]);
+        setTimeout(() => {
+          get().setElementAnimationState(element.id, { isEntering: false });
+        }, 300);
       },
 
       updateElement: (id, updates) => {
         const { elements, _updateHistory } = get();
 
-        const updateElement = (element: EditorElement): EditorElement => {
+        const updateElement = (element: AnimatedEditorElement): AnimatedEditorElement => {
           if (element.id === id) {
             return { ...element, ...updates };
           }
 
           if (element.type === "Button" && (element as ButtonElement).element) {
-            const buttonElement = element as ButtonElement;
+            const buttonElement = element as ButtonElement & ElementAnimationState;
             return {
               ...element,
               element: buttonElement.element
-                ? (updateElement(buttonElement.element) as FrameElement)
+                ? (updateElement(buttonElement.element as AnimatedEditorElement) as FrameElement & ElementAnimationState)
                 : undefined,
             };
           }
@@ -111,7 +122,7 @@ export const useEditorStore = create<EditorState>()(
           if (isContainerElement(element)) {
             return {
               ...element,
-              elements: element.elements.map(updateElement),
+              elements: (element.elements as AnimatedEditorElement[]).map(updateElement),
             };
           }
 
@@ -123,60 +134,72 @@ export const useEditorStore = create<EditorState>()(
 
       deleteElement: (id) => {
         const { elements, _updateHistory } = get();
-
-        const deleteElement = (
-          element: EditorElement
-        ): EditorElement | null => {
+        
+        const updatedElements = elements.map(element => {
           if (element.id === id) {
-            return null;
+            return { ...element, isExiting: true };
           }
-
-          // Improved Button element handling with better type safety
-          if (element.type === "Button" && (element as ButtonElement).element) {
-            const buttonElement = element as ButtonElement;
-            const updatedButtonElement = buttonElement.element
-              ? deleteElement(buttonElement.element)
-              : undefined;
-
-            return {
-              ...element,
-              element: updatedButtonElement as FrameElement | undefined,
-            };
-          }
-
-          if (isContainerElement(element)) {
-            const updatedElements = element.elements
-              .map(deleteElement)
-              .filter((el): el is EditorElement => el !== null);
-
-            return {
-              ...element,
-              elements: updatedElements,
-            };
-          }
-
           return element;
-        };
+        });
+        
+        set({ elements: updatedElements });
+        
+        setTimeout(() => {
+          const { elements, _updateHistory } = get();
+          
+          const deleteElement = (
+            element: AnimatedEditorElement
+          ): AnimatedEditorElement | null => {
+            if (element.id === id) {
+              return null;
+            }
+            
+            if (element.type === "Button" && (element as ButtonElement).element) {
+              const buttonElement = element as ButtonElement & ElementAnimationState;
+              const updatedButtonElement = buttonElement.element
+                ? deleteElement(buttonElement.element as AnimatedEditorElement)
+                : undefined;
 
-        const updatedElements = elements
-          .map(deleteElement)
-          .filter((el): el is EditorElement => el !== null);
+              return {
+                ...element,
+                element: updatedButtonElement as (FrameElement & ElementAnimationState) | undefined,
+              };
+            }
 
-        _updateHistory(updatedElements);
+            if (isContainerElement(element)) {
+              const updatedElements = (element.elements as AnimatedEditorElement[])
+                .map(deleteElement)
+                .filter((el): el is AnimatedEditorElement => el !== null);
+
+              return {
+                ...element,
+                elements: updatedElements,
+              };
+            }
+
+            return element;
+          };
+          
+          const filteredElements = elements
+            .map(deleteElement)
+            .filter((el): el is AnimatedEditorElement => el !== null);
+          
+          _updateHistory(filteredElements);
+        }, 200);
       },
 
       updateAllElements: (updates) => {
         const { elements, _updateHistory } = get();
 
-        const updateElement = (element: EditorElement): EditorElement => {
+        const updateElement = (element: AnimatedEditorElement): AnimatedEditorElement => {
           const updatedElement = { ...element, ...updates };
 
           if (element.type === "Button" && (element as ButtonElement).element) {
-            const buttonElement = element as ButtonElement;
+            const buttonElement = element as ButtonElement & ElementAnimationState;
             return {
               ...updatedElement,
               element: buttonElement.element
-                ? (updateElement(buttonElement.element) as FrameElement)
+                ? (updateElement(buttonElement.element as AnimatedEditorElement) as FrameElement & ElementAnimationState)
                 : undefined,
             };
           }
@@ -184,7 +207,7 @@ export const useEditorStore = create<EditorState>()(
           if (isContainerElement(updatedElement)) {
             return {
               ...updatedElement,
-              elements: updatedElement.elements.map(updateElement),
+              elements: (updatedElement.elements as AnimatedEditorElement[]).map(updateElement),
             };
           }
 
@@ -195,39 +218,43 @@ export const useEditorStore = create<EditorState>()(
       },
 
       loadElementsFromDB: (elements) => {
-        const { _updateHistory } = get();
-
-        _updateHistory(elements);
+        const animatedElements = elements.map(element => ({
+          ...element,
+          isEntering: true,
+        })) as AnimatedEditorElement[];
+        
+        get()._updateHistory(animatedElements);
+        
+        setTimeout(() => {
+          get().clearElementAnimationStates();
+        }, 300);
       },
 
       updateAllSelectedElements: (updates) => {
         const { elements, _updateHistory } = get();
 
         const updateSelectedElement = (
-          element: EditorElement
-        ): EditorElement => {
-          // If this element is selected, update it with the provided updates
+          element: AnimatedEditorElement
+        ): AnimatedEditorElement => {
           const shouldUpdate = element.isSelected;
           const updatedElement = shouldUpdate
             ? { ...element, ...updates }
             : element;
 
-          // Check for Button with element property
           if (element.type === "Button" && (element as ButtonElement).element) {
-            const buttonElement = element as ButtonElement;
+            const buttonElement = element as ButtonElement & ElementAnimationState;
             return {
               ...updatedElement,
               element: buttonElement.element
-                ? (updateSelectedElement(buttonElement.element) as FrameElement)
+                ? (updateSelectedElement(buttonElement.element as AnimatedEditorElement) as FrameElement & ElementAnimationState)
                 : undefined,
             };
           }
 
-          // Process nested elements regardless of selection status
           if (isContainerElement(updatedElement)) {
             return {
               ...updatedElement,
-              elements: updatedElement.elements.map(updateSelectedElement),
+              elements: (updatedElement.elements as AnimatedEditorElement[]).map(updateSelectedElement),
             };
           }
 
@@ -256,63 +283,52 @@ export const useEditorStore = create<EditorState>()(
           });
         }
       },
-
-      // Helper to find element by id through the nested structure
-      _findElementById: (id) => {
+      setElementAnimationState: (id, animState) => {
         const { elements } = get();
-
-        const findElement = (
-          elements: EditorElement[],
-          id: string
-        ): EditorElement | null => {
-          for (const element of elements) {
-            if (element.id === id) {
-              return element;
-            }
-
-            if (
-              element.type === "Button" &&
-              (element as ButtonElement).element
-            ) {
-              const buttonElement = element as ButtonElement;
-              if (buttonElement.element) {
-                if (buttonElement.element.id === id) {
-                  return buttonElement.element;
-                }
-
-                if (isContainerElement(buttonElement.element)) {
-                  const found = findElement(buttonElement.element.elements, id);
-                  if (found) return found;
-                }
-              }
-            }
-
-            if (isContainerElement(element)) {
-              const found = findElement(element.elements, id);
-              if (found) return found;
-            }
+        const updatedElements = elements.map(element => {
+          if (element.id === id) {
+            return { ...element, ...animState };
           }
-          return null;
-        };
-
-        return findElement(elements, id);
+          return element;
+        });
+        set({ elements: updatedElements });
       },
-
-      // Optimistic update methods
+      
+      clearElementAnimationStates: () => {
+        const { elements } = get();
+        const updatedElements = elements.map(element => ({
+          ...element,
+          isEntering: false,
+          isExiting: false,
+          isDragging: false,
+        }));
+        set({ elements: updatedElements });
+      },
+      
+      setElementDragging: (id, isDragging) => {
+        const { elements } = get();
+        const updatedElements = elements.map(element => {
+          if (element.id === id) {
+            return { ...element, isDragging };
+          }
+          return element;
+        });
+        set({ elements: updatedElements });
+      },
       addElementOptimistically: async (element, projectId, parentId) => {
         const elementsToCreate: EditorElement[] = [];
 
         const prepareElements = (
           element: EditorElement,
           parentId?: string
-        ): EditorElement => {
+        ): AnimatedEditorElement => {
           const newElement = {
             ...element,
             id: uuidv4(),
             projectId,
             parentId,
-            Type: element.type,
-          };
+            isEntering: true,
+          } as AnimatedEditorElement;
 
           elementsToCreate.push(newElement);
 
@@ -322,7 +338,7 @@ export const useEditorStore = create<EditorState>()(
               elements: element.elements.map((childElement) =>
                 prepareElements(childElement, newElement.id)
               ),
-            };
+            } as AnimatedEditorElement;
           }
 
           return newElement;
@@ -330,27 +346,35 @@ export const useEditorStore = create<EditorState>()(
 
         const preparedElement = prepareElements(element, parentId);
 
-        // Immediately update UI
         if (parentId) {
-          const childElements = (
-            get()._findElementById(parentId) as ContainerElement
-          ).elements;
-          get().updateElement(parentId, {
-            elements: [...(childElements || []), preparedElement],
-          });
+          const parentElement = get()._findElementById(parentId) as ContainerElement & ElementAnimationState;
+          if (parentElement) {
+            const childElements = parentElement.elements as AnimatedEditorElement[];
+            get().updateElement(parentId, {
+              elements: [...(childElements || []), preparedElement],
+            });
+          }
         } else {
           get().addElement(preparedElement);
         }
+        
         set({ isLoading: true, error: null });
 
+        setTimeout(() => {
+          get().setElementAnimationState(preparedElement.id, { isEntering: false });
+        }, 300);
+
         try {
-          // Perform API call
           await BatchCreate(elementsToCreate);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);
-          // Rollback on error
-          get().deleteElement(preparedElement.id);
+          get().setElementAnimationState(preparedElement.id, { isExiting: true });
+          
+          setTimeout(() => {
+            get().deleteElement(preparedElement.id);
+          }, 200);
+          
           set({
             isLoading: false,
             error:
@@ -362,24 +386,18 @@ export const useEditorStore = create<EditorState>()(
       updateElementOptimistically: async (id, updates) => {
         const currentElement = get()._findElementById(id);
         if (!currentElement) return;
-
-        // Ensure Type is included
         const completeUpdates = {
           ...updates,
         };
-
-        // Update UI immediately
         get().updateElement(id, completeUpdates);
         set({ isLoading: true, error: null });
 
         try {
-          // Perform API call
           const updatedElement = { ...currentElement, ...completeUpdates };
           await Update(updatedElement);
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to update element:", error);
-          // Rollback to previous state on error
           get().updateElement(id, currentElement);
           set({
             isLoading: false,
@@ -395,29 +413,75 @@ export const useEditorStore = create<EditorState>()(
         const elementToDelete = get()._findElementById(id);
         if (!elementToDelete) return;
 
-        // Store a copy for potential rollback
         const elementCopy = { ...elementToDelete };
 
-        // Update UI immediately
-        get().deleteElement(id);
+        get().setElementAnimationState(id, { isExiting: true });
         set({ isLoading: true, error: null });
+        setTimeout(async () => {
+          get().deleteElement(id);
+          
+          try {
+            await Delete(id);
+            set({ isLoading: false });
+          } catch (error) {
+            console.error("Failed to delete element:", error);
+            get().addElement({
+              ...elementCopy,
+              isEntering: true,
+              isExiting: false,
+            });
+            
+            set({
+              isLoading: false,
+              error:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to delete element",
+            });
+          }
+        }, 200);
+      },
+      _findElementById: (id) => {
+        const { elements } = get();
 
-        try {
-          // Perform API call
-          await Delete(id);
-          set({ isLoading: false });
-        } catch (error) {
-          console.error("Failed to delete element:", error);
-          // Rollback on error - add the element back
-          get().addElement(elementCopy);
-          set({
-            isLoading: false,
-            error:
-              error instanceof Error
-                ? error.message
-                : "Failed to delete element",
-          });
-        }
+        const findElement = (
+          elements: AnimatedEditorElement[],
+          id: string
+        ): AnimatedEditorElement | null => {
+          for (const element of elements) {
+            if (element.id === id) {
+              return element;
+            }
+
+            if (
+              element.type === "Button" &&
+              (element as ButtonElement).element
+            ) {
+              const buttonElement = element as ButtonElement & ElementAnimationState;
+              if (buttonElement.element) {
+                if (buttonElement.element.id === id) {
+                  return buttonElement.element as AnimatedEditorElement;
+                }
+
+                if (isContainerElement(buttonElement.element)) {
+                  const found = findElement(
+                    buttonElement.element.elements as AnimatedEditorElement[], 
+                    id
+                  );
+                  if (found) return found;
+                }
+              }
+            }
+
+            if (isContainerElement(element)) {
+              const found = findElement(element.elements as AnimatedEditorElement[], id);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+
+        return findElement(elements, id);
       },
     }),
     {

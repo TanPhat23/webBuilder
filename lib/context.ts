@@ -78,9 +78,6 @@ export function useEditorContext() {
   return { elements, dispatch };
 }
 
-/**
- * Legacy hook that now uses Zustand image store internally
- */
 export function useImageUploadContext() {
   const { uploadImages } = useImageStore();
 

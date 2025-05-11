@@ -9,6 +9,16 @@ export const popularFonts = [
   "Oswald",
   "Source Sans Pro",
   "Playfair Display",
+  "Nunito",
+  "Merriweather",
+  "Ubuntu",
+  "Rubik",
+  "Work Sans",
+  "Quicksand",
+  "DM Sans",
+  "PT Sans",
+  "Fira Sans",
+  "Mulish",
 ];
 
 export const loadFont = (fontName: string) => {
@@ -40,4 +50,14 @@ export const loadAllPopularFonts = () => {
 // Create a style object for a specific font
 export const createFontStyle = (fontName: string) => {
   return { fontFamily: `'${fontName}', sans-serif` };
+};
+
+export const applyFontToWebsite = (fontName: string) => {
+  loadFont(fontName);
+  document.documentElement.style.fontFamily = `'${fontName}', sans-serif`;
+  localStorage.setItem('website-font', fontName);
+};
+
+export const getCurrentWebsiteFont = (): string => {
+  return localStorage.getItem('website-font') || 'Roboto';
 };
