@@ -19,7 +19,7 @@ import { useEditorStore } from "@/lib/store/editorStore";
 import { startTransition } from "react";
 import { useCanvasStore } from "@/lib/store/canvasStore";
 import useSWR from "swr";
-import { getFontFamily } from "@/actions";
+import { getFontFamily } from "@/app/actions";
 import { loadFont } from "@/app/utils/LoadFont";
 import { CanvasStyles } from "@/lib/interface";
 
