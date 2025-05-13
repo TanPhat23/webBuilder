@@ -44,13 +44,7 @@ export default function EditorPageClient({
     if (canvasFontFamilies) {
       loadFonts(canvasFontFamilies);
     }
-  }, [
-    initialElements,
-    loadElementsFromDB,
-    loadProjectFromDB,
-    project,
-    canvasFontFamilies,
-  ]);
+  }, [initialElements, project, canvasFontFamilies]);
 
   return (
     <>

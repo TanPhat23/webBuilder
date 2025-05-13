@@ -2,7 +2,9 @@ import { GetAll } from "@/app/actions/element/action";
 import EditorPageClient from "./EditorPageClient";
 import { GetProjectById } from "@/app/actions/project/action";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
+
+export const revalidate = 30;
 
 export default async function Page({
   params,
