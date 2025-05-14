@@ -1,4 +1,4 @@
-import { Delete, GetAll } from "@/actions/project/action";
+import { Delete, GetAll } from "@/app/actions/project/action";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,

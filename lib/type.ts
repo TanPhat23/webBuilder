@@ -9,6 +9,7 @@ import {
   ListElement,
   SelectElement,
   FormElement,
+  YouTubeEmbedElement,
 } from "./interface";
 
 export type CarouselElementChild = Element | ButtonElement | FrameElement;
@@ -23,7 +24,8 @@ export type EditorElement =
   | SelectElement
   | ChartElement
   | DataTableElement
-  | FormElement;
+  | FormElement
+  | YouTubeEmbedElement;
 
 export interface ElementAnimationState {
   isEntering?: boolean;
@@ -67,7 +69,8 @@ export type ElementTypes =
   | "Chart"
   | "DataTable"
   | "Image"
-  | "Form";
+  | "Form"
+  | "YouTubeEmbed";
 
 export type ContainerElement =
   | FrameElement

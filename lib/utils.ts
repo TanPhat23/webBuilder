@@ -47,6 +47,10 @@ export async function generateProjectSubdomain(
  */
 export async function checkSubdomainAvailability(subdomain: string) {
   try {
+    if (!subdomain || typeof subdomain !== 'string') {
+      throw new Error("Invalid subdomain provided");
+    }
+    
     const response = await fetch(
       `/api/subdomain?subdomain=${encodeURIComponent(subdomain)}`,
       {
@@ -58,7 +62,9 @@ export async function checkSubdomainAvailability(subdomain: string) {
     );
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await response.json().catch(() => ({ 
+        error: `HTTP error ${response.status}` 
+      }));
       throw new Error(error.error || "Failed to check subdomain availability");
     }
 

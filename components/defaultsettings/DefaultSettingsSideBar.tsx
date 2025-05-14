@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { appProject } from "@/lib/interface";
 import { useCanvasStore } from "@/lib/store/canvasStore";
 import CanvasConfiguration from "../editor/sidebar/configurations/CanvasConfiguration";
-import { UpdateProject } from "@/actions/project/action";
+import { UpdateProject } from "@/app/actions/project/action";
 
 function DefaultSettingsSideBar() {
   return (

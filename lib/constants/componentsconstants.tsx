@@ -206,5 +206,10 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     id: "formComponents",
     label: "Form Components",
     prefix: "Form",
-  }
+  },
+  {
+    id: "iFrameComponents",
+    label: "iFrame Components",
+    prefix: "YouTube",
+  },
 ];

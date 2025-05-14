@@ -19,7 +19,7 @@ import { useEditorStore } from "@/lib/store/editorStore";
 import { startTransition } from "react";
 import { useCanvasStore } from "@/lib/store/canvasStore";
 import useSWR from "swr";
-import { getFontFamily } from "@/actions";
+import { getFontFamily } from "@/app/actions";
 import { loadFont } from "@/app/utils/LoadFont";
 import { CanvasStyles } from "@/lib/interface";
 
@@ -193,18 +193,137 @@ const AppearanceAccordion: React.FC<AppearanceProps> = ({
               </div>
               <Input
                 id="backgroundImage"
-                className="flex-1 h-8 text-xs"
-                value={currentStyles?.backgroundImage || ""}
+                className="flex-1 h-8 text-xs"                
+                value={currentStyles?.backgroundImage && currentStyles.backgroundImage.startsWith("url") 
+                  ? currentStyles.backgroundImage.replace(/url\(['"]?(.*?)['"]?\)/i, "$1") 
+                  : ""}
                 onChange={(e) => {
-                  handleChange("backgroundImage", `url(${e.target.value})`);
+                  if (currentStyles?.backgroundImage && currentStyles.backgroundImage.includes("linear-gradient")) {
+                    return;
+                  }
+                  handleChange("backgroundImage", e.target.value ? `url(${e.target.value})` : "");
                 }}
                 placeholder="url('/path/to/image.jpg')"
+                disabled={currentStyles?.backgroundImage && currentStyles.backgroundImage.includes("linear-gradient")}
               />
             </div>
           </div>
-
-          {/* Background Image Properties (show only when image is set) */}
-          {currentStyles?.backgroundImage && (
+          
+          <div className="flex flex-col gap-2">
+            <Label className="text-xs">
+              Background Gradient
+            </Label>            
+            <div className="flex items-center mb-2">
+              <Input
+                type="checkbox" 
+                id="useGradient"
+                checked={!!(currentStyles?.backgroundImage && currentStyles.backgroundImage.includes("linear-gradient"))}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    handleChange("backgroundImage", "linear-gradient(to right, #4facfe, #00f2fe)");
+                  } else {
+                    handleChange("backgroundImage", "");
+                  }
+                }}
+                className="w-4 h-4 mr-2 accent-blue-500 cursor-pointer"
+              />
+              <Label htmlFor="useGradient" className="text-xs cursor-pointer">
+                Use Gradient
+              </Label>
+            </div>
+            
+            {currentStyles?.backgroundImage && currentStyles.backgroundImage.includes("linear-gradient") && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs w-20">Direction:</Label>
+                  <Select
+                    value={
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to right") ? "to right" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to left") ? "to left" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to bottom") ? "to bottom" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to top") ? "to top" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to bottom right") ? "to bottom right" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to bottom left") ? "to bottom left" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to top right") ? "to top right" :
+                      currentStyles.backgroundImage && currentStyles.backgroundImage.includes("to top left") ? "to top left" : "to right"
+                    }
+                    onValueChange={(value) => {
+                      if (!currentStyles.backgroundImage) return;
+                      
+                      const colorMatch = currentStyles.backgroundImage.match(/linear-gradient\([^,]+,\s*([^,]+),\s*([^)]+)\)/);
+                      const color1 = colorMatch?.[1]?.trim() || "#4facfe";
+                      const color2 = colorMatch?.[2]?.trim() || "#00f2fe";
+                      
+                      handleChange("backgroundImage", `linear-gradient(${value}, ${color1}, ${color2})`);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Gradient direction" />
+                    </SelectTrigger>                    <SelectContent>
+                      <SelectItem value="to right">Horizontal → (Right)</SelectItem>
+                      <SelectItem value="to left">Horizontal ← (Left)</SelectItem>
+                      <SelectItem value="to bottom">Vertical ↓ (Down)</SelectItem>
+                      <SelectItem value="to top">Vertical ↑ (Up)</SelectItem>
+                      <SelectItem value="to bottom right">Diagonal ↘ (Bottom Right)</SelectItem>
+                      <SelectItem value="to bottom left">Diagonal ↙ (Bottom Left)</SelectItem>
+                      <SelectItem value="to top right">Diagonal ↗ (Top Right)</SelectItem>
+                      <SelectItem value="to top left">Diagonal ↖ (Top Left)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label className="text-xs w-20">Start color:</Label>
+                    <Input
+                      type="color"
+                      className="w-16 h-8 p-1"                      
+                      value={currentStyles.backgroundImage ? 
+                        ((currentStyles.backgroundImage.match(/#[a-f\d]{3,6}|rgba?\([^)]+\)/gi) || ["#4facfe"])[0] || "#4facfe") 
+                        : "#4facfe"}
+                      onChange={(e) => {
+                        if (!currentStyles.backgroundImage) return;
+                        
+                        const match = currentStyles.backgroundImage.match(/linear-gradient\(([^,]+),\s*[^,]+,\s*([^)]+)\)/);
+                        const direction = match?.[1]?.trim() || "to right";
+                        const color2 = match?.[2]?.trim() || "#00f2fe";
+                        
+                        handleChange("backgroundImage", `linear-gradient(${direction}, ${e.target.value}, ${color2})`);
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs w-20">End color:</Label>
+                    <Input
+                      type="color"
+                      className="w-16 h-8 p-1"                     
+                      value={currentStyles.backgroundImage ? 
+                        ((currentStyles.backgroundImage.match(/#[a-f\d]{3,6}|rgba?\([^)]+\)/gi) || ["#4facfe", "#00f2fe"])[1] || "#00f2fe") 
+                        : "#00f2fe"}
+                      onChange={(e) => {
+                        if (!currentStyles.backgroundImage) return;
+                        
+                        const match = currentStyles.backgroundImage.match(/linear-gradient\(([^,]+),\s*([^,]+),\s*[^)]+\)/);
+                        const direction = match?.[1]?.trim() || "to right";
+                        const color1 = match?.[2]?.trim() || "#4facfe";
+                        
+                        handleChange("backgroundImage", `linear-gradient(${direction}, ${color1}, ${e.target.value})`);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div 
+                  className="h-8 mt-2 rounded border"
+                  style={{
+                    backgroundImage: currentStyles.backgroundImage || ""
+                  }}
+                />
+              </div>
+            )}
+          </div>          
+          
+          {currentStyles?.backgroundImage && !currentStyles.backgroundImage.includes("linear-gradient") && (
             <>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="backgroundSize" className="text-xs">

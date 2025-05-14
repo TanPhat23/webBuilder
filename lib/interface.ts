@@ -114,6 +114,19 @@ export interface ChartElement extends Element {
   chartOptions?: Record<string, <T>(data: T) => T>;
 }
 
+export interface YouTubeEmbedElement extends Element {
+  type: "YouTubeEmbed";
+  videoId: string;
+  showControls?: boolean;
+  autoplay?: boolean;
+  allowFullscreen?: boolean;
+  attributes?: {
+    allow?: string;
+    title?: string;
+    [key: string]: string | undefined;
+  };
+}
+
 export interface DataTableElement extends Element {
   type: "DataTable";
   headers: string[];

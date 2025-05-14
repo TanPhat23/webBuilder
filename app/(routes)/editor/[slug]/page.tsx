@@ -1,6 +1,6 @@
-import { GetAll } from "@/actions/element/action";
+import { GetAll } from "@/app/actions/element/action";
 import EditorPageClient from "./EditorPageClient";
-import { GetProjectById } from "@/actions/project/action";
+import { GetProjectById } from "@/app/actions/project/action";
 
 // export const dynamic = "force-dynamic";
 
