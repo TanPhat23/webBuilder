@@ -82,7 +82,9 @@ export async function PUT(
           ButtonType: (element as ButtonElement).buttonType,
         },
       }),
-      prisma.settings.update({
+    ]);
+    if (settings) {
+      await prisma.settings?.update({
         where: {
           Id: settings?.Id,
         },
@@ -90,8 +92,8 @@ export async function PUT(
           ElementId: element.id,
           Settings: elementSettings,
         },
-      }),
-    ]);
+      });
+    }
 
     return NextResponse.json(updatedElement, { status: 200 });
   } catch (error) {
@@ -119,7 +121,7 @@ export async function DELETE(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  try {
+  try {~
     const { id } = await params;
 
     if (!id) {
@@ -144,7 +146,7 @@ export async function DELETE(
         data: {
           ParentId: null,
         },
-      })
+      }),
     ]);
 
     return NextResponse.json(deletedElement, { status: 200 });
