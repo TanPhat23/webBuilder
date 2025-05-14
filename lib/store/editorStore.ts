@@ -361,6 +361,7 @@ export const useEditorStore = create<EditorState>()(
 
       updateElementOptimistically: async (id, updates) => {
         const currentElement = get()._findElementById(id);
+        const projectId = currentElement?.projectId;
         if (!currentElement) return;
 
         // Ensure Type is included
@@ -374,8 +375,17 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
+          console.log("Project ID:", projectId);
           const updatedElement = { ...currentElement, ...completeUpdates };
-          await Update(updatedElement);
+          
+          // Update(updatedElement)
+          await fetch(`/api/element/${projectId}`, {
+            method: "PUT",
+            body: JSON.stringify(updatedElement),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to update element:", error);
