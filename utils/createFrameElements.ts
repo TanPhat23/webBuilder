@@ -230,7 +230,17 @@ const createElements = async (
     });
 
     try {
-      await Create(newElement);
+      await fetch(`/api/element/${newElement.projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newElement),
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to create element");
+        }
+      });
     } catch (error) {
       // Rollback on error
       updateElement(parentElement.id, {

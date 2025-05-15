@@ -72,17 +72,20 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
     [selectedElement, updateElementOptimistically]
   );
 
-  const handleSelectChange = (property: string, value: string) => {
-    if (!selectedElement) return;
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: value,
-        },
+  const handleSelectChange = React.useCallback(
+    (property: string, value: string) => {
+      if (!selectedElement) return;
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            [property]: value,
+          },
+        });
       });
-    });
-  };
+    },
+    [selectedElement, updateElementOptimistically]
+  );
 
   const handleOpacityChange = (value: number[]) => {
     if (!selectedElement) return;
@@ -140,7 +143,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginTop)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -164,7 +167,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginRight)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -190,7 +193,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                       selectedElement?.styles?.marginBottom
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -214,7 +217,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginLeft)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -244,7 +247,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                 ? parseInt(
                                     String(selectedElement?.styles?.paddingTop)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -270,7 +273,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                       selectedElement?.styles?.paddingRight
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -296,7 +299,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                       selectedElement?.styles?.paddingBottom
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -320,7 +323,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                                 ? parseInt(
                                     String(selectedElement?.styles?.paddingLeft)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -417,7 +420,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="borderWidth"
                 className="flex-1"
-                value={selectedElement?.styles?.borderWidth || ""}
+                value={selectedElement?.styles?.borderWidth || "0px"}
                 onChange={(e) =>
                   handleNumberInput("borderWidth", e.target.value)
                 }
@@ -467,7 +470,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 <Input
                   id="borderColorText"
                   className="flex-1"
-                  value={selectedElement?.styles?.borderColor || ""}
+                  value={selectedElement?.styles?.borderColor || "#000000"}
                   onChange={(e) =>
                     handleSelectChange("borderColor", e.target.value)
                   }
@@ -483,7 +486,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="borderRadius"
                 className="flex-1"
-                value={selectedElement?.styles?.borderRadius || ""}
+                value={selectedElement?.styles?.borderRadius || "0px"}
                 onChange={(e) =>
                   handleNumberInput("borderRadius", e.target.value)
                 }
@@ -527,7 +530,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="boxShadow"
                 className="flex-1"
-                value={selectedElement?.styles?.boxShadow || ""}
+                value={selectedElement?.styles?.boxShadow || "none"}
                 onChange={(e) =>
                   handleSelectChange("boxShadow", e.target.value)
                 }
@@ -566,7 +569,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
                 id="zIndex"
                 type="number"
                 className="flex-1"
-                value={selectedElement?.styles?.zIndex || ""}
+                value={selectedElement?.styles?.zIndex || 0}
                 onChange={(e) => handleNumberInput("zIndex", e.target.value)}
                 placeholder="e.g., 1"
               />
@@ -579,7 +582,7 @@ const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
               <Input
                 id="transform"
                 className="flex-1"
-                value={selectedElement?.styles?.transform || ""}
+                value={selectedElement?.styles?.transform || "none"}
                 onChange={(e) =>
                   handleSelectChange("transform", e.target.value)
                 }

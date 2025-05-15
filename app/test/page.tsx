@@ -1,59 +1,43 @@
-"use client";
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import React from 'react';
 
-const carouselSettings = {
-  dots: true,
-  infinite: true,
-  arrows: true,
-  speed: 500,
-  autoplay: false,
-  autoplaySpeed: 3000,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  pauseOnHover: true,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 2,
-        slidesToScroll: 1,
-      },
-    },
-    {
-      breakpoint: 768,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-      },
-    },
-  ],
-};
-
-const CarouselComponent = () => {
+function NavBar() {
   return (
-    <div className='w-screen h-screen'>
-      <div className="carousel-container w-full h-[300px] px-10 bg-[#77767b]">
-        <Slider {...carouselSettings}>
-          <div className="h-[300px] flex justify-center items-center">
-            <img
-              src="https://tkd8ihnk8y.ufs.sh/f/SZ9GMeiaP9HCsVvJMP3n5oua8HZp7xcC12WYGi4vtArlfkbO"
-              alt="Image 1"
-              className="h-[300px] object-cover mx-auto"
-            />
-          </div>
-          <div className="h-[300px] flex justify-center items-center">
-            <img
-              src="https://tkd8ihnk8y.ufs.sh/f/SZ9GMeiaP9HCBDWIViKtNfzEYKZQD5ijMhTn109kb63USpCR"
-              alt="Image 2"
-              className="h-[300px] object-cover mx-auto"
-            />
-          </div>
-        </Slider>
-      </div>
+    <div className="min-h-[50px] w-full bg-white flex flex-col md:flex-row items-center justify-center md:justify-start p-[15px] md:px-[10px] gap-[15px]">
+      <img
+        src=""
+        alt="Logo"
+        className="w-32 text-sm md:text-base md:text-left text-center text-gray-800 hover:scale-105 transition-transform"
+        style={{
+          color: 'black',
+          transition: 'background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease',
+        }}
+      />
+      <a
+        href="/"
+        className="m-0 text-sm md:text-base text-gray-800 flex items-center hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform"
+        style={{
+          color: 'black',
+          display: 'flex',
+          alignItems: 'center',
+          transition: 'background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease',
+        }}
+      >
+        Home
+      </a>
+      <a
+        href="/"
+        className="m-0 text-sm md:text-base text-gray-800 flex items-center hover:text-white hover:bg-blue-500 hover:shadow-md hover:scale-105 transition-transform"
+        style={{
+          color: 'black',
+          display: 'flex',
+          alignItems: 'center',
+          transition: 'background-color 0.4s ease, color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease',
+        }}
+      >
+        About
+      </a>
     </div>
   );
-};
+}
 
-export default CarouselComponent;
+export default NavBar;

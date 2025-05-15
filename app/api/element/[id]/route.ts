@@ -6,16 +6,40 @@ import {
   ButtonElement,
   CarouselElement,
   FormElement,
-  FrameElement,
+  InputElement,
   SelectElement,
 } from "@/lib/interface";
+import crypto from "crypto";
+
+export async function getElementSettings(
+  element: EditorElement
+): Promise<string | undefined> {
+  let elementSettings: string | undefined = undefined;
+  switch (element.type) {
+    case "Select":
+      elementSettings = JSON.stringify((element as SelectElement).options);
+      break;
+    case "Carousel":
+      elementSettings = JSON.stringify(
+        (element as CarouselElement).carouselSettings
+      );
+      break;
+    case "Form":
+      elementSettings = JSON.stringify((element as FormElement).formSettings);
+      break;
+    case "Input":
+      elementSettings = JSON.stringify((element as InputElement).inputSettings);
+      break;
+  }
+  return elementSettings;
+}
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = await auth();
-  if (!user) {
+  const { userId } = await auth();
+  if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
@@ -41,20 +65,7 @@ export async function PUT(
       });
     }
 
-    let elementSettings: string | undefined = undefined;
-    switch (element.type) {
-      case "Select":
-        elementSettings = JSON.stringify((element as SelectElement).options);
-        break;
-      case "Carousel":
-        elementSettings = JSON.stringify(
-          (element as CarouselElement).carouselSettings
-        );
-        break;
-      case "Form":
-        elementSettings = JSON.stringify((element as FormElement).formSettings);
-        break;
-    }
+    const elementSettings = await getElementSettings(element);
 
     const settings = await prisma.settings.findFirst({
       where: {
@@ -116,12 +127,12 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = await auth();
-  if (!user) {
+  const { userId } = await auth();
+  if (!userId) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  try {~
+  try {
     const { id } = await params;
 
     if (!id) {
@@ -131,22 +142,50 @@ export async function DELETE(
           "Content-Type": "application/json",
         },
       });
+    } // First, fetch the element to get its parentId
+    const { id: elementId } = await request.json();
+    if (!elementId) {
+      return new NextResponse("Element ID is required", {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+    const elementToDelete = await prisma.elements.findUnique({
+      where: { Id: elementId, ProjectId: id },
+      select: { ParentId: true, Order: true },
+    });
+
+    if (!elementToDelete) {
+      return new NextResponse("Element not found", { status: 404 });
     }
 
+    // Get all siblings with the same parentId and order > this element's order
+    const siblingsToUpdate = await prisma.elements.findMany({
+      where: {
+        ParentId: elementToDelete.ParentId,
+        ProjectId: id,
+        Order: { gt: elementToDelete.Order },
+      },
+      select: { Id: true, Order: true },
+    });
+
     const deletedElement = await prisma.$transaction([
+      // Delete the element itself
       prisma.elements.delete({
         where: {
-          Id: id,
+          Id: elementId,
+          ProjectId: id,
         },
       }),
-      prisma.elements.updateMany({
-        where: {
-          ParentId: id,
-        },
-        data: {
-          ParentId: null,
-        },
-      }),
+      // Update the order of sibling elements
+      ...siblingsToUpdate.map((sibling) =>
+        prisma.elements.update({
+          where: { Id: sibling.Id },
+          data: { Order: sibling.Order - 1 },
+        })
+      ),
     ]);
 
     return NextResponse.json(deletedElement, { status: 200 });
@@ -154,6 +193,84 @@ export async function DELETE(
     console.error("Error deleting element:", error);
     return new NextResponse(
       `Error deleting element: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  try {
+    const element: EditorElement = await request.json();
+    const { id } = await params;
+
+    if (!element) {
+      return new NextResponse("No elements found", {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    if (!id) {
+      return new NextResponse("Element ID is required", {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+    const elementSettings = await getElementSettings(element);
+
+    const createdElement = await prisma.elements.create({
+      data: {
+        Id: element.id ?? crypto.randomUUID(),
+        IsSelected: false,
+        Type: element.type,
+        Content: element.content,
+        Styles: JSON.stringify(element.styles),
+        X: element.x ?? 0,
+        Y: element.y ?? 0,
+        Src: element.src,
+        Href: element.href,
+        ParentId: element.parentId,
+        Name: element.name,
+        TailwindStyles: element.tailwindStyles,
+        ProjectId: id,
+      },
+    });
+    if (elementSettings) {
+      await prisma.settings.create({
+        data: {
+          Id: crypto.randomUUID(),
+          ElementId: createdElement.Id,
+          Settings: elementSettings,
+          Name: `${element.type} Settings`,
+          SettingType: element.type.toLowerCase(),
+        },
+      });
+    }
+
+    return NextResponse.json(createdElement, { status: 200 });
+  } catch (error) {
+    console.error("Error creating element:", error);
+    return new NextResponse(
+      `Error creating element: ${
         error instanceof Error ? error.message : "Unknown error"
       }`,
       {
