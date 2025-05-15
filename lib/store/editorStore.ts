@@ -344,8 +344,17 @@ export const useEditorStore = create<EditorState>()(
         set({ isLoading: true, error: null });
 
         try {
-          // Perform API call
-          await BatchCreate(elementsToCreate);
+          const response = await fetch(`/api/element/${projectId}`, {
+            method: "POST",
+            body: JSON.stringify(preparedElement),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to create element");
+          }
+
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);

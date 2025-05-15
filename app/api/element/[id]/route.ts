@@ -6,7 +6,9 @@ import {
   ButtonElement,
   CarouselElement,
   FormElement,
+  FrameElement,
   InputElement,
+  ListElement,
   SelectElement,
 } from "@/lib/interface";
 import crypto from "crypto";
@@ -215,56 +217,100 @@ export async function POST(
   }
 
   try {
-    const element: EditorElement = await request.json();
+    const element = await request.json();
     const { id } = await params;
 
     if (!element) {
-      return new NextResponse("No elements found", {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return new NextResponse("No elements found", { status: 400 });
     }
 
     if (!id) {
-      return new NextResponse("Element ID is required", {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return new NextResponse("Project ID is required", { status: 400 });
     }
-    const elementSettings = await getElementSettings(element);
 
-    const createdElement = await prisma.elements.create({
-      data: {
-        Id: element.id ?? crypto.randomUUID(),
-        IsSelected: false,
-        Type: element.type,
-        Content: element.content,
-        Styles: JSON.stringify(element.styles),
-        X: element.x ?? 0,
-        Y: element.y ?? 0,
-        Src: element.src,
-        Href: element.href,
-        ParentId: element.parentId,
-        Name: element.name,
-        TailwindStyles: element.tailwindStyles,
-        ProjectId: id,
-      },
-    });
-    if (elementSettings) {
-      await prisma.settings.create({
+    const createElementWithChildren = async (
+      element: EditorElement,
+      parentId?: string,
+      order?: number
+    ) => {
+      const elementId = element.id ?? crypto.randomUUID();
+
+      // Create the main element
+      const createdElement = await prisma.elements.create({
         data: {
-          Id: crypto.randomUUID(),
-          ElementId: createdElement.Id,
-          Settings: elementSettings,
-          Name: `${element.type} Settings`,
-          SettingType: element.type.toLowerCase(),
+          Id: elementId,
+          IsSelected: false,
+          Type: element.type,
+          Content: element.content,
+          Styles: JSON.stringify(element.styles),
+          X: element.x ?? 0,
+          Y: element.y ?? 0,
+          Src: element.src,
+          Href: element.href,
+          ParentId: parentId,
+          Name: element.name,
+          TailwindStyles: element.tailwindStyles,
+          ProjectId: id,
+          Order: order ?? 0,
+          ButtonType: (element as ButtonElement).buttonType,
+          ...(element.type === "carousel" && {
+            CarouselSettings: JSON.stringify(
+              (element as CarouselElement).carouselSettings
+            ),
+          }),
+          ...(element.type === "input" && {
+            InputSettings: JSON.stringify(
+              (element as InputElement).inputSettings
+            ),
+          }),
+          ...(element.type === "select" && {
+            SelectSettings: JSON.stringify(
+              (element as SelectElement).selectSettings
+            ),
+            Options: JSON.stringify((element as SelectElement).options),
+          }),
         },
       });
-    }
+
+      // Handle element-specific settings
+      const elementSettings = await getElementSettings(element);
+      if (elementSettings) {
+        await prisma.settings.create({
+          data: {
+            Id: crypto.randomUUID(),
+            ElementId: elementId,
+            Settings: elementSettings,
+            Name: `${element.type} Settings`,
+            SettingType: element.type.toLowerCase(),
+          },
+        });
+      }
+
+      // Handle nested elements recursively
+      if ("elements" in element) {
+        const nestedElements = (
+          element as FrameElement | CarouselElement | ListElement
+        ).elements;
+        if (nestedElements && nestedElements.length > 0) {
+          await Promise.all(
+            nestedElements.map((child, index) =>
+              createElementWithChildren(child, elementId, index)
+            )
+          );
+        }
+      }
+      // Handle button's nested element
+      if (element.type === "button" && (element as ButtonElement).element) {
+        await createElementWithChildren(
+          (element as ButtonElement).element!,
+          elementId
+        );
+      }
+
+      return createdElement;
+    };
+
+    const createdElement = await createElementWithChildren(element);
 
     return NextResponse.json(createdElement, { status: 200 });
   } catch (error) {
@@ -273,12 +319,7 @@ export async function POST(
       `Error creating element: ${
         error instanceof Error ? error.message : "Unknown error"
       }`,
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      { status: 500 }
     );
   }
 }
