@@ -9,7 +9,7 @@ import {
 } from "../interface";
 import { EditorElement } from "../type";
 import { v4 as uuidv4 } from "uuid";
-import { BatchCreate, Delete, Update } from "@/app/actions/element/action";
+import { BatchCreate } from "@/app/actions/element/action";
 
 type ContainerElement =
   | FrameElement
@@ -344,8 +344,17 @@ export const useEditorStore = create<EditorState>()(
         set({ isLoading: true, error: null });
 
         try {
-          // Perform API call
-          await BatchCreate(elementsToCreate);
+          const response = await fetch(`/api/element/${projectId}`, {
+            method: "POST",
+            body: JSON.stringify(preparedElement),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to create element");
+          }
+
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to add element:", error);
@@ -377,7 +386,7 @@ export const useEditorStore = create<EditorState>()(
           // Perform API call
           console.log("Project ID:", projectId);
           const updatedElement = { ...currentElement, ...completeUpdates };
-          
+
           // Update(updatedElement)
           await fetch(`/api/element/${projectId}`, {
             method: "PUT",
@@ -414,7 +423,15 @@ export const useEditorStore = create<EditorState>()(
 
         try {
           // Perform API call
-          await Delete(id);
+          await fetch(`/api/element/${elementToDelete.projectId}`, {
+            method: "DELETE",
+            body: JSON.stringify({
+              id: elementToDelete.id,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
           set({ isLoading: false });
         } catch (error) {
           console.error("Failed to delete element:", error);

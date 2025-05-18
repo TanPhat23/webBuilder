@@ -3,6 +3,7 @@ import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { EditorElement } from "@/lib/type";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
@@ -77,9 +78,9 @@ function buildPrompt(options: {
 }
 
 export async function POST(req: Request) {
-  const user = await auth();
-  if (!user) {
-    return new Response("Unauthorized", { status: 401 });
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse("Unauthorized", { status: 401 });
   }
 
   const body = await req.json();
