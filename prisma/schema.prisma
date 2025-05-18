@@ -13,8 +13,8 @@ model Elements {
   Content                                     String?
   IsSelected                                  Boolean
   Styles                                      String
-  X                                           Int
-  Y                                           Int
+  X                                           Float
+  Y                                           Float
   Src                                         String?
   Href                                        String?
   ParentId                                    String?
@@ -27,7 +27,7 @@ model Elements {
   TailwindStyles                              String?
   Elements_Elements_ElementIdToElements       Elements?  @relation("Elements_ElementIdToElements", fields: [ElementId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ElementId")
   other_Elements_Elements_ElementIdToElements Elements[] @relation("Elements_ElementIdToElements")
-  Elements                                    Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
+  Elements                                    Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
   other_Elements                              Elements[] @relation("ElementsToElements")
   Projects                                    Projects   @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Projects_ProjectId")
   Settings                                    Settings[]
@@ -54,9 +54,9 @@ model Projects {
 model Users {
   Id        String     @id(map: "PK_Users")
   Email     String
-  FirstName String
-  LastName  String
-  ImageUrl  String
+  FirstName String?
+  LastName  String?
+  ImageUrl  String?
   CreatedAt DateTime   @db.Timestamptz(6)
   UpdatedAt DateTime   @db.Timestamptz(6)
   Images    Images[]

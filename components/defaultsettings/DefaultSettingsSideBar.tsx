@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
 import { ChevronDown } from "lucide-react";
 import React from "react";
 import CanvasConfiguration from "../editor/sidebar/configurations/CanvasConfiguration"; 

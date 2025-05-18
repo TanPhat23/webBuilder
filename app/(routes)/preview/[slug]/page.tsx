@@ -6,9 +6,10 @@ import {
   InputElement,
   ListElement,
   SelectElement,
+  FormElement,
 } from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/actions/element/action";
+import { GetAllPublic } from "@/app/actions/element/action";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 
@@ -164,6 +165,23 @@ export default async function PreviewPage({
     );
   };
 
+  const renderFormElement = (element: FormElement) => {
+    return (
+      <form
+        key={element.id}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+        method={element.formSettings?.method}
+        autoComplete={element.formSettings?.autoComplete}
+        noValidate={element.formSettings?.noValidate}
+      >
+        {element.elements.map((childElement) => renderElement(childElement))}
+      </form>
+    );
+  };
+
   const renderElement = (element: EditorElement) => {
     switch (element.type as ElementTypes) {
       case "Text":
@@ -197,8 +215,6 @@ export default async function PreviewPage({
             alt={element.content || "Image"}
             style={{
               ...element.styles,
-              maxWidth: "100%",
-              height: "auto",
             }}
             className={cn(element.tailwindStyles, "object-cover ")}
             loading="lazy"
@@ -216,6 +232,8 @@ export default async function PreviewPage({
         return renderInputElement(element as InputElement);
       case "Select":
         return renderSelectElement(element as SelectElement);
+      case "Form":
+        return renderFormElement(element as FormElement);
       default:
         return null;
     }

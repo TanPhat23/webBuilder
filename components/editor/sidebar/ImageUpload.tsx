@@ -7,10 +7,17 @@ import Image from "next/image";
 import { UploadedFileData } from "uploadthing/types";
 import { deleteImage } from "@/app/api/uploadthing/route";
 import Cropper from "react-easy-crop";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { Scissors, X } from "lucide-react";
+import { CreateImages, DeleteImage } from "@/app/actions/image/action";
 
 // Types from react-easy-crop
 interface Point {
@@ -39,7 +46,7 @@ const createImage = (url: string): Promise<HTMLImageElement> =>
 // to avoid "Tainted canvas" errors with cross-origin images
 async function getCroppedImgAsBlob(
   imageSrc: string,
-  pixelCrop: Area,
+  pixelCrop: Area
 ): Promise<Blob> {
   try {
     const image = await createImage(imageSrc);
@@ -78,7 +85,7 @@ async function getCroppedImgAsBlob(
           resolve(blob);
         },
         "image/jpeg",
-        0.95  // Quality
+        0.95 // Quality
       );
     });
   } catch (error) {
@@ -90,16 +97,18 @@ async function getCroppedImgAsBlob(
 const ImageUpload: React.FC = () => {
   const { uploadImages, addImage, removeImage } = useImageStore();
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
-  
+
   // Crop state
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
-  const [originalImageIndex, setOriginalImageIndex] = useState<number | null>(null);
+  const [originalImageIndex, setOriginalImageIndex] = useState<number | null>(
+    null
+  );
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [isCropping, setIsCropping] = useState(false);
-  
+
   const handleCropComplete = useCallback(
     (_croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
@@ -109,31 +118,34 @@ const ImageUpload: React.FC = () => {
 
   const handleCropImage = useCallback(async () => {
     if (!imageToCrop || !croppedAreaPixels) return;
-    
+
     try {
       setIsCropping(true);
       // Get the cropped image as a blob
-      const croppedImageBlob = await getCroppedImgAsBlob(imageToCrop, croppedAreaPixels);
-      
+      const croppedImageBlob = await getCroppedImgAsBlob(
+        imageToCrop,
+        croppedAreaPixels
+      );
+
       // Convert blob to base64
       const croppedImageBase64 = await blobToBase64(croppedImageBlob);
-      
+
       // If we're cropping an existing image
       if (originalImageIndex !== null && originalImageIndex >= 0) {
         // Remove the old image
         const oldImage = uploadImages[originalImageIndex];
         removeImage(oldImage.ufsUrl);
-        
+
         // Create a new object that mimics the UploadedFileData structure
         const croppedImageData: UploadedFileData = {
           ...oldImage,
           ufsUrl: croppedImageBase64,
         };
-        
+
         // Add the cropped image
         addImage(croppedImageData);
       }
-      
+
       // Close the dialog
       setCropDialogOpen(false);
       setImageToCrop(null);
@@ -145,7 +157,14 @@ const ImageUpload: React.FC = () => {
     } finally {
       setIsCropping(false);
     }
-  }, [imageToCrop, croppedAreaPixels, originalImageIndex, uploadImages, removeImage, addImage]);
+  }, [
+    imageToCrop,
+    croppedAreaPixels,
+    originalImageIndex,
+    uploadImages,
+    removeImage,
+    addImage,
+  ]);
 
   const handleImageDragStart = (
     e: React.DragEvent<HTMLImageElement>,
@@ -157,7 +176,7 @@ const ImageUpload: React.FC = () => {
   const handleImageError = (index: number) => {
     setImageErrors((prev) => ({ ...prev, [index]: true }));
   };
-  
+
   const openCropDialog = (imageUrl: string, index: number) => {
     setImageToCrop(imageUrl);
     setOriginalImageIndex(index);
@@ -168,10 +187,19 @@ const ImageUpload: React.FC = () => {
     <div className="flex flex-col">
       <UploadDropzone
         endpoint="imageUploader"
-        onClientUploadComplete={(res) => {
-          res.forEach((file) => {
-            addImage(file as UploadedFileData);
-          });
+        onClientUploadComplete={async (res) => {
+          try {
+            res.forEach((file) => {
+              addImage(file as UploadedFileData);
+            });
+            await CreateImages(res);
+          } catch (error) {
+            res.forEach((file) => {
+              deleteImage(file);
+              removeImage(file.ufsUrl);
+            });
+            console.error("Error creating images:", error);
+          }
         }}
         onUploadError={(error: Error) => {
           console.error("Upload error:", error);
@@ -200,6 +228,7 @@ const ImageUpload: React.FC = () => {
                   try {
                     removeImage(image.ufsUrl);
                     deleteImage(image);
+                    DeleteImage(image.ufsUrl);
                     setImageErrors((prev) => ({ ...prev, [index]: false }));
                   } catch (error) {
                     console.error("Error removing image:", error);
@@ -232,13 +261,13 @@ const ImageUpload: React.FC = () => {
           </div>
         ))}
       </div>
-      
+
       <Dialog open={cropDialogOpen} onOpenChange={setCropDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Crop Image</DialogTitle>
           </DialogHeader>
-          
+
           <div className="relative h-[300px] w-full mt-4">
             {imageToCrop && (
               <Cropper
@@ -252,7 +281,7 @@ const ImageUpload: React.FC = () => {
               />
             )}
           </div>
-          
+
           <div className="mt-4">
             <p className="text-sm mb-2">Zoom</p>
             <Slider
@@ -264,9 +293,13 @@ const ImageUpload: React.FC = () => {
               className="w-full"
             />
           </div>
-          
+
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setCropDialogOpen(false)} disabled={isCropping}>
+            <Button
+              variant="outline"
+              onClick={() => setCropDialogOpen(false)}
+              disabled={isCropping}
+            >
               Cancel
             </Button>
             <Button onClick={handleCropImage} disabled={isCropping}>
