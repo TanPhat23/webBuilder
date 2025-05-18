@@ -10,6 +10,7 @@ import { barChartComponent, pieChartComponent, lineChartComponent } from "./char
 import { simpleDataTableComponent, complexDataTableComponent } from "./data/dataTableComponents";
 import { clockWidgetComponent, digitalClockWidgetComponent } from "./widgets/widgetComponents";
 import { formComponent1, formComponent2 } from "./form/formComponents";
+import { onboardingComponent } from "./onboarding/onboardingComponents";
 import { youtubeIframeComponent } from "./iFrameYoutube/iFrameComponent";
 
 export interface CustomComponent {
@@ -57,5 +58,6 @@ export const customComponents: CustomComponent[] = [
   digitalClockWidgetComponent,
   formComponent1,
   formComponent2,
+  onboardingComponent,
   youtubeIframeComponent,
 ];

@@ -208,6 +208,11 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     prefix: "Form",
   },
   {
+    id: "onboardingComponents",
+    label: "Onboarding Components",
+    prefix: "Onboarding",
+  },
+  {
     id: "iFrameComponents",
     label: "iFrame Components",
     prefix: "YouTube",
