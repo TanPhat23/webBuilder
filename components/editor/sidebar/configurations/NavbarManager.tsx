@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   Dialog,
@@ -16,7 +16,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronUp, ChevronDown, Plus, Trash2, Settings, ExternalLink, AlertCircle } from "lucide-react";
+import { ChevronUp, ChevronDown, Plus, Trash2, Settings, ExternalLink, AlertCircle, Youtube } from "lucide-react";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
@@ -41,18 +41,35 @@ const NavbarManager = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [debugMessage, setDebugMessage] = useState<string | null>(null);
 
-  useEffect(() => {
+  const extractYoutubeVideoId = (url: string): string | null => {
+    if (!url) return null;
+    
+    const regExp = /^.*(youtube\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const youtubeVideoId = extractYoutubeVideoId(newLinkHref);
+  
+  const editingYoutubeVideoId = editingLink ? extractYoutubeVideoId(editingLink.href) : null;
+
+  const extractedLinks = React.useMemo(() => {
     if (selectedElement && selectedElement.type === "Frame") {
       try {
         const frameElement = selectedElement as FrameElement;
         const extractedLinks = extractNavLinks(frameElement);
-        setNavLinks(extractedLinks);
+        if (navLinks.length === 0 && extractedLinks.length > 0) {
+          setNavLinks(extractedLinks);
+        }
         setDebugMessage(null);
+        return extractedLinks;
       } catch (error) {
         console.error("Error extracting nav links:", error);
         setDebugMessage(`Error extracting links: ${(error as Error).message}`);
       }
     }
+    return [];
   }, [selectedElement]);
 
   const extractNavLinks = (element: FrameElement): NavLinkProps[] => {
@@ -368,6 +385,27 @@ const NavbarManager = () => {
     );
   };
 
+  const YoutubePreview = ({ videoId }: { videoId: string }) => {
+    return (
+      <div className="mt-3 border rounded-md overflow-hidden bg-black">
+        <div className="relative pb-[56.25%]">
+          <iframe
+            className="absolute top-0 left-0 w-full h-full"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+        <div className="bg-gray-100 p-2 flex items-center gap-2">
+          <Youtube className="h-4 w-4 text-red-600" />
+          <span className="text-xs font-medium">YouTube Video Preview</span>
+        </div>
+      </div>
+    );
+  };
+
   if (!selectedElement || selectedElement.type !== "Frame") {
     return (
       <div className="p-4 text-center text-gray-500">
@@ -416,6 +454,8 @@ const NavbarManager = () => {
                   className="h-8 text-xs"
                 />
               </div>
+              
+              {youtubeVideoId && <YoutubePreview videoId={youtubeVideoId} />}
               
               <Button 
                 onClick={handleAddLink} 
@@ -472,6 +512,8 @@ const NavbarManager = () => {
                 </Button>
               </div>
             </div>
+            
+            {editingYoutubeVideoId && <YoutubePreview videoId={editingYoutubeVideoId} />}
           </div>
           
           <DialogFooter>

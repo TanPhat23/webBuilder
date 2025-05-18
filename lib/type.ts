@@ -25,6 +25,14 @@ export type EditorElement =
   | DataTableElement
   | FormElement;
 
+export interface ElementAnimationState {
+  isEntering?: boolean;
+  isExiting?: boolean;
+  isDragging?: boolean;
+}
+
+export type AnimatedEditorElement = EditorElement & ElementAnimationState;
+
 /** this is DEPRECIATED use The
  * @file editorStore.tsx to mange your state
  * @deprecated

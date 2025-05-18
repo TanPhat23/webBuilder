@@ -1,4 +1,4 @@
-import { Link } from "lucide-react";
+import { Link, Youtube } from "lucide-react";
 import React from "react";
 import { ComponentTooltip } from "../../ComponentTooltip";
 
@@ -16,7 +16,10 @@ const LinkHolder = () => {
         onDragStart={(e) => onDragStart(e, "Link")}
         className="flex flex-row justify-between items-center w-full"
       >
-        <div>Link</div>
+        <div className="flex items-center gap-1.5">
+          <span>Link</span>
+          <Youtube className="h-3 w-3 text-red-500" />
+        </div>
         <Link />
       </div>
     </ComponentTooltip>

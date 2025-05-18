@@ -55,6 +55,8 @@
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+  --animate-fade-in: fade-in 0.55s ease-out;
+  --animate-fade-out: fade-out 0.55s ease-in forwards;
 
   @keyframes accordion-down {
     from {
@@ -80,6 +82,22 @@
     }
     20%,
     50% {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
       opacity: 0;
     }
   }
@@ -265,6 +283,22 @@
 @layer utilities {
   .font {
     font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS";
+  }
+  
+  .editor-element-enter {
+    animation: var(--animate-fade-in);
+  }
+  
+  .editor-element-exit {
+    animation: var(--animate-fade-out);
+  }
+  
+  .editor-element-dragging {
+    opacity: 0.8;
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease, box-shadow 0.5s ease, opacity 0.5s ease;
   }
 }
 @layer base {

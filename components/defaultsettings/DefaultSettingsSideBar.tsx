@@ -14,14 +14,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChevronDown, Save, ArrowUpToLine } from "lucide-react";
-import React, { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { appProject } from "@/lib/interface";
-import { useCanvasStore } from "@/lib/store/canvasStore";
-import CanvasConfiguration from "../editor/sidebar/configurations/CanvasConfiguration";
-import { UpdateProject } from "@/app/actions/project/action";
+
+import { ChevronDown } from "lucide-react";
+import React from "react";
+import CanvasConfiguration from "../editor/sidebar/configurations/CanvasConfiguration"; 
 
 function DefaultSettingsSideBar() {
   return (
