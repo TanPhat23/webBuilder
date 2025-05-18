@@ -16,7 +16,9 @@ const LinkHolder = () => {
         onDragStart={(e) => onDragStart(e, "Link")}
         className="flex flex-row justify-between items-center w-full"
       >
-        <div>Link</div>
+        <div className="flex items-center gap-1.5">
+          <span>Link</span>
+        </div>
         <Link />
       </div>
     </ComponentTooltip>

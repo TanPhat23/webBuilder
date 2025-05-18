@@ -60,7 +60,6 @@ export function createElements(
           ...baseElement.styles,
           padding: "8px 16px",
           backgroundColor: "#0070f3",
-          color: "#ffffff",
           borderRadius: "4px",
           border: "none",
           cursor: "pointer",
@@ -135,9 +134,8 @@ export function createElements(
         ...baseElement,
         x: 0,
         styles: {
-          ...baseElement.styles,
-          height: "300px",
           width: "100%",
+          height: "300px",
         },
         carouselSettings: {
           dots: true,

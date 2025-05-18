@@ -13,8 +13,8 @@ model Elements {
   Content                                     String?
   IsSelected                                  Boolean
   Styles                                      String
-  X                                           Int
-  Y                                           Int
+  X                                           Float
+  Y                                           Float
   Src                                         String?
   Href                                        String?
   ParentId                                    String?
@@ -23,16 +23,14 @@ model Elements {
   Name                                        String?
   ButtonType                                  String?
   ElementId                                   String?
-  InputSettings                               String?
   Options                                     String?
-  SelectSettings                              String?
-  CarouselSettings                            String?
   TailwindStyles                              String?
   Elements_Elements_ElementIdToElements       Elements?  @relation("Elements_ElementIdToElements", fields: [ElementId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ElementId")
   other_Elements_Elements_ElementIdToElements Elements[] @relation("Elements_ElementIdToElements")
-  Elements                                    Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
+  Elements                                    Elements?  @relation("ElementsToElements", fields: [ParentId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Elements_ParentId")
   other_Elements                              Elements[] @relation("ElementsToElements")
   Projects                                    Projects   @relation(fields: [ProjectId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Elements_Projects_ProjectId")
+  Settings                                    Settings[]
 
   @@index([ParentId], map: "IX_Elements_ParentId")
   @@index([ProjectId], map: "IX_Elements_ProjectId")
@@ -46,6 +44,7 @@ model Projects {
   OwnerId     String
   published   Boolean    @default(false)
   subdomain   String?
+  Styles      String     @default("")
   Elements    Elements[]
   Users       Users      @relation(fields: [OwnerId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Projects_Users_OwnerId")
 
@@ -55,9 +54,9 @@ model Projects {
 model Users {
   Id        String     @id(map: "PK_Users")
   Email     String
-  FirstName String
-  LastName  String
-  ImageUrl  String
+  FirstName String?
+  LastName  String?
+  ImageUrl  String?
   CreatedAt DateTime   @db.Timestamptz(6)
   UpdatedAt DateTime   @db.Timestamptz(6)
   Images    Images[]
@@ -72,11 +71,22 @@ model EFMigrationsHistory {
 }
 
 model Images {
-  ImageId   String @id(map: "PK_Images")
-  ImageBlob Bytes
-  ImageName String
+  ImageId   String  @id(map: "PK_Images")
+  ImageName String?
   UserId    String
-  Users     Users  @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Images_Users_UserId")
+  ImageLink String  @default("")
+  Users     Users   @relation(fields: [UserId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Images_Users_UserId")
 
   @@index([UserId], map: "IX_Images_UserId")
+}
+
+model Settings {
+  Id          String    @id(map: "PK_Settings")
+  Name        String
+  SettingType String
+  Settings    String
+  ElementId   String?
+  Elements    Elements? @relation(fields: [ElementId], references: [Id], onDelete: Cascade, onUpdate: NoAction, map: "FK_Settings_Elements_ElementId")
+
+  @@index([ElementId], map: "IX_Settings_ElementId")
 }

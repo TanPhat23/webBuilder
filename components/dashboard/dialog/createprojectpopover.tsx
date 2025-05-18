@@ -22,13 +22,33 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Create } from "@/app/data/project/projectDAL";
-import { appProjectTypes } from "@/lib/type";
+import { Create } from "@/app/actions/project/action";
 import { useRouter } from "next/navigation";
+import { appProject } from "@/lib/interface";
 
 const formSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
+  styles: z
+    .object({
+      backgroundColor: z.string().default("#ffffff"),
+      width: z.string().default("100%"),
+      height: z.string().default("100%"),
+      gridEnabled: z.boolean().default(false),
+      gridSize: z.number().default(8),
+      snapToGrid: z.boolean().default(false),
+      overflow: z.string().default("auto"),
+      borderRadius: z.string().default("0px"),
+      border: z.string().default("none"),
+      boxShadow: z.string().default("none"),
+      backgroundImage: z.string().default(""),
+      backgroundSize: z.string().default("cover"),
+      backgroundPosition: z.string().default("center"),
+      backgroundRepeat: z.string().default("no-repeat"),
+    })
+    .default({}),
+  subdomain: z.string().optional(),
+  published: z.boolean().optional(),
 });
 
 const CreatePojectDialog = () => {
@@ -38,11 +58,29 @@ const CreatePojectDialog = () => {
     defaultValues: {
       name: "",
       description: "",
+      styles: {
+        backgroundColor: "#ffffff",
+        width: "100%",
+        height: "100%",
+        gridEnabled: false,
+        gridSize: 8,
+        snapToGrid: false,
+        overflow: "auto",
+        borderRadius: "0px",
+        border: "none",
+        boxShadow: "none",
+        backgroundImage: "",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      },
+      subdomain: "",
+      published: false,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response: appProjectTypes = await Create(values);
+    const response: appProject = await Create(values);
     router.push(`/editor/${response.id}`);
   }
   return (

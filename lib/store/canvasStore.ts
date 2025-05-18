@@ -1,27 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-
-export interface CanvasStyles {
-  backgroundColor?: string;
-  width?: string;
-  height?: string;
-  maxWidth?: string;
-  gridEnabled?: boolean;
-  gridSize?: number;
-  snapToGrid?: boolean;
-  gridColor?: string;
-  overflow?: string;
-  borderRadius?: string;
-  border?: string;
-  boxShadow?: string;
-  backdropFilter?: string;
-  transition?: string;
-  [key: string]: any;
-}
+import { CanvasStyles } from "../interface";
+import { UpdateProject } from "@/app/actions/project/action";
 
 interface CanvasState {
   styles: CanvasStyles;
-  setStyles: (styles: CanvasStyles) => void;
+  canvasFontFamilies: string[];
+  setFontFamilies: (fontFamilies: string[]) => void;
+  setStyles: (id: string, styles: CanvasStyles) => void;
+  loadCanvasStylesFromDB: (styles: CanvasStyles) => void;
 }
 
 const defaultStyles: CanvasStyles = {
@@ -38,8 +25,24 @@ const defaultStyles: CanvasStyles = {
 export const useCanvasStore = create<CanvasState>()(
   persist(
     (set) => ({
+      canvasFontFamilies: [],
       styles: defaultStyles,
-      setStyles: (styles: CanvasStyles) => {
+      setStyles: (id: string, styles: CanvasStyles) => {
+        const prevStyles = useCanvasStore.getState().styles;
+        try {
+          set({ styles });
+          UpdateProject({ id: id, styles: styles });
+        } catch (error) {
+          set({ styles: prevStyles });
+          console.error("Error setting styles:", error);
+        }
+      },
+
+      setFontFamilies: (fontFamilies: string[]) => {
+        set({ canvasFontFamilies: fontFamilies });
+      },
+
+      loadCanvasStylesFromDB: (styles: CanvasStyles) => {
         set({ styles });
       },
     }),

@@ -4,7 +4,7 @@ import BorderRadiusInput from "./inputs/BorderRadiusInput";
 import FrameConfiguration from "./FrameConfiguration";
 import BaseConfiguration from "./BaseConfiguration";
 import CarouselConfiguration from "./CarouselConfiguration";
-import { CarouselElement } from "@/lib/interface";
+import { CarouselElement, FrameElement } from "@/lib/interface";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import InputConfiguration from "./InputConfiguration";
@@ -12,14 +12,11 @@ import ButtonConfiguration from "./ButtonConfiguration";
 import SelectConfiguration from "./SelectConfiguration";
 import FormConfiguration from "./FormConfiguration";
 import CanvasConfiguration from "./CanvasConfiguration";
-import useSWR from "swr";
-import { getFontFamily } from "@/actions";
+import NavbarManager from "./NavbarManager";
+import { EditorElement } from "@/lib/type";
 
 const Configuration = () => {
-  const { data: fontFamilies = [] } = useSWR(
-    `https://www.googleapis.com/webfonts/v1/webfonts?key=${process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY}`,
-    getFontFamily
-  );
+  
   const { selectedElement } = useElementSelectionStore();
   const { updateElementOptimistically } = useEditorStore();
 
@@ -37,7 +34,7 @@ const Configuration = () => {
     setLocalWidth(selectedElement?.styles?.width || "");
     setLocalHeight(selectedElement?.styles?.height || "");
     setLocalFontSize(selectedElement?.styles?.fontSize || localFontSize);
-  }, [selectedElement]);
+  }, [selectedElement, localFontSize]);
 
   const handleWidthChange = (e: React.FormEvent<HTMLInputElement>) => {
     const newWidth = e.currentTarget.value;
@@ -71,6 +68,24 @@ const Configuration = () => {
 
   const renderConfiguration = () => {
     if (!selectedElement) return null;
+    
+    const isNavbar = 
+      selectedElement.type === "Frame" && 
+      (selectedElement.name?.toLowerCase().includes("navbar") || 
+       selectedElement.name?.toLowerCase().includes("nav") ||
+       (selectedElement as FrameElement).elements?.some(
+         (el: EditorElement) => el.type === "Frame" && el.name?.toLowerCase().includes("link")
+       ));
+    
+    if (isNavbar) {
+      return (
+        <>
+          <NavbarManager />
+          <FrameConfiguration selectedElement={selectedElement} />
+        </>
+      );
+    }
+    
     switch (selectedElement?.type) {
       case "Frame":
         return <FrameConfiguration selectedElement={selectedElement} />;
@@ -92,7 +107,6 @@ const Configuration = () => {
         return (
           <BaseConfiguration
             selectedElement={selectedElement}
-            fontFamilies={fontFamilies}
           />
         );
     }

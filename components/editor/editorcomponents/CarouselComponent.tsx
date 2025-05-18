@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useOptimistic, useMemo, startTransition } from "react";
+import React, { useOptimistic, startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
@@ -36,8 +36,8 @@ const CarouselComponent: React.FC<Props> = ({
   );
   React.useEffect(() => {
     setSettings((element as CarouselElement).carouselSettings || {});
-  }, [element.carouselSettings]);
-  
+  }, [element]);
+
   const [optimisticElements] = useOptimistic(
     element.elements,
     (newElements: EditorElement[]) => newElements
@@ -154,8 +154,15 @@ const CarouselComponent: React.FC<Props> = ({
     <div
       id={element.id}
       onDrop={handleDrop}
-      className="h-full carousel-container mx-10"
+      className="h-full carousel-container px-10"
       onDragOver={(e) => e.preventDefault()}
+      style={{
+        backgroundColor: element.styles?.backgroundColor,
+        backgroundImage: element.styles?.backgroundImage,
+        backgroundSize: element.styles?.backgroundSize,
+        backgroundPosition: element.styles?.backgroundPosition,
+        backgroundRepeat: element.styles?.backgroundRepeat,
+      }}
     >
       <Slider key={`slider-${element.id}`} {...settings}>
         {optimisticElements.map((childElement, index) => (

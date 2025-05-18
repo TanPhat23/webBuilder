@@ -1,4 +1,4 @@
-import { Delete, GetAll } from "@/app/data/project/projectDAL";
+import { Delete, GetAllProjects } from "@/app/actions/project/action";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -7,16 +7,16 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { appProjectTypes } from "@/lib/type";
+import { appProject } from "@/lib/interface";
 import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 
 const DeleteProjectDialog = () => {
   const [selectedProject, setSelectedProject] = React.useState<string>("");
-  const { data: projects } = useSWR<appProjectTypes[]>(
+  const { data: projects } = useSWR<appProject[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/projects`,
-    GetAll
+    GetAllProjects
   );
 
   const handleDelete = useCallback(async () => {

@@ -10,6 +10,31 @@ export interface EditorComponentProps {
   projectId: string;
 }
 
+export interface CanvasStyles extends React.CSSProperties {
+  backgroundColor?: string;
+  width?: string;
+  height?: string;
+  maxWidth?: string;
+  gridEnabled?: boolean;
+  gridSize?: number;
+  snapToGrid?: boolean;
+  gridColor?: string;
+  overflow?: string;
+  borderRadius?: string;
+  border?: string;
+  boxShadow?: string;
+  backdropFilter?: string;
+  transition?: string;
+}
+export interface appProject {
+  id?: string;
+  name: string;
+  description?: string;
+  subdomain?: string;
+  published?: boolean;
+  styles: CanvasStyles;
+}
+
 export interface commonProps {
   onDoubleClick: (e: React.MouseEvent<HTMLElement>) => void;
   onContextMenu: (e: React.MouseEvent<HTMLElement>) => void;
@@ -106,5 +131,5 @@ export interface DataTableElement extends Element {
 
 export interface FormElement extends Element {
   elements: EditorElement[];
-  formSettings?: Partial<HTMLFormElement>
+  formSettings?: Partial<HTMLFormElement>;
 }

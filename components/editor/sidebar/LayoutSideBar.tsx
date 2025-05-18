@@ -109,8 +109,8 @@ function LayoutSideBar() {
               onClick={() => {
                 if (params.slug) visitProjectSubdomain(params.slug.toString());
               }}
-              className="w-full bg-purple-400 font-bold"
-              variant="outline"
+              className="w-full font-bold"
+              variant="default"
             >
               View Live Site
             </Button>

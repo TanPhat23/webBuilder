@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: CarouselElement;
@@ -24,7 +25,9 @@ type Props = {
 const CarouselConfiguration: React.FC<Props> = () => {
   const router = useRouter();
   const { selectedElement } = useElementSelectionStore();
-  const settings = (selectedElement as CarouselElement).carouselSettings || {};
+  const settings = React.useMemo(() => {
+    return (selectedElement as CarouselElement).carouselSettings || {};
+  }, [selectedElement]);
   const { updateElementOptimistically } = useEditorStore();
   const [copied, setCopied] = useState(false);
   const [jsonValue, setJsonValue] = useState(JSON.stringify(settings, null, 2));
@@ -63,6 +66,13 @@ const CarouselConfiguration: React.FC<Props> = () => {
   return (
     <div className="flex flex-col">
       <Accordion type="single" collapsible>
+        <AccordionItem value="appearance">
+          <AccordionTrigger>Appearance</AccordionTrigger>
+          <AccordionContent>
+            <AppearanceAccordion selectedElement={selectedElement} />
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="basic">
           <AccordionTrigger>Basic Settings</AccordionTrigger>
           <AccordionContent className="flex flex-col gap-3">
@@ -228,6 +238,7 @@ const CarouselConfiguration: React.FC<Props> = () => {
                       });
                     }
                   } catch (err) {
+                    console.error("Invalid JSON", err);
                     setIsValidJson(false);
                   }
                 }}

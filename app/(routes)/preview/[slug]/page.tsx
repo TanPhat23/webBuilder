@@ -6,18 +6,26 @@ import {
   InputElement,
   ListElement,
   SelectElement,
+  FormElement,
+  appProject,
 } from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/app/data/element/elementDAL";
+import { GetAllPublic } from "@/app/actions/element/action";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {
-    return [];
+    const projects = await fetch("http://localhost:3000/api/projects").then(
+      (res) => res.json()
+    );
+
+    return projects.map((project: appProject) => ({
+      slug: String(project.id),
+    }));
   } catch (error) {
     console.error("Error generating static params:", error);
     return [];
@@ -164,6 +172,23 @@ export default async function PreviewPage({
     );
   };
 
+  const renderFormElement = (element: FormElement) => {
+    return (
+      <form
+        key={element.id}
+        style={{
+          ...element.styles,
+        }}
+        className={element.tailwindStyles}
+        method={element.formSettings?.method}
+        autoComplete={element.formSettings?.autoComplete}
+        noValidate={element.formSettings?.noValidate}
+      >
+        {element.elements.map((childElement) => renderElement(childElement))}
+      </form>
+    );
+  };
+
   const renderElement = (element: EditorElement) => {
     switch (element.type as ElementTypes) {
       case "Text":
@@ -197,8 +222,6 @@ export default async function PreviewPage({
             alt={element.content || "Image"}
             style={{
               ...element.styles,
-              maxWidth: "100%",
-              height: "auto",
             }}
             className={cn(element.tailwindStyles, "object-cover ")}
             loading="lazy"
@@ -216,6 +239,8 @@ export default async function PreviewPage({
         return renderInputElement(element as InputElement);
       case "Select":
         return renderSelectElement(element as SelectElement);
+      case "Form":
+        return renderFormElement(element as FormElement);
       default:
         return null;
     }

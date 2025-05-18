@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
 import Typography from "./accorditionitem/Typography";
-import * as CSS from "csstype";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
@@ -37,7 +37,7 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const [textColor, setTextColor] = useState<string>(
     (selectedElement as ButtonElement).styles?.color || "#374151"
   );
-  const [localFontSize, setLocalFontSize] = useState(
+  const [, setLocalFontSize] = useState(
     selectedElement?.styles?.fontSize || ""
   );
 
@@ -197,21 +197,6 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
     });
   };
 
-  const handleFontChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.currentTarget.value;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-          transition: "font-size 0.2s ease",
-        },
-      });
-    });
-  };
-
   const handleNumberInput = (property: string, value: string | number) => {
     if (!selectedElement) return;
 
@@ -261,39 +246,8 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
       defaultValue={["typography", "basic", "appearance", "border"]}
       className="w-full"
     >
-      <Typography
-        fontFamilies={[
-          "Arial",
-          "Roboto",
-          "Open Sans",
-          "Helvetica",
-          "Times New Roman",
-        ]}
-        localFontSize={localFontSize as CSS.Property.FontSize}
-        selectedElement={selectedElement}
-        handleFontChange={handleFontChange}
-        handleNumberInput={handleNumberInput}
-        handleSelectChange={handleSelectChange}
-        handleSwitchChange={(property, value) => {
-          let styleValue = "";
-          if (property === "textDecoration") {
-            styleValue = value ? "underline" : "none";
-          } else if (property === "fontStyle") {
-            styleValue = value ? "italic" : "normal";
-          } else if (property === "fontWeight") {
-            styleValue = value ? "bold" : "normal";
-          }
-
-          startTransition(() => {
-            updateElementOptimistically(selectedElement.id, {
-              styles: {
-                ...selectedElement.styles,
-                [property]: styleValue,
-              },
-            });
-          });
-        }}
-      />
+      <Typography selectedElement={selectedElement} />
+      <AppearanceAccordion selectedElement={selectedElement} />
       <AccordionItem value="basic">
         <AccordionTrigger className="text-sm font-medium">
           Basic Settings

@@ -1,4 +1,4 @@
-import React, { startTransition, useState, useEffect } from "react";
+import React, { startTransition } from "react";
 import { Input } from "../../../ui/input";
 import { Label } from "../../../ui/label";
 import { Slider } from "../../../ui/slider";
@@ -18,43 +18,15 @@ import {
 } from "../../../ui/accordion";
 import { EditorElement } from "@/lib/type";
 import Typography from "./accorditionitem/Typography";
-import * as CSS from "csstype";
 import { useEditorStore } from "@/lib/store/editorStore";
+import AppearanceAccordion from "./accorditionitem/AppearanceAccordion";
 
 type Props = {
   selectedElement: EditorElement;
-  fontFamilies: string[];
 };
 
-const BaseConfiguration: React.FC<Props> = ({
-  selectedElement,
-  fontFamilies,
-}) => {
-  const [localFontSize, setLocalFontSize] = useState<
-    CSS.Property.FontSize | undefined
-  >((selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined);
+const BaseConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const { updateElementOptimistically } = useEditorStore();
-
-  useEffect(() => {
-    setLocalFontSize(
-      (selectedElement?.styles?.fontSize as CSS.Property.FontSize) || undefined
-    );
-  }, [selectedElement]);
-
-  const handleFontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.target.value as CSS.Property.FontSize;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-          transition: "font-size 0.2s ease",
-        },
-      });
-    });
-  };
 
   const handleNumberInput = React.useCallback(
     (property: string, value: string | number) => {
@@ -100,39 +72,20 @@ const BaseConfiguration: React.FC<Props> = ({
     [selectedElement, updateElementOptimistically]
   );
 
-  const handleSwitchChange = (property: string, value: boolean) => {
-    if (!selectedElement) return;
-
-    let styleValue = "";
-    if (property === "textDecoration") {
-      styleValue = value ? "underline" : "none";
-    } else if (property === "fontStyle") {
-      styleValue = value ? "italic" : "normal";
-    } else if (property === "fontWeight") {
-      styleValue = value ? "bold" : "normal";
-    }
-
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: styleValue,
-        },
+  const handleSelectChange = React.useCallback(
+    (property: string, value: string) => {
+      if (!selectedElement) return;
+      startTransition(() => {
+        updateElementOptimistically(selectedElement.id, {
+          styles: {
+            ...selectedElement.styles,
+            [property]: value,
+          },
+        });
       });
-    });
-  };
-
-  const handleSelectChange = (property: string, value: string) => {
-    if (!selectedElement) return;
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          [property]: value,
-        },
-      });
-    });
-  };
+    },
+    [selectedElement, updateElementOptimistically]
+  );
 
   const handleOpacityChange = (value: number[]) => {
     if (!selectedElement) return;
@@ -149,19 +102,17 @@ const BaseConfiguration: React.FC<Props> = ({
   return (
     <Accordion
       type="multiple"
-      defaultValue={["typography", "spacing", "border", "effects"]}
+      defaultValue={[
+        "typography",
+        "appearance",
+        "spacing",
+        "border",
+        "effects",
+      ]}
       className="w-full"
     >
-      <Typography
-        fontFamilies={fontFamilies}
-        localFontSize={localFontSize}
-        selectedElement={selectedElement}
-        handleFontChange={handleFontChange}
-        handleNumberInput={handleNumberInput}
-        handleSelectChange={handleSelectChange}
-        handleSwitchChange={handleSwitchChange}
-      />
-
+      <Typography selectedElement={selectedElement} />
+      <AppearanceAccordion selectedElement={selectedElement} />
       {/*Margin and Padding settings*/}
       <AccordionItem value="spacing">
         <AccordionTrigger className="text-sm font-medium">
@@ -192,7 +143,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginTop)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -216,7 +167,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginRight)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -242,7 +193,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                       selectedElement?.styles?.marginBottom
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -266,7 +217,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                 ? parseInt(
                                     String(selectedElement?.styles?.marginLeft)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -296,7 +247,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                 ? parseInt(
                                     String(selectedElement?.styles?.paddingTop)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -322,7 +273,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                       selectedElement?.styles?.paddingRight
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -348,7 +299,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                       selectedElement?.styles?.paddingBottom
                                     )
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -372,7 +323,7 @@ const BaseConfiguration: React.FC<Props> = ({
                                 ? parseInt(
                                     String(selectedElement?.styles?.paddingLeft)
                                   )
-                                : ""
+                                : 0
                             }
                             onChange={(e) =>
                               handleNumberInput(
@@ -469,7 +420,7 @@ const BaseConfiguration: React.FC<Props> = ({
               <Input
                 id="borderWidth"
                 className="flex-1"
-                value={selectedElement?.styles?.borderWidth || ""}
+                value={selectedElement?.styles?.borderWidth || "0px"}
                 onChange={(e) =>
                   handleNumberInput("borderWidth", e.target.value)
                 }
@@ -519,7 +470,7 @@ const BaseConfiguration: React.FC<Props> = ({
                 <Input
                   id="borderColorText"
                   className="flex-1"
-                  value={selectedElement?.styles?.borderColor || ""}
+                  value={selectedElement?.styles?.borderColor || "#000000"}
                   onChange={(e) =>
                     handleSelectChange("borderColor", e.target.value)
                   }
@@ -535,7 +486,7 @@ const BaseConfiguration: React.FC<Props> = ({
               <Input
                 id="borderRadius"
                 className="flex-1"
-                value={selectedElement?.styles?.borderRadius || ""}
+                value={selectedElement?.styles?.borderRadius || "0px"}
                 onChange={(e) =>
                   handleNumberInput("borderRadius", e.target.value)
                 }
@@ -579,7 +530,7 @@ const BaseConfiguration: React.FC<Props> = ({
               <Input
                 id="boxShadow"
                 className="flex-1"
-                value={selectedElement?.styles?.boxShadow || ""}
+                value={selectedElement?.styles?.boxShadow || "none"}
                 onChange={(e) =>
                   handleSelectChange("boxShadow", e.target.value)
                 }
@@ -618,7 +569,7 @@ const BaseConfiguration: React.FC<Props> = ({
                 id="zIndex"
                 type="number"
                 className="flex-1"
-                value={selectedElement?.styles?.zIndex || ""}
+                value={selectedElement?.styles?.zIndex || 0}
                 onChange={(e) => handleNumberInput("zIndex", e.target.value)}
                 placeholder="e.g., 1"
               />
@@ -631,7 +582,7 @@ const BaseConfiguration: React.FC<Props> = ({
               <Input
                 id="transform"
                 className="flex-1"
-                value={selectedElement?.styles?.transform || ""}
+                value={selectedElement?.styles?.transform || "none"}
                 onChange={(e) =>
                   handleSelectChange("transform", e.target.value)
                 }

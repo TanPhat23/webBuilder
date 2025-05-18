@@ -1,4 +1,3 @@
-// Popular preset fonts that can be loaded
 export const popularFonts = [
   "Roboto",
   "Open Sans",
@@ -10,13 +9,23 @@ export const popularFonts = [
   "Oswald",
   "Source Sans Pro",
   "Playfair Display",
+  "Nunito",
+  "Merriweather",
+  "Ubuntu",
+  "Rubik",
+  "Work Sans",
+  "Quicksand",
+  "DM Sans",
+  "PT Sans",
+  "Fira Sans",
+  "Mulish",
 ];
 
 export const loadFont = (fontName: string) => {
   const fontUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
     fontName
   )}&display=swap`;
-
+  
   const existingLinks = document.querySelectorAll(`link[href="${fontUrl}"]`);
 
   if (existingLinks.length === 0) {
@@ -27,17 +36,34 @@ export const loadFont = (fontName: string) => {
   }
 };
 
-// Load multiple fonts at once
 export const loadFonts = (fontNames: string[]) => {
   fontNames.forEach((font) => loadFont(font));
 };
 
-// Load all popular fonts at once
 export const loadAllPopularFonts = () => {
   loadFonts(popularFonts);
 };
 
-// Create a style object for a specific font
 export const createFontStyle = (fontName: string) => {
   return { fontFamily: `'${fontName}', sans-serif` };
+};
+
+export const applyFontToWebsite = (fontName: string) => {
+  if (!fontName) return;
+  
+  loadFont(fontName);
+  document.documentElement.style.fontFamily = `'${fontName}', sans-serif`;
+  localStorage.setItem('website-font', fontName);
+};
+
+export const getCurrentWebsiteFont = (): string => {
+  if (typeof window === 'undefined') return 'Roboto';
+  return localStorage.getItem('website-font') || 'Roboto';
+};
+
+export const initializeFontLoading = () => {
+  if (typeof window === 'undefined') return;
+  
+  const savedFont = getCurrentWebsiteFont();
+  applyFontToWebsite(savedFont);
 };

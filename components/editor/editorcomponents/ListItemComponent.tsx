@@ -6,7 +6,6 @@ import { EditorElement } from "@/lib/type";
 import ButtonComponent from "./ButtonComponent";
 import FrameComponents from "./FrameComponents";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
-import { useEditorStore } from "@/lib/store/editorStore";
 
 type ListItemProps = EditorComponentProps & {
   parentHandlers?: {
@@ -58,10 +57,6 @@ const ListItemComponent = (props: ListItemProps) => {
   const renderElement = (element: EditorElement): React.ReactNode => {
     const commonProps = getCommonProps(element);
     const contentProps = getContentProps(element);
-    const {elements, updateElement} = useEditorStore()
-    updateElement(element.id, {
-      
-    })
     switch (element.type) {
       case "Frame":
         return (
