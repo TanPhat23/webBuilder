@@ -11,7 +11,7 @@ import { simpleDataTableComponent, complexDataTableComponent } from "./data/data
 import { clockWidgetComponent, digitalClockWidgetComponent } from "./widgets/widgetComponents";
 import { formComponent1, formComponent2 } from "./form/formComponents";
 import { onboardingComponent } from "./onboarding/onboardingComponents";
-import { youtubeIframeComponent } from "./iFrameYoutube/iFrameComponent";
+// import { youtubeIframeComponent } from "./iFrameYoutube/iFrameComponent"; 
 
 export interface CustomComponent {
   component: Partial<EditorElement>;
@@ -59,5 +59,5 @@ export const customComponents: CustomComponent[] = [
   formComponent1,
   formComponent2,
   onboardingComponent,
-  youtubeIframeComponent,
+  // youtubeIframeComponent, 
 ];

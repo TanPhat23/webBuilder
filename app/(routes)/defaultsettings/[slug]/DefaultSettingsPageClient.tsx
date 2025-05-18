@@ -14,8 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { loadFonts } from "../../../utils/LoadFont";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loadFonts } from "@/app/utils/LoadFont";
 
 type Props = {
   project: appProject;
@@ -23,7 +23,7 @@ type Props = {
 
 export default function DefaultSettingsPageClient({ project }: Props) {
   const router = useRouter();
-  const { loadCanvasStylesFromDB, styles, canvasFontFamilies } = useCanvasStore();
+  const { loadCanvasStylesFromDB, canvasFontFamilies, styles } = useCanvasStore();
   const [activeTab, setActiveTab] = useState("canvas");
 
   useEffect(() => {
@@ -31,10 +31,10 @@ export default function DefaultSettingsPageClient({ project }: Props) {
       loadCanvasStylesFromDB(project.styles);
       toast.success("Project settings loaded successfully", {position: "top-left"});
     }
-    if  (canvasFontFamilies){
-      loadFonts(canvasFontFamilies);
-    }
-  }, [project, loadCanvasStylesFromDB, canvasFontFamilies]);
+    if (canvasFontFamilies) {
+      loadFonts (canvasFontFamilies);
+    } 
+  },[project, loadCanvasStylesFromDB, canvasFontFamilies]);
 
   return (
     <div className="flex flex-col">

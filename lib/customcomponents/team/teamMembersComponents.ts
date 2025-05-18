@@ -1290,7 +1290,6 @@ export const aboutCarouselHorizontal: CustomComponent = createAboutComponent(
   ]
 );
 
-// Default team member components - each with only one card and different layouts
 export const teamMembersComponent1: CustomComponent =
   createTeamMembersComponent("vertical", [
     {

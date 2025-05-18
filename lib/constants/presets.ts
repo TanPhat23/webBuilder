@@ -152,4 +152,4 @@ export const Presets: { name: string; styles: CanvasStyles }[] = [
   },
 ];
 
-export default Presets;
+export default Presets; 

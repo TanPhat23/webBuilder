@@ -212,9 +212,9 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     label: "Onboarding Components",
     prefix: "Onboarding",
   },
-  {
-    id: "iFrameComponents",
-    label: "iFrame Components",
-    prefix: "YouTube",
-  },
+  { 
+    id: "iFrameComponents", 
+    label: "iFrame Components", 
+    prefix: "YouTube", 
+  }, 
 ];

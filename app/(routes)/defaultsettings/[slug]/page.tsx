@@ -1,4 +1,4 @@
-import { GetProjectById } from "@/app/actions/project/action";
+import { GetProjectById } from "../../../actions/project/action";
 import DefaultSettingsPageClient from "./DefaultSettingsPageClient";
 import DefaultSettingsSideBar from "@/components/defaultsettings/DefaultSettingsSideBar";
 
@@ -12,7 +12,7 @@ export default async function Page({
   return (
     <>
       <DefaultSettingsPageClient project={project} />
-      <DefaultSettingsSideBar />
+      <DefaultSettingsSideBar/>
     </>
   );
 }

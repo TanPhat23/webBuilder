@@ -22,7 +22,7 @@ import { loadFont } from "@/app/utils/LoadFont";
 import { useCanvasStore } from "@/lib/store/canvasStore";
 import { useEditorStore } from "@/lib/store/editorStore";
 import useSWR from "swr";
-import { getFontFamily } from "@/app/actions";
+import { getFontFamily } from "@/app/actions"; 
 
 type Props = {
   selectedElement: EditorElement;
