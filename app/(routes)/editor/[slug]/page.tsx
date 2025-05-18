@@ -2,9 +2,18 @@ import { GetAll } from "@/app/actions/element/action";
 import EditorPageClient from "./EditorPageClient";
 import { GetProjectById } from "@/app/actions/project/action";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 10;
 
-export const revalidate = 30;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    return [];
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
+}
 
 export default async function Page({
   params,

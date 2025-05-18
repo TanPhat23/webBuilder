@@ -18,7 +18,6 @@ const LinkHolder = () => {
       >
         <div className="flex items-center gap-1.5">
           <span>Link</span>
-          <Youtube className="h-3 w-3 text-red-500" />
         </div>
         <Link />
       </div>

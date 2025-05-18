@@ -109,7 +109,7 @@ function LayoutSideBar() {
               onClick={() => {
                 if (params.slug) visitProjectSubdomain(params.slug.toString());
               }}
-              className="w-full  font-bold"
+              className="w-full font-bold"
               variant="default"
             >
               View Live Site
