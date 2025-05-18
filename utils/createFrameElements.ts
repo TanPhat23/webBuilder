@@ -7,7 +7,6 @@ import {
 } from "@/lib/interface";
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Create } from "@/actions/element/action";
 
 const commonStyles: CSSProperties = {
   display: "flex",
@@ -230,7 +229,17 @@ const createElements = async (
     });
 
     try {
-      await Create(newElement);
+      await fetch(`/api/element/${newElement.projectId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newElement),
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to create element");
+        }
+      });
     } catch (error) {
       // Rollback on error
       updateElement(parentElement.id, {
