@@ -238,6 +238,7 @@ const CarouselConfiguration: React.FC<Props> = () => {
                       });
                     }
                   } catch (err) {
+                    console.error("Invalid JSON", err);
                     setIsValidJson(false);
                   }
                 }}

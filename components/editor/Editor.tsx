@@ -90,42 +90,48 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     });
   }, [elements]);
 
-  const handleCopy = (element: EditorElement) => {
-    const elementToSerialize = { ...element };
-    window.sessionStorage.setItem(
-      "editorClipboard",
-      JSON.stringify(elementToSerialize)
-    );
+  const handleCopy = React.useCallback(
+    (element: EditorElement) => {
+      const elementToSerialize = { ...element };
+      window.sessionStorage.setItem(
+        "editorClipboard",
+        JSON.stringify(elementToSerialize)
+      );
 
-    const originalBorder = element.styles?.border;
-    updateElement(element.id, {
-      styles: {
-        ...element.styles,
-        border: "2px dashed green",
-      },
-    });
-
-    setTimeout(() => {
+      const originalBorder = element.styles?.border;
       updateElement(element.id, {
         styles: {
           ...element.styles,
-          border: originalBorder,
+          border: "2px dashed green",
         },
       });
-    }, 300);
-  };
 
-  const handleCut = (element: EditorElement) => {
-    const elementToSerialize = { ...element };
-    window.sessionStorage.setItem(
-      "editorClipboard",
-      JSON.stringify(elementToSerialize)
-    );
+      setTimeout(() => {
+        updateElement(element.id, {
+          styles: {
+            ...element.styles,
+            border: originalBorder,
+          },
+        });
+      }, 300);
+    },
+    [updateElement]
+  );
 
-    deleteElementOptimistically(element.id);
-  };
+  const handleCut = React.useCallback(
+    (element: EditorElement) => {
+      const elementToSerialize = { ...element };
+      window.sessionStorage.setItem(
+        "editorClipboard",
+        JSON.stringify(elementToSerialize)
+      );
 
-  const handlePaste = () => {
+      deleteElementOptimistically(element.id);
+    },
+    [deleteElementOptimistically]
+  );
+
+  const handlePaste = React.useCallback(() => {
     try {
       const storedElement = window.sessionStorage.getItem("editorClipboard");
       if (storedElement) {
@@ -142,7 +148,8 @@ const Editor: React.FC<Props> = ({ projectId }) => {
     } catch (error) {
       console.error("Error pasting element:", error);
     }
-  };
+  }, [selectedElement, addElementOptimistically, projectId]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") {

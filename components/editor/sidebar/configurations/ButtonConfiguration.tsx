@@ -37,7 +37,7 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
   const [textColor, setTextColor] = useState<string>(
     (selectedElement as ButtonElement).styles?.color || "#374151"
   );
-  const [localFontSize, setLocalFontSize] = useState(
+  const [, setLocalFontSize] = useState(
     selectedElement?.styles?.fontSize || ""
   );
 
@@ -192,21 +192,6 @@ const ButtonConfiguration: React.FC<Props> = ({ selectedElement }) => {
         styles: {
           ...(selectedElement as ButtonElement).styles,
           color: newColor,
-        },
-      });
-    });
-  };
-
-  const handleFontChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!selectedElement) return;
-    const newFontSize = e.currentTarget.value;
-    setLocalFontSize(newFontSize);
-    startTransition(() => {
-      updateElementOptimistically(selectedElement.id, {
-        styles: {
-          ...selectedElement.styles,
-          fontSize: newFontSize,
-          transition: "font-size 0.2s ease",
         },
       });
     });

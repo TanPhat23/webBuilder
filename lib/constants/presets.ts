@@ -1,4 +1,5 @@
-import { CanvasStyles } from "../store/canvasStore";
+import { CanvasStyles } from "../interface";
+
 
 export const Presets: { name: string; styles: CanvasStyles }[] = [
   {

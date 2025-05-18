@@ -16,7 +16,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronUp, ChevronDown, Plus, Trash2, Settings, ExternalLink, AlertCircle, Youtube } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Plus,
+  Trash2,
+  Settings,
+  ExternalLink,
+  AlertCircle,
+  Youtube,
+} from "lucide-react";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
@@ -39,122 +48,59 @@ const NavbarManager = () => {
   const [newLinkHref, setNewLinkHref] = useState("/");
   const [editingLink, setEditingLink] = useState<NavLinkProps | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [debugMessage, setDebugMessage] = useState<string | null>(null);
+  const [debugMessage] = useState<string | null>(null);
 
   const extractYoutubeVideoId = (url: string): string | null => {
     if (!url) return null;
-    
-    const regExp = /^.*(youtube\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+
+    const regExp =
+      /^.*(youtube\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
-    
-    return (match && match[2].length === 11) ? match[2] : null;
+
+    return match && match[2].length === 11 ? match[2] : null;
   };
 
   const youtubeVideoId = extractYoutubeVideoId(newLinkHref);
-  
-  const editingYoutubeVideoId = editingLink ? extractYoutubeVideoId(editingLink.href) : null;
 
-  const extractedLinks = React.useMemo(() => {
-    if (selectedElement && selectedElement.type === "Frame") {
-      try {
-        const frameElement = selectedElement as FrameElement;
-        const extractedLinks = extractNavLinks(frameElement);
-        if (navLinks.length === 0 && extractedLinks.length > 0) {
-          setNavLinks(extractedLinks);
-        }
-        setDebugMessage(null);
-        return extractedLinks;
-      } catch (error) {
-        console.error("Error extracting nav links:", error);
-        setDebugMessage(`Error extracting links: ${(error as Error).message}`);
-      }
-    }
-    return [];
-  }, [selectedElement]);
-
-  const extractNavLinks = (element: FrameElement): NavLinkProps[] => {
-    if (!element || !element.elements) {
-      return [];
-    }
-    
-    let links: EditorElement[] = [];
-    
-    const directLinks = (element.elements || []).filter(el => el.type === "Link");
-    
-    const linkContainers = (element.elements || []).filter(
-      (el) => {
-        if (el.type !== "Frame") return false;
-        
-        const frameEl = el as FrameElement;
-        return (
-          (frameEl.name && (
-            frameEl.name.toLowerCase().includes('link') || 
-            frameEl.name.toLowerCase().includes('nav') || 
-            frameEl.name.toLowerCase().includes('menu')
-          )) ||
-          (frameEl.elements && frameEl.elements.some((child: EditorElement) => child.type === "Link"))
-        );
-      }
-    ) as FrameElement[];
-    
-    const nestedLinks: EditorElement[] = [];
-    linkContainers.forEach(container => {
-      if (container.elements) {
-        const containerLinks = container.elements.filter(el => el.type === "Link");
-        nestedLinks.push(...containerLinks);
-      }
-    });
-    
-    links = [...directLinks, ...nestedLinks];
-    
-    const uniqueLinks = links.filter((link, index, self) => 
-      index === self.findIndex(l => l.id === link.id)
-    );
-    
-    return uniqueLinks.map((link) => ({
-      id: link.id,
-      content: link.content || "",
-      href: link.href || "/",
-      isSelected: link.isSelected || false,
-      originalElement: { ...link }
-    }));
-  };
+  const editingYoutubeVideoId = editingLink
+    ? extractYoutubeVideoId(editingLink.href)
+    : null;
 
   const handleAddLink = () => {
     if (!newLinkText.trim()) return;
-    
+
     try {
       const newLink = {
         id: uuidv4(),
         content: newLinkText,
         href: newLinkHref || "/",
         isSelected: false,
-        originalElement: null as any
+        originalElement: null as unknown as EditorElement,
       };
 
       const updatedLinks = [...navLinks, newLink];
       setNavLinks(updatedLinks);
       updateNavbarLinks(updatedLinks);
-      
+
       setNewLinkText("");
       setNewLinkHref("/");
     } catch (error) {
       console.error("Error adding link:", error);
       toast.error("Error adding link", {
-        description: (error as Error).message
+        description: (error as Error).message,
       });
     }
   };
 
   const handleRemoveLink = (id: string) => {
     try {
-      const updatedLinks = navLinks.filter(link => link.id !== id);
+      const updatedLinks = navLinks.filter((link) => link.id !== id);
       setNavLinks(updatedLinks);
       updateNavbarLinks(updatedLinks);
     } catch (error) {
       console.error("Error removing link:", error);
       toast.error("Error removing link", {
-        description: (error as Error).message
+        description: (error as Error).message,
       });
     }
   };
@@ -166,91 +112,98 @@ const NavbarManager = () => {
 
   const handleSaveEdit = () => {
     if (!editingLink) return;
-    
+
     try {
-      const updatedLinks = navLinks.map(link => 
+      const updatedLinks = navLinks.map((link) =>
         link.id === editingLink.id ? editingLink : link
       );
-      
+
       setNavLinks(updatedLinks);
       updateNavbarLinks(updatedLinks);
       setIsEditDialogOpen(false);
       setEditingLink(null);
-    } catch (error) {
+    } catch (error : unknown) {
       console.error("Error saving link edit:", error);
       toast.error("Error saving changes", {
-        description: (error as Error).message
+        description: (error as Error).message,
       });
     }
   };
 
-  const handleMoveLink = (index: number, direction: 'up' | 'down') => {
+  const handleMoveLink = (index: number, direction: "up" | "down") => {
     if (
-      (direction === 'up' && index === 0) || 
-      (direction === 'down' && index === navLinks.length - 1)
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === navLinks.length - 1)
     ) {
       return;
     }
 
     try {
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      const newIndex = direction === "up" ? index - 1 : index + 1;
       const updatedLinks = [...navLinks];
-      [updatedLinks[index], updatedLinks[newIndex]] = [updatedLinks[newIndex], updatedLinks[index]];
-      
+      [updatedLinks[index], updatedLinks[newIndex]] = [
+        updatedLinks[newIndex],
+        updatedLinks[index],
+      ];
+
       setNavLinks(updatedLinks);
       updateNavbarLinks(updatedLinks);
     } catch (error) {
       console.error("Error moving link:", error);
       toast.error("Error changing link order", {
-        description: (error as Error).message
+        description: (error as Error).message,
       });
     }
   };
 
   const updateNavbarLinks = (updatedLinks: NavLinkProps[]) => {
     if (!selectedElement || selectedElement.type !== "Frame") return;
-    
+
     const frameElement = selectedElement as FrameElement;
     if (!frameElement.elements) {
       frameElement.elements = [];
     }
-    
+
     const linkContainerIndices = frameElement.elements
       .map((el, index) => {
         if (el.type !== "Frame") return -1;
         const frameEl = el as FrameElement;
-        return frameEl.elements?.some((child: EditorElement) => child.type === "Link") ? index : -1;
+        return frameEl.elements?.some(
+          (child: EditorElement) => child.type === "Link"
+        )
+          ? index
+          : -1;
       })
-      .filter(index => index !== -1);
-    
+      .filter((index) => index !== -1);
+
     const directLinkIndices = frameElement.elements
-      .map((el, index) => el.type === "Link" ? index : -1)
-      .filter(index => index !== -1);
-    
+      .map((el, index) => (el.type === "Link" ? index : -1))
+      .filter((index) => index !== -1);
+
     let templateLink: EditorElement | null = null;
-    
+
     for (const link of updatedLinks) {
       if (link.originalElement) {
         templateLink = link.originalElement;
         break;
       }
     }
-    
+
     if (!templateLink) {
       for (const index of linkContainerIndices) {
         const container = frameElement.elements[index] as FrameElement;
-        const firstLink = container.elements?.find(el => el.type === "Link");
+        const firstLink = container.elements?.find((el) => el.type === "Link");
         if (firstLink) {
           templateLink = firstLink;
           break;
         }
       }
-      
+
       if (!templateLink && directLinkIndices.length > 0) {
         templateLink = frameElement.elements[directLinkIndices[0]];
       }
     }
-    
+
     const defaultStyles = {
       color: "#333",
       fontSize: "16px",
@@ -259,8 +212,8 @@ const NavbarManager = () => {
       display: "inline-block",
       textDecoration: "none",
     };
-    
-    const newLinkElements = updatedLinks.map(link => {
+
+    const newLinkElements = updatedLinks.map((link) => {
       if (link.originalElement) {
         return {
           ...link.originalElement,
@@ -269,7 +222,7 @@ const NavbarManager = () => {
           isSelected: link.isSelected,
         };
       }
-      
+
       return {
         type: "Link" as const,
         content: link.content,
@@ -278,45 +231,53 @@ const NavbarManager = () => {
         x: 0,
         y: 0,
         styles: templateLink?.styles || defaultStyles,
-        tailwindStyles: templateLink?.tailwindStyles || "text-gray-800 hover:text-gray-900 px-4 py-2",
+        tailwindStyles:
+          templateLink?.tailwindStyles ||
+          "text-gray-800 hover:text-gray-900 px-4 py-2",
         href: link.href,
         src: "",
         parentId: "",
         projectId: frameElement.projectId || "",
       };
     });
-    
+
     if (linkContainerIndices.length > 0) {
       const containerIndex = linkContainerIndices[0];
       const container = frameElement.elements[containerIndex] as FrameElement;
-      
-      const nonLinkElements = container.elements?.filter(el => el.type !== "Link") || [];
-      
+
+      const nonLinkElements =
+        container.elements?.filter((el) => el.type !== "Link") || [];
+
       const updatedContainer = {
         ...container,
-        elements: [...nonLinkElements, ...newLinkElements.map(el => ({
-          ...el,
-          parentId: container.id
-        }))],
+        elements: [
+          ...nonLinkElements,
+          ...newLinkElements.map((el) => ({
+            ...el,
+            parentId: container.id,
+          })),
+        ],
       };
-      
+
       const updatedElements = [...frameElement.elements];
       updatedElements[containerIndex] = updatedContainer;
-      
+
       updateElementOptimistically(frameElement.id, {
         elements: updatedElements,
       });
     } else if (directLinkIndices.length > 0) {
-      const nonLinkElements = frameElement.elements.filter(el => el.type !== "Link");
-      
+      const nonLinkElements = frameElement.elements.filter(
+        (el) => el.type !== "Link"
+      );
+
       const updatedElements = [...nonLinkElements, ...newLinkElements];
-      
+
       updateElementOptimistically(frameElement.id, {
         elements: updatedElements,
       });
     } else {
       const updatedElements = [...frameElement.elements, ...newLinkElements];
-      
+
       updateElementOptimistically(frameElement.id, {
         elements: updatedElements,
       });
@@ -335,44 +296,46 @@ const NavbarManager = () => {
     return (
       <div className="space-y-2 mt-2">
         {navLinks.map((link, index) => (
-          <div 
-            key={link.id} 
+          <div
+            key={link.id}
             className="flex items-center justify-between p-2 border rounded-md bg-gray-50 hover:bg-gray-100"
           >
             <div className="flex items-center gap-2 overflow-hidden">
               <span className="font-medium truncate">{link.content}</span>
-              <span className="text-xs text-gray-500 truncate">{link.href}</span>
+              <span className="text-xs text-gray-500 truncate">
+                {link.href}
+              </span>
             </div>
             <div className="flex items-center space-x-1">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleMoveLink(index, 'up')}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleMoveLink(index, "up")}
                 disabled={index === 0}
                 className="h-7 w-7"
               >
                 <ChevronUp className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handleMoveLink(index, 'down')}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleMoveLink(index, "down")}
                 disabled={index === navLinks.length - 1}
                 className="h-7 w-7"
               >
                 <ChevronDown className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => handleEditLink(link)}
                 className="h-7 w-7"
               >
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => handleRemoveLink(link.id)}
                 className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
               >
@@ -416,25 +379,31 @@ const NavbarManager = () => {
 
   return (
     <div className="p-2 space-y-4">
-      
       {debugMessage && (
         <div className="p-2 border border-red-300 bg-red-50 rounded text-xs text-red-800 flex items-start gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <div>{debugMessage}</div>
         </div>
       )}
-      
-      <Accordion type="single" collapsible className="w-full" defaultValue="links">
+
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full"
+        defaultValue="links"
+      >
         <AccordionItem value="links">
           <AccordionTrigger className="text-sm py-2">
             Manage Navigation Links
           </AccordionTrigger>
           <AccordionContent>
             {renderLinksList()}
-            
+
             <div className="mt-4 space-y-3 pt-3 border-t">
               <div className="space-y-1">
-                <Label htmlFor="linkText" className="text-xs">Link Text</Label>
+                <Label htmlFor="linkText" className="text-xs">
+                  Link Text
+                </Label>
                 <Input
                   id="linkText"
                   value={newLinkText}
@@ -443,9 +412,11 @@ const NavbarManager = () => {
                   className="h-8 text-xs"
                 />
               </div>
-              
+
               <div className="space-y-1">
-                <Label htmlFor="linkHref" className="text-xs">Link URL</Label>
+                <Label htmlFor="linkHref" className="text-xs">
+                  Link URL
+                </Label>
                 <Input
                   id="linkHref"
                   value={newLinkHref}
@@ -454,11 +425,11 @@ const NavbarManager = () => {
                   className="h-8 text-xs"
                 />
               </div>
-              
+
               {youtubeVideoId && <YoutubePreview videoId={youtubeVideoId} />}
-              
-              <Button 
-                onClick={handleAddLink} 
+
+              <Button
+                onClick={handleAddLink}
                 disabled={!newLinkText.trim()}
                 className="w-full h-8 text-xs gap-1"
               >
@@ -476,35 +447,47 @@ const NavbarManager = () => {
           <DialogHeader>
             <DialogTitle>Edit Navigation Link</DialogTitle>
           </DialogHeader>
-          
+
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="editLinkText" className="text-sm">Link Text</Label>
+              <Label htmlFor="editLinkText" className="text-sm">
+                Link Text
+              </Label>
               <Input
                 id="editLinkText"
                 value={editingLink?.content || ""}
-                onChange={(e) => setEditingLink(prev => prev ? {...prev, content: e.target.value} : null)}
+                onChange={(e) =>
+                  setEditingLink((prev) =>
+                    prev ? { ...prev, content: e.target.value } : null
+                  )
+                }
                 className="h-9"
               />
             </div>
-            
+
             <div className="grid gap-2">
-              <Label htmlFor="editLinkHref" className="text-sm">Link URL</Label>
+              <Label htmlFor="editLinkHref" className="text-sm">
+                Link URL
+              </Label>
               <div className="flex">
                 <Input
                   id="editLinkHref"
                   value={editingLink?.href || ""}
-                  onChange={(e) => setEditingLink(prev => prev ? {...prev, href: e.target.value} : null)}
+                  onChange={(e) =>
+                    setEditingLink((prev) =>
+                      prev ? { ...prev, href: e.target.value } : null
+                    )
+                  }
                   className="h-9 rounded-r-none"
                 />
-                <Button 
-                  variant="outline" 
-                  size="icon" 
+                <Button
+                  variant="outline"
+                  size="icon"
                   className="h-9 w-9 rounded-l-none"
                   title="Test link"
                   onClick={() => {
                     if (editingLink?.href) {
-                      window.open(editingLink.href, '_blank');
+                      window.open(editingLink.href, "_blank");
                     }
                   }}
                 >
@@ -512,13 +495,15 @@ const NavbarManager = () => {
                 </Button>
               </div>
             </div>
-            
-            {editingYoutubeVideoId && <YoutubePreview videoId={editingYoutubeVideoId} />}
+
+            {editingYoutubeVideoId && (
+              <YoutubePreview videoId={editingYoutubeVideoId} />
+            )}
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
             >
               Cancel

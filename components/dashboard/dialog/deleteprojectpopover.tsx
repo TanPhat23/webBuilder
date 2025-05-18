@@ -1,4 +1,4 @@
-import { Delete, GetAll } from "@/app/actions/project/action";
+import { Delete, GetAllProjects } from "@/app/actions/project/action";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -16,7 +16,7 @@ const DeleteProjectDialog = () => {
   const [selectedProject, setSelectedProject] = React.useState<string>("");
   const { data: projects } = useSWR<appProject[]>(
     `${process.env.NEXT_PUBLIC_API_URL}/projects`,
-    GetAll
+    GetAllProjects
   );
 
   const handleDelete = useCallback(async () => {

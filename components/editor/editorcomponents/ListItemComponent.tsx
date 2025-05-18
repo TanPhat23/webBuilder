@@ -6,7 +6,6 @@ import { EditorElement } from "@/lib/type";
 import ButtonComponent from "./ButtonComponent";
 import FrameComponents from "./FrameComponents";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
-import { useEditorStore } from "@/lib/store/editorStore";
 
 type ListItemProps = EditorComponentProps & {
   parentHandlers?: {

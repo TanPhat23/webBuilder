@@ -1,5 +1,5 @@
 "use client";
-import { GetAll } from "@/app/actions/project/action";
+import { GetAllProjects } from "@/app/actions/project/action";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,
@@ -28,7 +28,7 @@ export default function Page() {
     isLoading,
   } = useSWR<appProject[]>(
     process.env.NEXT_PUBLIC_API_URL + "/projects",
-    GetAll
+    GetAllProjects
   );
 
   if (error) console.log(error);

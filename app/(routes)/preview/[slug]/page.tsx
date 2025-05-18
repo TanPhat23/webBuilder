@@ -7,18 +7,25 @@ import {
   ListElement,
   SelectElement,
   FormElement,
+  appProject,
 } from "@/lib/interface";
 import React from "react";
 import { GetAllPublic } from "@/app/actions/element/action";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {
-    return [];
+    const projects = await fetch("http://localhost:3000/api/projects").then(
+      (res) => res.json()
+    );
+
+    return projects.map((project: appProject) => ({
+      slug: String(project.id),
+    }));
   } catch (error) {
     console.error("Error generating static params:", error);
     return [];

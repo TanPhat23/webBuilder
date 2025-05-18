@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import Presets from "@/lib/constants/presets";
 import { CanvasStyles } from "@/lib/interface";
 import { useCanvasStore } from "@/lib/store/canvasStore";

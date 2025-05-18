@@ -213,7 +213,7 @@ const FormConfiguration: React.FC<Props> = ({ selectedElement }) => {
               </p>
               <p className="text-xs text-muted-foreground">
                 To create a custom submit button, add a Button and set its type
-                to "submit" in the Button Configuration.
+                to &quot;submit&quot; in the Button Configuration.
               </p>
             </div>
           </div>

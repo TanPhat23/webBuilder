@@ -34,14 +34,10 @@ import React, { startTransition, useState } from "react";
 const LayoutSideBarElements = () => {
   const { elements, updateElementOptimistically, updateElement } =
     useEditorStore();
+
   const { setSelectedElement } = useElementSelectionStore();
+
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
-
-  const handleDoubleClick = (element: EditorElement) => {
-    if (!element) return;
-
-    setSelectedElement(element);
-  };
 
   const getElementIcon = (type: string) => {
     switch (type) {
@@ -114,6 +110,7 @@ const LayoutSideBarElements = () => {
         ...element,
         isSelected: !element.isSelected,
       });
+      setSelectedElement(element);
     };
 
     const handleToggle = (open: boolean) => {

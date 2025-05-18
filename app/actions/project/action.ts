@@ -30,7 +30,7 @@ export const Create = async (data: appProject) => {
   }
 };
 
-export const GetAll = async (): Promise<appProject[]> => {
+export const GetAllProjects = async (): Promise<appProject[]> => {
   try {
     const { userId, sessionId } = await auth();
     if (!userId || !sessionId) throw new Error("User not found");

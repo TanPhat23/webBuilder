@@ -1,4 +1,4 @@
-import { Link, Youtube } from "lucide-react";
+import { Link } from "lucide-react";
 import React from "react";
 import { ComponentTooltip } from "../../ComponentTooltip";
 
