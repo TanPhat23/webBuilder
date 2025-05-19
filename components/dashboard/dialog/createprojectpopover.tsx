@@ -22,9 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Create } from "@/app/actions/project/action";
 import { useRouter } from "next/navigation";
 import { appProject } from "@/lib/interface";
+import { Create } from "@/app/actions/projects";
 
 const formSchema = z.object({
   name: z.string().nonempty(),

@@ -10,7 +10,7 @@ import {
   appProject,
 } from "@/lib/interface";
 import React from "react";
-import { GetAllPublic } from "@/app/actions/element/action";
+import { GetAllPublic } from "@/app/actions/elements";
 import { cn } from "@/lib/utils";
 import DynamicCarousel from "@/components/preview/client/DynamicCarousel";
 

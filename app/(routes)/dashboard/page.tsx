@@ -1,5 +1,5 @@
 "use client";
-import { GetAllProjects } from "@/app/actions/project/action";
+import { GetAllProjects } from "@/app/actions/projects";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import {
   Breadcrumb,

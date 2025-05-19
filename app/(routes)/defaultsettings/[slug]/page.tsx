@@ -1,4 +1,4 @@
-import { GetProjectById } from "@/app/actions/project/action";
+import { GetProjectById } from "@/app/actions/projects";
 import DefaultSettingsPageClient from "./DefaultSettingsPageClient";
 import DefaultSettingsSideBar from "@/components/defaultsettings/DefaultSettingsSideBar";
 

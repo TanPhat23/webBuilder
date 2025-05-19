@@ -1,7 +1,7 @@
-import { GetAll } from "@/app/actions/element/action";
+import { GetAll } from "@/app/actions/elements";
 import EditorPageClient from "./EditorPageClient";
-import { GetProjectById } from "@/app/actions/project/action";
 import { appProject } from "@/lib/interface";
+import { GetProjectById } from "@/app/actions/projects";
 
 export const revalidate = 3600;
 

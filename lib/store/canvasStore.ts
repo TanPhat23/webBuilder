@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { CanvasStyles } from "../interface";
-import { UpdateProject } from "@/app/actions/project/action";
+import { UpdateProject } from "@/app/actions/projects";
 
 interface CanvasState {
   styles: CanvasStyles;

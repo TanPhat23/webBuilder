@@ -17,7 +17,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { blobToBase64 } from "@/app/utils/HandleImage";
 import { Scissors, X } from "lucide-react";
-import { CreateImages, DeleteImage } from "@/app/actions/image/action";
+import { CreateImages, DeleteImage } from "@/app/actions/images";
 
 // Types from react-easy-crop
 interface Point {
