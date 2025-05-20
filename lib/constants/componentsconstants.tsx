@@ -206,5 +206,10 @@ export const COMPONENT_CATEGORIES: ComponentCategory[] = [
     id: "formComponents",
     label: "Form Components",
     prefix: "Form",
-  }
+  },
+  {
+    id: "landingPageTemplates",
+    label: "Landing Page Templates",
+    prefix: "LandingPage",
+  },
 ];

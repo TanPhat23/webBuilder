@@ -9,16 +9,19 @@ import {
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { EditorElement } from "@/lib/type";
+import { startTransition } from "react";
 
 export default function ImageDropDown() {
-  const { updateElement } = useEditorStore();
+  const { updateElementOptimistically } = useEditorStore();
   const { selectedElement } = useElementSelectionStore();
 
   const handleImageUrlChange = (src: string) => {
     if (!selectedElement) return;
-    updateElement(selectedElement.id, {
+    startTransition(() => {
+      updateElementOptimistically(selectedElement.id, {
       src,
     });
+    })
   };
 
   return (
