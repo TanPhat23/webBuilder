@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { FrameElement, EditorComponentProps } from "@/lib/interface";
+import { FrameElement, EditorComponentProps, CarouselElement } from "@/lib/interface";
 import ButtonComponent from "./ButtonComponent";
 import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";
@@ -11,6 +11,7 @@ import SelectComponent from "./SelectComponent";
 import ChartComponent from "./ChartComponent";
 import DataTableComponent from "./DataTableComponent";
 import FormComponent from "./FormComponent";
+import CarouselComponent from "./CarouselComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
@@ -161,6 +162,17 @@ const FrameComponents = (props: EditorComponentProps) => {
             onDrop={(e: React.DragEvent<HTMLAnchorElement>) =>
               handleDrop(e, element)
             }
+          />
+        );
+
+      case "Carousel":
+        return (
+          <CarouselComponent
+            key={element.id}
+            element={element as CarouselElement}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
           />
         );
 
