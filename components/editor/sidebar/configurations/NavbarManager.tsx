@@ -294,7 +294,7 @@ const NavbarManager = () => {
     }
 
     return (
-      <div className="space-y-2 mt-2">
+      <div className="flex flex-col gap-2 mt-2">
         {navLinks.map((link, index) => (
           <div
             key={link.id}
@@ -378,7 +378,7 @@ const NavbarManager = () => {
   }
 
   return (
-    <div className="p-2 space-y-4">
+    <div className="space-y-4">
       {debugMessage && (
         <div className="p-2 border border-red-300 bg-red-50 rounded text-xs text-red-800 flex items-start gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -387,20 +387,17 @@ const NavbarManager = () => {
       )}
 
       <Accordion
-        type="single"
-        collapsible
+        type="multiple"
+        defaultValue={["links"]}
         className="w-full"
-        defaultValue="links"
       >
         <AccordionItem value="links">
-          <AccordionTrigger className="text-sm py-2">
+          <AccordionTrigger className="text-sm font-medium">
             Manage Navigation Links
           </AccordionTrigger>
           <AccordionContent>
-            {renderLinksList()}
-
-            <div className="mt-4 space-y-3 pt-3 border-t">
-              <div className="space-y-1">
+            {renderLinksList()}            <div className="mt-4 space-y-3 pt-3 border-t">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="linkText" className="text-xs">
                   Link Text
                 </Label>
@@ -413,7 +410,7 @@ const NavbarManager = () => {
                 />
               </div>
 
-              <div className="space-y-1">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="linkHref" className="text-xs">
                   Link URL
                 </Label>
@@ -426,12 +423,10 @@ const NavbarManager = () => {
                 />
               </div>
 
-              {youtubeVideoId && <YoutubePreview videoId={youtubeVideoId} />}
-
-              <Button
+              {youtubeVideoId && <YoutubePreview videoId={youtubeVideoId} />}              <Button
                 onClick={handleAddLink}
                 disabled={!newLinkText.trim()}
-                className="w-full h-8 text-xs gap-1"
+                className="w-full h-8 text-xs flex items-center gap-1"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add Navigation Link
