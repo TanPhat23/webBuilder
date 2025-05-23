@@ -8,7 +8,6 @@ import {
 import { CSSProperties } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-
 const commonStyles: CSSProperties = {
   display: "flex",
   justifyContent: "center",
@@ -100,6 +99,47 @@ const createElements = async (
           autoComplete: "on",
           noValidate: false,
         },
+        projectId: projectId,
+      };
+      break;
+    }
+    case "Carousel": {
+      newElement = {
+        type: "Carousel",
+        ...baseElement,
+        x: 0,
+        styles: {
+          width: "100%",
+          height: "300px",
+        },
+        carouselSettings: {
+          dots: true,
+          infinite: true,
+          arrows: true,
+          speed: 500,
+          autoplay: false,
+          autoplaySpeed: 3000,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          pauseOnHover: true,
+          responsive: [
+            {
+              breakpoint: 1024,
+              settings: {
+                slidesToShow: 2,
+                slidesToScroll: 1,
+              },
+            },
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+              },
+            },
+          ],
+        },
+        elements: [],
         projectId: projectId,
       };
       break;

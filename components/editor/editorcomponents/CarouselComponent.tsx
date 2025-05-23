@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useOptimistic, startTransition } from "react";
+import React, { startTransition } from "react";
 import Slider, { Settings } from "react-slick";
 import FrameComponents from "./FrameComponents";
 import { motion } from "framer-motion";
@@ -37,12 +37,6 @@ const CarouselComponent: React.FC<Props> = ({
   React.useEffect(() => {
     setSettings((element as CarouselElement).carouselSettings || {});
   }, [element]);
-
-  const [optimisticElements] = useOptimistic(
-    element.elements,
-    (newElements: EditorElement[]) => newElements
-  );
-
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -59,11 +53,11 @@ const CarouselComponent: React.FC<Props> = ({
       imgSrc.ufsUrl
     );
   };
-
   const handleSwap = (fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= optimisticElements.length) return;
+    if (!element.elements || toIndex < 0 || toIndex >= element.elements.length)
+      return;
 
-    const newElements = [...optimisticElements];
+    const newElements = [...element.elements];
     [newElements[fromIndex], newElements[toIndex]] = [
       newElements[toIndex],
       newElements[fromIndex],
@@ -151,55 +145,61 @@ const CarouselComponent: React.FC<Props> = ({
   };
 
   return (
-    <div
+    <motion.div
       id={element.id}
       onDrop={handleDrop}
-      className="h-full carousel-container px-10"
+      className={cn("h-full carousel-container px-10",{
+        "border-2  border-black": element.isSelected,
+
+      })}
       onDragOver={(e) => e.preventDefault()}
+      onDoubleClick={(e) => handleDoubleClick(e, element)}
       style={{
         backgroundColor: element.styles?.backgroundColor,
         backgroundImage: element.styles?.backgroundImage,
         backgroundSize: element.styles?.backgroundSize,
         backgroundPosition: element.styles?.backgroundPosition,
         backgroundRepeat: element.styles?.backgroundRepeat,
+        ...element.styles,
       }}
     >
       <Slider key={`slider-${element.id}`} {...settings}>
-        {optimisticElements.map((childElement, index) => (
-          <div key={childElement.id} className="h-full relative px-2 pb-8">
-            <div
-              className="flex items-center justify-center overflow-hidden"
-              style={{ height: element.styles?.height }}
-            >
-              {renderElement(childElement, index)}
-            </div>
+        {element.elements &&
+          element.elements.map((childElement, index) => (
+            <div key={childElement.id} className="h-full relative px-2 pb-8">
+              <div
+                className="flex items-center justify-center overflow-hidden"
+                style={{ height: element.styles?.height }}
+              >
+                {renderElement(childElement, index)}
+              </div>
 
-            <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleSwap(index, index - 1)}
-                disabled={index === 0}
-                className="gap-1 hover:bg-gray-100"
-              >
-                <ArrowLeftCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Move Left</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleSwap(index, index + 1)}
-                disabled={index === optimisticElements.length - 1}
-                className="gap-1 hover:bg-gray-100"
-              >
-                <span className="hidden sm:inline">Move Right</span>
-                <ArrowRightCircle className="h-4 w-4" />
-              </Button>
+              <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSwap(index, index - 1)}
+                  disabled={index === 0}
+                  className="gap-1 hover:bg-gray-100"
+                >
+                  <ArrowLeftCircle className="h-4 w-4" />
+                  <span className="hidden sm:inline">Move Left</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSwap(index, index + 1)}
+                  disabled={index === element.elements.length - 1}
+                  className="gap-1 hover:bg-gray-100"
+                >
+                  <span className="hidden sm:inline">Move Right</span>
+                  <ArrowRightCircle className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </Slider>
-    </div>
+    </motion.div>
   );
 };
 

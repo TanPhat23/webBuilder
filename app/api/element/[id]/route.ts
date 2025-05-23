@@ -247,7 +247,7 @@ export async function POST(
           Y: element.y ?? 0,
           Src: element.src,
           Href: element.href,
-          ParentId: parentId,
+          ParentId: element.parentId ?? parentId,
           Name: element.name,
           TailwindStyles: element.tailwindStyles,
           ProjectId: id,

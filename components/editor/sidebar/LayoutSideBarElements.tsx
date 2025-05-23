@@ -35,7 +35,7 @@ const LayoutSideBarElements = () => {
   const { elements, updateElementOptimistically, updateElement } =
     useEditorStore();
 
-  const { setSelectedElement } = useElementSelectionStore();
+  const { setSelectedElement, selectedElement } = useElementSelectionStore();
 
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
@@ -101,7 +101,7 @@ const LayoutSideBarElements = () => {
       });
     };
 
-    const handleDoubleClick = (
+    const handleClick = (
       e: React.MouseEvent<HTMLDivElement>,
       element: EditorElement
     ) => {
@@ -111,6 +111,9 @@ const LayoutSideBarElements = () => {
         isSelected: !element.isSelected,
       });
       setSelectedElement(element);
+      if (selectedElement?.id === element.id) {
+        setSelectedElement(undefined);
+      }
     };
 
     const handleToggle = (open: boolean) => {
@@ -140,7 +143,7 @@ const LayoutSideBarElements = () => {
                   "bg-accent rounded-md": element.isSelected,
                 }
               )}
-              onDoubleClick={(e) => handleDoubleClick(e, element)}
+              onClick={(e) => handleClick(e, element)}
             >
               {getElementIcon(element.type)}
               <span

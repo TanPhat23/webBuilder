@@ -6,7 +6,6 @@ import { GetProjectById } from "@/app/actions/projects";
 export const revalidate = 3600;
 
 export const dynamicParams = true;
-
 export async function generateStaticParams() {
   try {
     const projects = await fetch("http://localhost:3000/api/projects").then(

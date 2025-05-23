@@ -329,6 +329,7 @@ export const useEditorStore = create<EditorState>()(
         };
 
         const preparedElement = prepareElements(element, parentId);
+        
 
         // Immediately update UI
         if (parentId) {

@@ -129,6 +129,7 @@ export const GetAll = async (url: string): Promise<EditorElement[]> => {
     });
 
     const data: EditorElement[] = await response.json();
+    
     return data;
   } catch (error: Error | unknown) {
     console.error(

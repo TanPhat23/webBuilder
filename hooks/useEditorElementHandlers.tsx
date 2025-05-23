@@ -13,6 +13,7 @@ import createElements from "@/utils/createFrameElements";
 import DOMPurify from "dompurify";
 import { advancedComponents } from "@/lib/customcomponents/advancedComponents";
 import { PanInfo } from "framer-motion";
+import { customComponents } from "@/lib/customcomponents/styleconstants";
 
 export interface ElementHandlers {
   handleDoubleClick: (
@@ -60,6 +61,7 @@ export interface ElementHandlers {
   setDraggingElement: React.Dispatch<
     React.SetStateAction<EditorElement | null>
   >;
+  dragOverElementId: string | null;
 }
 
 export function useEditorElementHandlers({
@@ -68,22 +70,25 @@ export function useEditorElementHandlers({
   setShowContextMenu,
   setContextMenuPosition,
 }: EditorComponentProps): ElementHandlers {
-  const { setSelectedElement } = useElementSelectionStore();
+  const { setSelectedElement, selectedElement } = useElementSelectionStore();
   const { uploadImages } = useImageStore();
   const {
     updateElement,
     updateElementOptimistically,
     addElementOptimistically,
   } = useEditorStore();
-
   const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
     null
   );
   const [draggingElement, setDraggingElement] = useState<EditorElement | null>(
     null
   );
+  const [dragOverElementId, setDragOverElementId] = useState<string | null>(
+    null
+  );
+  const dragOverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const swapElements = () => {
+  const swapElements = async () => {
     if (!draggingElement || !hoveredElement) return;
 
     const draggingParentId = draggingElement.parentId;
@@ -108,11 +113,17 @@ export function useEditorElementHandlers({
           id: draggingId,
         });
 
-        // Update hovered element to have dragging element's properties
         updateElement(hoveredId, {
           ...draggingProps,
           id: hoveredId,
         });
+      });
+      await fetch("/api/element/swap", {
+        method: "PUT",
+        body: JSON.stringify({
+          element: draggingElement,
+          targetedElement: hoveredElement,
+        }),
       });
     }
 
@@ -141,7 +152,44 @@ export function useEditorElementHandlers({
     }
     console.log("hovering", element.id);
   };
+  const handleMouseLeave = (
+    e: React.MouseEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    if (draggingElement && draggingElement.id !== element.id) {
+      setHoveredElement(null);
+    }
+    console.log("leaving", element.id);
+  };
+  const onDragOver = (
+    e: React.DragEvent<HTMLElement>,
+    element: EditorElement
+  ) => {
+    if (
+      element.type !== "Frame" &&
+      element.type !== "Carousel" &&
+      element.type !== "Form" &&
+      element.type !== "Select"
+    ) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
 
+    // Update dragOverElementId state instead of modifying the element directly
+    setDragOverElementId(element.id);
+
+    // Clear any existing timeout to prevent race conditions
+    if (dragOverTimeoutRef.current) {
+      clearTimeout(dragOverTimeoutRef.current);
+    }
+
+    // Set new timeout to clear the dragover state
+    dragOverTimeoutRef.current = setTimeout(() => {
+      setDragOverElementId(null);
+      dragOverTimeoutRef.current = null;
+    }, 300);
+  };
   const handleDragEnd = (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
     info?: PanInfo
@@ -157,6 +205,12 @@ export function useEditorElementHandlers({
 
     setDraggingElement(null);
     setHoveredElement(null);
+    setDragOverElementId(null);
+
+    if (dragOverTimeoutRef.current) {
+      clearTimeout(dragOverTimeoutRef.current);
+      dragOverTimeoutRef.current = null;
+    }
   };
 
   const handleKeyDown = (
@@ -181,8 +235,10 @@ export function useEditorElementHandlers({
     // if (element.type !== "Image" && element.type !== "Frame") return;
     const elementType = e.dataTransfer.getData("elementType");
     const advancedType = e.dataTransfer.getData("advancedType");
+    const newCustomElement = e.dataTransfer.getData("customElement");
+
     const imgIdx = e.dataTransfer.getData("image");
-    if (!elementType && !advancedType && !imgIdx) return;
+    // if (!elementType && !advancedType && !imgIdx && !newCustomElement) return;
     if (elementType) {
       createElements(
         elementType,
@@ -192,7 +248,7 @@ export function useEditorElementHandlers({
       );
     } else if (imgIdx) {
       const imgSrc = uploadImages[parseInt(imgIdx)];
-      if (imgSrc) {
+      if (imgSrc && element.type !== "Image") {
         createElements(
           imgSrc ? "Image" : elementType,
           element as FrameElement,
@@ -213,6 +269,20 @@ export function useEditorElementHandlers({
           element.id
         );
       });
+    } else if (newCustomElement) {
+      const customComponent = customComponents.find(
+        (component) => component.component.name === newCustomElement
+      );
+      if (customComponent) {
+        customComponent.component.parentId = element.id;
+        startTransition(() => {
+          addElementOptimistically(
+            customComponent.component as EditorElement,
+            projectId,
+            element.id
+          );
+        });
+      }
     }
   };
 
@@ -226,6 +296,9 @@ export function useEditorElementHandlers({
     updateElement(element.id, {
       isSelected: !element.isSelected,
     });
+    if (selectedElement?.id === element.id) {
+      setSelectedElement(undefined);
+    }
   };
 
   const handleInput = (
@@ -312,6 +385,9 @@ export function useEditorElementHandlers({
       "opacity-50": element.id === draggingElement?.id,
       "border-dashed border-blue-500 border-2":
         element.id === hoveredElement?.id && draggingElement !== null,
+      "border-solid border-gray-300": element.id === hoveredElement?.id,
+      "ring-2 ring-offset-1 ring-blue-400 transition-all":
+        element.id === dragOverElementId,
     }),
     dragConstraints: dragConstraintRef,
     drag: !element.isSelected,
@@ -323,15 +399,13 @@ export function useEditorElementHandlers({
     onDragStart: (e: React.DragEvent<HTMLElement>) =>
       handleDragStart(e, element),
     onDragEnd: (e: React.DragEvent<HTMLElement>) => handleDragEnd(e),
-    onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
-      if (draggingElement?.id !== element.id) {
-        setHoveredElement(element);
-      }
-    },
-
+    onMouseEnter: (e: React.MouseEvent<HTMLElement>) =>
+      handleMouseEnter(e, element),
+    onMouseLeave: (e: React.MouseEvent<HTMLElement>) =>
+      handleMouseLeave(e, element),
+    onDragOver: (e: React.DragEvent<HTMLElement>) => onDragOver(e, element),
     style: { ...element.styles },
   });
-
   return {
     handleDoubleClick,
     handleContextMenu,
@@ -348,5 +422,6 @@ export function useEditorElementHandlers({
     setHoveredElement,
     draggingElement,
     setDraggingElement,
+    dragOverElementId,
   };
 }

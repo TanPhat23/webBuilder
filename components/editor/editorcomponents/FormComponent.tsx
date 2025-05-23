@@ -200,6 +200,8 @@ const FormComponent = (props: EditorComponentProps) => {
       onDragOver={(e) => e.preventDefault()}
       onDoubleClick={(e) => handleDoubleClick(e, element)}
       onContextMenu={(e) => handleContextMenu(e, element)}
+      onDragStart={(e, info) => handleDragStart(e, element, info)}
+      onDragEnd={(e, info) => handleDragEnd(e, info)}
       onSubmit={handleSubmit}
       className={cn("", element.tailwindStyles, {
         "border-black border-2 border-solid": element.isSelected,
