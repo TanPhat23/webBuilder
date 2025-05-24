@@ -1,7 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ButtonElement, EditorComponentProps, FormElement } from "@/lib/interface";
+import {
+  ButtonElement,
+  commonProps,
+  EditorComponentProps,
+  FormElement,
+} from "@/lib/interface";
 import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 import { EditorElement } from "@/lib/type";
 import FrameComponents from "./FrameComponents";
@@ -10,8 +15,13 @@ import InputComponent from "./InputComponent";
 import SelectComponent from "./SelectComponent";
 import ListItemComponent from "./ListItemComponent";
 
-const FormComponent = (props: EditorComponentProps) => {
-  const { projectId, element, setShowContextMenu, setContextMenuPosition } = props;
+type Props = EditorComponentProps & {
+  commonProps?: Partial<commonProps>;
+};
+
+const FormComponent = (props: Props) => {
+  const { projectId, element, setShowContextMenu, setContextMenuPosition } =
+    props;
 
   const {
     handleKeyDown,
@@ -26,6 +36,7 @@ const FormComponent = (props: EditorComponentProps) => {
     draggingElement,
   } = useEditorElementHandlers(props);
 
+  const commonProps = props.commonProps;
   const formElement = element as FormElement;
   const formSettings = formElement.formSettings || {};
 
@@ -33,7 +44,7 @@ const FormComponent = (props: EditorComponentProps) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const data = Object.fromEntries(formData.entries());
-    
+
     if (formSettings.action && !element.isSelected) {
       return true;
     } else {
@@ -43,9 +54,6 @@ const FormComponent = (props: EditorComponentProps) => {
   };
 
   const renderElement = (element: EditorElement): React.ReactNode => {
-    const commonProps = getCommonProps(
-      element,
-    );
     const contentProps = getContentProps(element);
 
     switch (element.type) {
@@ -59,7 +67,7 @@ const FormComponent = (props: EditorComponentProps) => {
             projectId={projectId}
           />
         );
-        
+
       case "Form":
         return (
           <FormComponent
@@ -174,7 +182,7 @@ const FormComponent = (props: EditorComponentProps) => {
             />
           );
         }
-        
+
       default:
         return (
           <motion.div
@@ -195,6 +203,7 @@ const FormComponent = (props: EditorComponentProps) => {
   return (
     <motion.form
       id={element.id}
+      {...commonProps}
       style={{ ...element.styles }}
       onDrop={(e) => handleDrop(e, element)}
       onDragOver={(e) => e.preventDefault()}
@@ -235,8 +244,8 @@ const FormComponent = (props: EditorComponentProps) => {
 
 const hasSubmitButton = (formElement: FormElement) => {
   return formElement.elements?.some(
-    el => el.type === 'Button' && 
-    (el as ButtonElement).buttonType === 'submit'
+    (el) =>
+      el.type === "Button" && (el as ButtonElement).buttonType === "submit"
   );
 };
 

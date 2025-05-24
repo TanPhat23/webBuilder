@@ -51,10 +51,10 @@ const FrameComponents = (props: EditorComponentProps) => {
         return (
           <motion.div
             key={element.id}
-            {...commonProps}
             onDrop={(e: React.DragEvent<HTMLDivElement>) =>
               handleDrop(e, element)
             }
+            {...commonProps}
             onDragStart={(e, info) => handleDragStart(e, element, info)}
             onDragEnd={(e, info) => handleDragEnd(e, info)}
           >
@@ -74,6 +74,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
+            commonProps={commonProps}
           />
         );
 
@@ -181,6 +182,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
+            commonProps={commonProps}
           />
         );
 
@@ -212,16 +214,7 @@ const FrameComponents = (props: EditorComponentProps) => {
             />
           );
         }
-      case "Carousel":
-        return (
-          <CarouselComponent
-            key={element.id}
-            element={element as CarouselElement}
-            setContextMenuPosition={setContextMenuPosition}
-            setShowContextMenu={setShowContextMenu}
-            projectId={projectId}
-          />
-        );
+
       default:
         return (
           <motion.div
@@ -238,51 +231,7 @@ const FrameComponents = (props: EditorComponentProps) => {
         );
     }
   };
-  const handleDropLineZone = (
-    e: React.DragEvent<HTMLDivElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
 
-    const elementType = e.dataTransfer.getData("elementType");
-    const advancedType = e.dataTransfer.getData("advancedType");
-    const newCustomElement = e.dataTransfer.getData("customElement");
-    if (elementType) {
-      createElements(
-        elementType,
-        element as FrameElement,
-        projectId,
-        updateElement
-      );
-    } else if (advancedType) {
-      const advancedElement = advancedComponents.find(
-        (el) => el.component.name === advancedType
-      );
-      if (!advancedElement) return;
-      startTransition(() => {
-        addElementOptimistically(
-          advancedElement.component as EditorElement,
-          projectId,
-          element.id
-        );
-      });
-    } else if (newCustomElement) {
-      const customComponent = customComponents.find(
-        (component) => component.component.name === newCustomElement
-      );
-      if (customComponent) {
-        customComponent.component.parentId = element.id;
-        startTransition(() => {
-          addElementOptimistically(
-            customComponent.component as EditorElement,
-            projectId,
-            element.id
-          );
-        });
-      }
-    }
-  };
   const [dropZoneActive, setDropZoneActive] = useState<"bottom" | null>(null);
 
   return (
@@ -305,13 +254,12 @@ const FrameComponents = (props: EditorComponentProps) => {
         ref={dragConstraint}
       >
         {(element as FrameElement).elements?.map((childElement) => (
-          <React.Fragment key={childElement.id}>
+          <React.Fragment key={childElement.id}>  
             {renderElement(childElement)}
           </React.Fragment>
         ))}
       </motion.div>
 
-      {/* Bottom drop zone */}
       <div
         className={cn(
           "absolute bottom-0 left-0 w-full h-4 translate-y-full z-10",
@@ -325,7 +273,7 @@ const FrameComponents = (props: EditorComponentProps) => {
         }}
         onDragLeave={() => setDropZoneActive(null)}
         onDrop={(e) => {
-          handleDropLineZone(e, element);
+          handleDrop(e, element);
           setDropZoneActive(null);
         }}
       />

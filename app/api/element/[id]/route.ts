@@ -228,14 +228,125 @@ export async function POST(
       return new NextResponse("Project ID is required", { status: 400 });
     }
 
-    const createElementWithChildren = async (
-      element: EditorElement,
-      parentId?: string,
-      order?: number
-    ) => {
-      const elementId = element.id ?? crypto.randomUUID();
+    const createElementWithChildren = async (rootElement: EditorElement) => {
+      let maxParentOrder = 0;
+      if(rootElement.parentId){
+        maxParentOrder = await prisma.elements.count({
+          where: {
+            ParentId: rootElement.parentId,
+            ProjectId: id,
+          },
+        });
+      }
+      // Queue for BFS traversal - structure includes parent info and element ordering within parent context
+      const queue: {
+        element: EditorElement;
+        parentId?: string;
+        order: number;
+      }[] = [{ element: rootElement, parentId: undefined, order: maxParentOrder }];
 
-      // Create the main element
+      const createdElementsById = new Map<string, any>();
+
+      let rootCreatedElement: any = null;
+      while (queue.length > 0) {
+        const { element, parentId, order } = queue.shift()!;
+        const elementId = element.id ?? crypto.randomUUID();
+        const createdElement = await prisma.elements.create({
+          data: {
+            Id: elementId,
+            IsSelected: false,
+            Type: element.type,
+            Content: element.content,
+            Styles: JSON.stringify(element.styles),
+            X: element.x ?? 0,
+            Y: element.y ?? 0,
+            Src: element.src,
+            Href: element.href,
+            ParentId: element.parentId ?? parentId,
+            Name: element.name,
+            TailwindStyles: element.tailwindStyles,
+            ProjectId: id,
+            Order: order,
+            ButtonType: (element as ButtonElement).buttonType,
+            ...(element.type === "carousel" && {
+              CarouselSettings: JSON.stringify(
+                (element as CarouselElement).carouselSettings
+              ),
+            }),
+            ...(element.type === "input" && {
+              InputSettings: JSON.stringify(
+                (element as InputElement).inputSettings
+              ),
+            }),
+            ...(element.type === "select" && {
+              SelectSettings: JSON.stringify(
+                (element as SelectElement).selectSettings
+              ),
+              Options: JSON.stringify((element as SelectElement).options),
+            }),
+          },
+        });
+
+        // Store for future reference
+        createdElementsById.set(elementId, createdElement);
+
+        // Save the root element to return later
+        if (!parentId) {
+          rootCreatedElement = createdElement;
+        }
+
+        // Handle element-specific settings
+        const elementSettings = await getElementSettings(element);
+        if (elementSettings) {
+          await prisma.settings.create({
+            data: {
+              Id: crypto.randomUUID(),
+              ElementId: elementId,
+              Settings: elementSettings,
+              Name: `${element.type} Settings`,
+              SettingType: element.type.toLowerCase(),
+            },
+          });
+        }
+
+        // Add child elements to the queue
+        if ("elements" in element) {
+          const nestedElements = (
+            element as FrameElement | CarouselElement | ListElement
+          ).elements;
+
+          if (nestedElements && nestedElements.length > 0) {
+            // Add all children to the queue with their index as order
+            nestedElements.forEach((childElement, index) => {
+              queue.push({
+                element: childElement,
+                parentId: elementId,
+                order: index,
+              });
+            });
+          }
+        }
+
+        // Handle button's nested element
+        if (element.type === "button" && (element as ButtonElement).element) {
+          queue.push({
+            element: (element as ButtonElement).element!,
+            parentId: elementId,
+            order: 0, // Button element always has order 0 as there's only one child
+          });
+        }
+      }
+      return rootCreatedElement;
+    };
+
+    const createElementWithoutChildren = async () => {
+      const maxParentOrder = await prisma.elements.count({
+        where: {
+          ParentId: element.parentId,
+          ProjectId: id,
+        },
+      });
+      const elementId = element.id ?? crypto.randomUUID();
       const createdElement = await prisma.elements.create({
         data: {
           Id: elementId,
@@ -247,36 +358,17 @@ export async function POST(
           Y: element.y ?? 0,
           Src: element.src,
           Href: element.href,
-          ParentId: element.parentId ?? parentId,
+          ParentId: element.parentId,
           Name: element.name,
           TailwindStyles: element.tailwindStyles,
           ProjectId: id,
-          Order: order ?? 0,
-          ButtonType: (element as ButtonElement).buttonType,
-          ...(element.type === "carousel" && {
-            CarouselSettings: JSON.stringify(
-              (element as CarouselElement).carouselSettings
-            ),
-          }),
-          ...(element.type === "input" && {
-            InputSettings: JSON.stringify(
-              (element as InputElement).inputSettings
-            ),
-          }),
-          ...(element.type === "select" && {
-            SelectSettings: JSON.stringify(
-              (element as SelectElement).selectSettings
-            ),
-            Options: JSON.stringify((element as SelectElement).options),
-          }),
+          Order: maxParentOrder,
         },
       });
-
-      // Handle element-specific settings
       const elementSettings = await getElementSettings(element);
       if (elementSettings) {
         await prisma.settings.create({
-          data: {
+          data: { 
             Id: crypto.randomUUID(),
             ElementId: elementId,
             Settings: elementSettings,
@@ -286,33 +378,16 @@ export async function POST(
         });
       }
 
-      // Handle nested elements recursively
-      if ("elements" in element) {
-        const nestedElements = (
-          element as FrameElement | CarouselElement | ListElement
-        ).elements;
-        if (nestedElements && nestedElements.length > 0) {
-          await Promise.all(
-            nestedElements.map((child, index) =>
-              createElementWithChildren(child, elementId, index)
-            )
-          );
-        }
-      }
-      // Handle button's nested element
-      if (element.type === "button" && (element as ButtonElement).element) {
-        await createElementWithChildren(
-          (element as ButtonElement).element!,
-          elementId
-        );
-      }
-
       return createdElement;
     };
 
-    const createdElement = await createElementWithChildren(element);
+    if (element.elements && element.elements.length > 0) {
+      await createElementWithChildren(element);
+    } else {
+      await createElementWithoutChildren();
+    }
 
-    return NextResponse.json(createdElement, { status: 200 });
+    return NextResponse.json("Created successfully", { status: 200 });
   } catch (error) {
     console.error("Error creating element:", error);
     return new NextResponse(

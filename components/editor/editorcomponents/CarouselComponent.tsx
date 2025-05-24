@@ -14,12 +14,24 @@ import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
-import { CarouselElement, EditorComponentProps } from "@/lib/interface";
+import {
+  CarouselElement,
+  EditorComponentProps,
+  commonProps,
+} from "@/lib/interface";
 import { EditorElement } from "@/lib/type";
 import ListItemComponent from "./ListItemComponent";
+import ButtonComponent from "./ButtonComponent";
+import InputComponent from "./InputComponent";
+import SelectComponent from "./SelectComponent";
+import ChartComponent from "./ChartComponent";
+import DataTableComponent from "./DataTableComponent";
+import FormComponent from "./FormComponent";
+import { useEditorElementHandlers } from "@/hooks/useEditorElementHandlers";
 
 type Props = EditorComponentProps & {
   element: CarouselElement;
+  commonProps?: Partial<commonProps>;
 };
 
 const CarouselComponent: React.FC<Props> = ({
@@ -27,13 +39,29 @@ const CarouselComponent: React.FC<Props> = ({
   setContextMenuPosition,
   setShowContextMenu,
   projectId,
+  commonProps,
 }) => {
   const { uploadImages } = useImageStore();
   const { updateElement } = useEditorStore();
-  const { setSelectedElement } = useElementSelectionStore();
   const [settings, setSettings] = React.useState<Settings>(
     (element as CarouselElement).carouselSettings || {}
   );
+
+  const {
+    handleDoubleClick,
+    handleContextMenu,
+    handleDrop: hookHandleDrop,
+    handleImageDrop,
+    getContentProps,
+    getCommonProps,
+    draggingElement,
+  } = useEditorElementHandlers({
+    element,
+    projectId,
+    setContextMenuPosition,
+    setShowContextMenu,
+  });
+
   React.useEffect(() => {
     setSettings((element as CarouselElement).carouselSettings || {});
   }, [element]);
@@ -53,34 +81,20 @@ const CarouselComponent: React.FC<Props> = ({
       imgSrc.ufsUrl
     );
   };
-  const handleSwap = (fromIndex: number, toIndex: number) => {
-    if (!element.elements || toIndex < 0 || toIndex >= element.elements.length)
-      return;
+  // const handleSwap = (fromIndex: number, toIndex: number) => {
+  //   if (!element.elements || toIndex < 0 || toIndex >= element.elements.length)
+  //     return;
 
-    const newElements = [...element.elements];
-    [newElements[fromIndex], newElements[toIndex]] = [
-      newElements[toIndex],
-      newElements[fromIndex],
-    ];
+  //   const newElements = [...element.elements];
+  //   [newElements[fromIndex], newElements[toIndex]] = [
+  //     newElements[toIndex],
+  //     newElements[fromIndex],
+  //   ];
 
-    startTransition(() => {
-      updateElement(element.id, { elements: newElements });
-    });
-  };
-
-  const handleDoubleClick = (
-    e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const newSelectionState = !element.isSelected;
-    if (newSelectionState) {
-      setSelectedElement(element);
-    }
-    updateElement(element.id, { isSelected: newSelectionState });
-  };
+  //   startTransition(() => {
+  //     updateElement(element.id, { elements: newElements });
+  //   });
+  // };
 
   const renderElement = (
     element: EditorElement,
@@ -101,24 +115,59 @@ const CarouselComponent: React.FC<Props> = ({
         return (
           <FrameComponents
             key={element.id}
-            {...commonProps}
             element={element}
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
           />
         );
-      case "Image":
+
+      case "Form":
         return (
-          <motion.img
+          <FormComponent
             key={element.id}
-            {...commonProps}
-            src={element.src}
-            alt={`Carousel Image ${index}`}
-            className={cn(commonProps.className, "object-cover")}
-            loading="lazy"
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
           />
         );
+
+      case "Chart":
+        return (
+          <ChartComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
+      case "DataTable":
+        return (
+          <DataTableComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+          />
+        );
+
+      case "Button":
+        return (
+          <ButtonComponent
+            key={element.id}
+            element={element}
+            commonProps={commonProps}
+            draggingElement={draggingElement}
+            projectId={projectId}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+          />
+        );
+
       case "ListItem":
         return (
           <ListItemComponent
@@ -127,12 +176,95 @@ const CarouselComponent: React.FC<Props> = ({
             setContextMenuPosition={setContextMenuPosition}
             setShowContextMenu={setShowContextMenu}
             projectId={projectId}
-            {...commonProps}
+            parentHandlers={{
+              handleDrop: hookHandleDrop,
+              handleDoubleClick,
+              handleContextMenu,
+              handleImageDrop,
+              getContentProps,
+              getCommonProps,
+              draggingElement,
+            }}
           />
         );
+
+      case "Select":
+        return (
+          <SelectComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+            parentHandlers={{
+              handleDoubleClick,
+              handleContextMenu,
+              getCommonProps,
+              draggingElement,
+            }}
+          />
+        );
+
+      case "Input":
+        return (
+          <InputComponent
+            key={element.id}
+            element={element}
+            setContextMenuPosition={setContextMenuPosition}
+            setShowContextMenu={setShowContextMenu}
+            projectId={projectId}
+            commonProps={commonProps}
+          />
+        );
+
+      case "Link":
+        return (
+          <motion.a
+            key={element.id}
+            {...commonProps}
+            href={element.href || "#"}
+            contentEditable={element.isSelected}
+            suppressContentEditableWarning={true}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(element.content || ""),
+            }}
+          />
+        );
+
+      case "Image":
+        if (element.src) {
+          return (
+            <motion.img
+              key={element.id}
+              {...commonProps}
+              src={element.src}
+              alt={`Carousel Image ${index}`}
+              className={cn(commonProps.className, "object-cover")}
+              loading="lazy"
+              drag={element.isSelected}
+            />
+          );
+        } else {
+          return (
+            <motion.div
+              key={element.id}
+              {...commonProps}
+              drag={element.isSelected}
+              contentEditable={element.isSelected}
+              suppressContentEditableWarning={true}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  element.content || "Drop an image here"
+                ),
+              }}
+            />
+          );
+        }
+
       default:
         return (
           <motion.div
+            key={element.id}
             {...commonProps}
             contentEditable={element.isSelected}
             suppressContentEditableWarning={true}
@@ -148,12 +280,14 @@ const CarouselComponent: React.FC<Props> = ({
     <motion.div
       id={element.id}
       onDrop={handleDrop}
-      className={cn("h-full carousel-container px-10",{
-        "border-2  border-black": element.isSelected,
-
-      })}
-      onDragOver={(e) => e.preventDefault()}
-      onDoubleClick={(e) => handleDoubleClick(e, element)}
+      className={cn(
+        "h-full carousel-container px-10 ",
+        element.tailwindStyles,
+        {
+          "border-2  border-black": element.isSelected,
+        }
+      )}
+      {...commonProps}
       style={{
         backgroundColor: element.styles?.backgroundColor,
         backgroundImage: element.styles?.backgroundImage,
@@ -174,7 +308,7 @@ const CarouselComponent: React.FC<Props> = ({
                 {renderElement(childElement, index)}
               </div>
 
-              <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {/* <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <Button
                   variant="outline"
                   size="sm"
@@ -195,7 +329,7 @@ const CarouselComponent: React.FC<Props> = ({
                   <span className="hidden sm:inline">Move Right</span>
                   <ArrowRightCircle className="h-4 w-4" />
                 </Button>
-              </div>
+              </div> */}
             </div>
           ))}
       </Slider>

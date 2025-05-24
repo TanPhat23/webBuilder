@@ -30,9 +30,9 @@ export default function ImageDropDown() {
         <Button className="w-full">Image</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuGroup>
+        <DropdownMenuGroup className="hover:bg-primary">
           <DropdownMenuItem
-            className="flex flex-col gap-2 items-start cursor-pointer w-full"
+            className="flex flex-col gap-2 items-start cursor-pointer w-full "
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-sm font-medium">Image URL</p>

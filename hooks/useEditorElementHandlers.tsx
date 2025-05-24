@@ -105,26 +105,95 @@ export function useEditorElementHandlers({
         type: hoveredType,
         ...hoveredProps
       } = hoveredElement;
+      console.log("swapping", draggingId, hoveredId);
 
-      // Swap everything except ID and type
-      startTransition(() => {
-        updateElement(draggingId, {
-          ...hoveredProps,
-          id: draggingId,
+      // Get elements from the store to find the parent
+      const { elements } = useEditorStore.getState();
+
+      // Find the parent container element
+      const findParentElement = (
+        elements: EditorElement[],
+        parentId: string
+      ): EditorElement | undefined => {
+        for (const el of elements) {
+          if (el.id === parentId) {
+            return el;
+          }
+
+          if("elements" in el && Array.isArray(el.elements)) {
+            const found = findParentElement(el.elements, parentId);
+            if (found) {
+              return found;
+            }
+          }
+        }
+        return undefined;
+      };
+
+      const parentElement = draggingParentId
+        ? findParentElement(elements, draggingParentId)
+        : undefined;
+
+      if (
+        parentElement &&
+        "elements" in parentElement &&
+        Array.isArray(parentElement.elements)
+      ) {
+        // Get the parent's elements array
+        const parentElements = [...parentElement.elements];
+
+        // Find the indices of the dragging and hovered elements
+        const draggingIndex = parentElements.findIndex(
+          (el) => el.id === draggingId
+        );
+        const hoveredIndex = parentElements.findIndex(
+          (el) => el.id === hoveredId
+        );
+
+        if (draggingIndex !== -1 && hoveredIndex !== -1) {
+          // Swap the positions in the array
+          const temp = parentElements[draggingIndex];
+          parentElements[draggingIndex] = parentElements[hoveredIndex];
+          parentElements[hoveredIndex] = temp;
+
+          // Update the parent with the new array order
+          startTransition(() => {
+            updateElement(parentElement.id, {
+              elements: parentElements,
+            });
+          });
+
+          // Call the API to update the backend
+          await fetch("/api/element/swap", {
+            method: "PUT",
+            body: JSON.stringify({
+              element: draggingElement,
+              targetedElement: hoveredElement,
+            }),
+          });
+        }
+      } else {
+        // Fallback to swapping properties if container elements array not found
+        startTransition(() => {
+          updateElement(draggingId, {
+            ...hoveredProps,
+            id: draggingId,
+          });
+
+          updateElement(hoveredId, {
+            ...draggingProps,
+            id: hoveredId,
+          });
         });
 
-        updateElement(hoveredId, {
-          ...draggingProps,
-          id: hoveredId,
+        await fetch("/api/element/swap", {
+          method: "PUT",
+          body: JSON.stringify({
+            element: draggingElement,
+            targetedElement: hoveredElement,
+          }),
         });
-      });
-      await fetch("/api/element/swap", {
-        method: "PUT",
-        body: JSON.stringify({
-          element: draggingElement,
-          targetedElement: hoveredElement,
-        }),
-      });
+      }
     }
 
     setDraggingElement(null);
@@ -150,7 +219,7 @@ export function useEditorElementHandlers({
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(element);
     }
-    console.log("hovering", element.id);
+    // console.log("hovering", element.id);
   };
   const handleMouseLeave = (
     e: React.MouseEvent<HTMLElement>,
@@ -159,7 +228,7 @@ export function useEditorElementHandlers({
     if (draggingElement && draggingElement.id !== element.id) {
       setHoveredElement(null);
     }
-    console.log("leaving", element.id);
+    // console.log("leaving", element.id);
   };
   const onDragOver = (
     e: React.DragEvent<HTMLElement>,
