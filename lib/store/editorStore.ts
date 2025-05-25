@@ -62,6 +62,12 @@ interface EditorState {
     updates: Partial<EditorElement>
   ) => Promise<void>;
   deleteElementOptimistically: (id: string) => Promise<void>;
+  insertElementIntoFrame: (
+    element: EditorElement,
+    frameId: string,
+    projectId: string,
+    index?: number
+  ) => Promise<void>;
 
   // Helper to update history
   _updateHistory: (newElements: EditorElement[]) => void;
@@ -528,6 +534,18 @@ export const useEditorStore = create<EditorState>()(
                 : "Failed to delete element",
           });
         }
+      },
+
+      insertElementIntoFrame: async (element, frameId, projectId, index) => {
+        const frameElement = get()._findElementById(frameId) as FrameElement;
+        if (!frameElement || frameElement.type !== "Frame") {
+          throw new Error("Frame element not found or invalid frame ID");
+        }
+
+        const insertIndex = index !== undefined ? index : frameElement.elements.length;
+
+        // Use the existing insertElement method with the frameId as parentId
+        await get().insertElement(element, projectId, insertIndex, frameId);
       },
     }),
     {

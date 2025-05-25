@@ -15,17 +15,12 @@ import SelectComponent from "./SelectComponent";
 import ChartComponent from "./ChartComponent";
 import DataTableComponent from "./DataTableComponent";
 import FormComponent from "./FormComponent";
-import { useEditorStore } from "@/lib/store/editorStore";
-import createElements from "@/utils/createFrameElements";
-import { advancedComponents } from "@/lib/customcomponents/advancedComponents";
-import { customComponents } from "@/lib/customcomponents/styleconstants";
 import CarouselComponent from "./CarouselComponent";
 
 const FrameComponents = (props: EditorComponentProps) => {
   const { projectId, element, setShowContextMenu, setContextMenuPosition } =
     props;
   const dragConstraint = useRef<HTMLDivElement>(null);
-  const { updateElement, addElementOptimistically } = useEditorStore();
   const {
     handleKeyDown,
     handleDrop,
@@ -51,12 +46,7 @@ const FrameComponents = (props: EditorComponentProps) => {
         return (
           <motion.div
             key={element.id}
-            onDrop={(e: React.DragEvent<HTMLDivElement>) =>
-              handleDrop(e, element)
-            }
             {...commonProps}
-            onDragStart={(e, info) => handleDragStart(e, element, info)}
-            onDragEnd={(e, info) => handleDragEnd(e, info)}
           >
             {(element as FrameElement).elements?.map((childElement) => (
               <React.Fragment key={childElement.id}>
@@ -262,9 +252,9 @@ const FrameComponents = (props: EditorComponentProps) => {
 
       <div
         className={cn(
-          "absolute bottom-0 left-0 w-full h-4 translate-y-full z-10",
+          "absolute bottom-0 left-0 w-full h-2 translate-y-full z-10",
           {
-            "bg-blue-300 opacity-50": dropZoneActive === "bottom",
+            "bg-blue-300 opacity-50 h-4": dropZoneActive === "bottom",
           }
         )}
         onDragOver={(e) => {

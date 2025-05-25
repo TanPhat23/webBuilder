@@ -1,4 +1,4 @@
-import React, { startTransition, useState } from "react";
+import React, { startTransition, useCallback, useState } from "react";
 import { useEditorStore } from "@/lib/store/editorStore";
 import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
@@ -18,34 +18,34 @@ import { customComponents } from "@/lib/customcomponents/styleconstants";
 export interface ElementHandlers {
   handleDoubleClick: (
     e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => void;
   handleContextMenu: (
     e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => void;
   handleInput: (
     e: React.FormEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => void;
   handleKeyDown: (
     e: React.KeyboardEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => void;
   handleDrop: (e: React.DragEvent<HTMLElement>, element: EditorElement) => void;
   handleImageDrop: (
     e: React.DragEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => void;
   handleDragStart: (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
     element: EditorElement,
-    info?: PanInfo
+    info?: PanInfo,
   ) => void;
 
   handleDragEnd: (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
-    info?: PanInfo
+    info?: PanInfo,
   ) => void;
   swapElements: () => void;
   getContentProps: (element: EditorElement) => {
@@ -53,7 +53,7 @@ export interface ElementHandlers {
   };
   getCommonProps: (
     element: EditorElement,
-    dragConstraintRef?: React.RefObject<HTMLDivElement>
+    dragConstraintRef?: React.RefObject<HTMLDivElement>,
   ) => any;
   hoveredElement: EditorElement | null;
   setHoveredElement: React.Dispatch<React.SetStateAction<EditorElement | null>>;
@@ -78,13 +78,13 @@ export function useEditorElementHandlers({
     addElementOptimistically,
   } = useEditorStore();
   const [hoveredElement, setHoveredElement] = useState<EditorElement | null>(
-    null
+    null,
   );
   const [draggingElement, setDraggingElement] = useState<EditorElement | null>(
-    null
+    null,
   );
   const [dragOverElementId, setDragOverElementId] = useState<string | null>(
-    null
+    null,
   );
   const dragOverTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -105,7 +105,6 @@ export function useEditorElementHandlers({
         type: hoveredType,
         ...hoveredProps
       } = hoveredElement;
-      console.log("swapping", draggingId, hoveredId);
 
       // Get elements from the store to find the parent
       const { elements } = useEditorStore.getState();
@@ -113,14 +112,14 @@ export function useEditorElementHandlers({
       // Find the parent container element
       const findParentElement = (
         elements: EditorElement[],
-        parentId: string
+        parentId: string,
       ): EditorElement | undefined => {
         for (const el of elements) {
           if (el.id === parentId) {
             return el;
           }
 
-          if("elements" in el && Array.isArray(el.elements)) {
+          if ("elements" in el && Array.isArray(el.elements)) {
             const found = findParentElement(el.elements, parentId);
             if (found) {
               return found;
@@ -144,10 +143,10 @@ export function useEditorElementHandlers({
 
         // Find the indices of the dragging and hovered elements
         const draggingIndex = parentElements.findIndex(
-          (el) => el.id === draggingId
+          (el) => el.id === draggingId,
         );
         const hoveredIndex = parentElements.findIndex(
-          (el) => el.id === hoveredId
+          (el) => el.id === hoveredId,
         );
 
         if (draggingIndex !== -1 && hoveredIndex !== -1) {
@@ -203,36 +202,31 @@ export function useEditorElementHandlers({
   const handleDragStart = (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
     element: EditorElement,
-    info?: PanInfo
+    info?: PanInfo,
   ) => {
     if (e instanceof Event) {
       e.stopPropagation();
     }
-    console.log("dragging", element.id);
     setDraggingElement(element);
   };
 
-  const handleMouseEnter = (
-    e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    if (draggingElement && draggingElement.id !== element.id) {
-      setHoveredElement(element);
-    }
-    // console.log("hovering", element.id);
-  };
-  const handleMouseLeave = (
-    e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
-  ) => {
-    if (draggingElement && draggingElement.id !== element.id) {
+  const handleMouseEnter = useCallback(
+    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
+      if (!element.isSelected) {
+        setHoveredElement(element);
+      }
+    },
+    [setHoveredElement],
+  );
+  const handleMouseLeave = useCallback(
+    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
       setHoveredElement(null);
-    }
-    // console.log("leaving", element.id);
-  };
+    },
+    [setHoveredElement],
+  );
   const onDragOver = (
     e: React.DragEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     if (
       element.type !== "Frame" &&
@@ -261,7 +255,7 @@ export function useEditorElementHandlers({
   };
   const handleDragEnd = (
     e: React.DragEvent<HTMLElement> | MouseEvent | TouchEvent | PointerEvent,
-    info?: PanInfo
+    info?: PanInfo,
   ) => {
     if ("preventDefault" in e) {
       e.preventDefault();
@@ -284,7 +278,7 @@ export function useEditorElementHandlers({
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -297,7 +291,7 @@ export function useEditorElementHandlers({
 
   const handleDrop = (
     e: React.DragEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -313,7 +307,7 @@ export function useEditorElementHandlers({
         elementType,
         element as FrameElement,
         projectId,
-        updateElement
+        updateElement,
       );
     } else if (imgIdx) {
       const imgSrc = uploadImages[parseInt(imgIdx)];
@@ -323,24 +317,24 @@ export function useEditorElementHandlers({
           element as FrameElement,
           projectId,
           updateElement,
-          imgSrc.ufsUrl
+          imgSrc.ufsUrl,
         );
       }
     } else if (advancedType) {
       const advancedElement = advancedComponents.find(
-        (el) => el.component.name === advancedType
+        (el) => el.component.name === advancedType,
       );
       if (!advancedElement) return;
       startTransition(() => {
         addElementOptimistically(
           advancedElement.component as EditorElement,
           projectId,
-          element.id
+          element.id,
         );
       });
     } else if (newCustomElement) {
       const customComponent = customComponents.find(
-        (component) => component.component.name === newCustomElement
+        (component) => component.component.name === newCustomElement,
       );
       if (customComponent) {
         customComponent.component.parentId = element.id;
@@ -348,7 +342,7 @@ export function useEditorElementHandlers({
           addElementOptimistically(
             customComponent.component as EditorElement,
             projectId,
-            element.id
+            element.id,
           );
         });
       }
@@ -357,7 +351,7 @@ export function useEditorElementHandlers({
 
   const handleDoubleClick = (
     e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -365,6 +359,9 @@ export function useEditorElementHandlers({
     updateElement(element.id, {
       isSelected: !element.isSelected,
     });
+    (e: React.MouseEvent<HTMLElement>, element: EditorElement) => {
+      setHoveredElement(null);
+    };
     if (selectedElement?.id === element.id) {
       setSelectedElement(undefined);
     }
@@ -372,7 +369,7 @@ export function useEditorElementHandlers({
 
   const handleInput = (
     e: React.FormEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -398,7 +395,7 @@ export function useEditorElementHandlers({
 
   const handleContextMenu = (
     e: React.MouseEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -413,7 +410,7 @@ export function useEditorElementHandlers({
 
   const handleImageDrop = (
     e: React.DragEvent<HTMLElement>,
-    element: EditorElement
+    element: EditorElement,
   ) => {
     e.preventDefault();
 
@@ -438,7 +435,7 @@ export function useEditorElementHandlers({
   // Helper function to get common props for elements
   const getCommonProps = (
     element: EditorElement,
-    dragConstraintRef?: React.RefObject<HTMLDivElement>
+    dragConstraintRef?: React.RefObject<HTMLDivElement>,
   ) => ({
     onDoubleClick: (e: React.MouseEvent<HTMLElement>) =>
       handleDoubleClick(e, element),
@@ -452,9 +449,12 @@ export function useEditorElementHandlers({
       "-z-50": element.id === draggingElement?.id,
       "z-50": element.id !== draggingElement?.id,
       "opacity-50": element.id === draggingElement?.id,
-      "border-dashed border-blue-500 border-2":
+      "border-dashed border-blue-600 border-2":
         element.id === hoveredElement?.id && draggingElement !== null,
-      "border-solid border-gray-300": element.id === hoveredElement?.id,
+      "border-solid border-blue-600 border-2":
+        element.id === hoveredElement?.id && draggingElement,
+      "border-solid border-black border-2":
+        element.id === hoveredElement?.id && !element.isSelected,
       "ring-2 ring-offset-1 ring-blue-400 transition-all":
         element.id === dragOverElementId,
     }),
