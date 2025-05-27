@@ -413,7 +413,7 @@ export function useEditorElementHandlers({
     element: EditorElement,
   ) => {
     e.preventDefault();
-
+    e.stopPropagation();
     const imgIdx = e.dataTransfer.getData("image");
     const imgSrc = uploadImages[parseInt(imgIdx)];
 

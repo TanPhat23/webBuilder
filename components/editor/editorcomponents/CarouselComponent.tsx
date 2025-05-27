@@ -10,10 +10,8 @@ import "slick-carousel/slick/slick-theme.css";
 import createElements from "@/utils/createFrameElements";
 import { cn } from "@/lib/utils";
 import { useEditorStore } from "@/lib/store/editorStore";
-import { useElementSelectionStore } from "@/lib/store/elementSelectionStore";
 import { useImageStore } from "@/lib/store/imageStore";
-import { Button } from "@/components/ui/button";
-import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
+
 import {
   CarouselElement,
   EditorComponentProps,

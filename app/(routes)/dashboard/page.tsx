@@ -70,12 +70,10 @@ export default function Page() {
                 {projects?.map((project) => (
                   <li
                     key={project.id}
-                    className="rounded-lg shadow-md bg-foreground"
+                    className="rounded-lg shadow-md bg-primary-foreground"
                   >
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-primary-foreground">
-                        {project.name}
-                      </h3>
+                      <h3 className="text-lg font-semibold ">{project.name}</h3>
                       <p className="text-sm">{project.description}</p>
                       <div className="flex gap-2 mt-4">
                         <Button

@@ -47,6 +47,7 @@ const FrameComponents = (props: EditorComponentProps) => {
           <motion.div
             key={element.id}
             {...commonProps}
+            onDrop={(e)=> handleDrop(e, element)}
           >
             {(element as FrameElement).elements?.map((childElement) => (
               <React.Fragment key={childElement.id}>
@@ -184,7 +185,7 @@ const FrameComponents = (props: EditorComponentProps) => {
               {...commonProps}
               src={element.src}
               onDrop={(e: React.DragEvent<HTMLImageElement>) =>
-                handleImageDrop(e, element)
+                commonProps.handleImageDrop(e, element)
               }
               drag={element.isSelected}
             />
