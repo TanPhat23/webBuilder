@@ -10,7 +10,7 @@ import { barChartComponent, pieChartComponent, lineChartComponent } from "./char
 import { simpleDataTableComponent, complexDataTableComponent } from "./data/dataTableComponents";
 import { clockWidgetComponent, digitalClockWidgetComponent } from "./widgets/widgetComponents";
 import { formComponent1, formComponent2 } from "./form/formComponents";
-import { landingPageTemplateComponent } from "./landingpage/landingPageComponents";
+import { landingPageTemplateComponent, landingPageTemplateComponent2 } from "./landingpage/landingPageComponents";
 
 export interface CustomComponent {
   component: Partial<EditorElement>;
@@ -58,4 +58,5 @@ export const customComponents: CustomComponent[] = [
   formComponent1,
   formComponent2,
   landingPageTemplateComponent,
+  landingPageTemplateComponent2
 ];
